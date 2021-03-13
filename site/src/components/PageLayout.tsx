@@ -8,7 +8,7 @@ const PageLayout = ({ children }: PageLayoutProps) => (
   <div className="
     box-border
     font-sans
-    pl-10 pr-10
+    px-10
     bg-white
     text-black
   ">

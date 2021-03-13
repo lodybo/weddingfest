@@ -22,8 +22,13 @@ module.exports = {
       },
     },
     fontFamily: {
-      sans: ['Vollkorn', ...defaultTheme.fontFamily.sans],
+      sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
+      handwriting: ['Caveat', 'cursive'],
     },
+    fontSize: {
+      ...defaultTheme.fontSize,
+      'mega': '12rem'
+    }
   },
   variants: {
     extend: {},
