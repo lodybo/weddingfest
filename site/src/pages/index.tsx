@@ -4,7 +4,7 @@ import Header from '../components/Header';
 
 const indexPage = () => (
   <PageLayout>
-    <Header/>
+    <Header full />
   </PageLayout>
 );
 

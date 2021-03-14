@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "develop": "gatsby develop",
-    "start": "gatsby develop",
+    "start": "cross-env ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop -H 0.0.0.0",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean"
@@ -33,7 +33,9 @@
     "react-helmet": "^6.1.0"
   },
   "devDependencies": {
+    "@sindresorhus/slugify": "^1.1.0",
     "autoprefixer": "^10.2.5",
+    "cross-env": "^7.0.3",
     "gatsby-plugin-postcss": "^4.0.0",
     "postcss": "^8.2.8",
     "tailwindcss": "^2.0.3"

@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { Helmet } from 'react-helmet';
 
 type PageLayoutProps = {
   children: ReactNode,
@@ -12,6 +13,10 @@ const PageLayout = ({ children }: PageLayoutProps) => (
     bg-white
     text-black
   ">
+    <Helmet>
+      <title>WEDDINGFEST 2022</title>
+    </Helmet>
+
     { children }
   </div>
 );
