@@ -40,13 +40,16 @@ class RSVPForm extends PureComponent<RSVPFormProps> {
             name,
             attendance,
             remarks,
+            camping,
           }) => (
             <li>
               <RSVPGuest
+                key={id}
                 id={id}
                 name={name}
                 attendance={attendance}
                 remarks={remarks}
+                camping={camping}
               />
             </li>
           ))}

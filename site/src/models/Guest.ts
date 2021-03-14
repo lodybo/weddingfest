@@ -3,4 +3,5 @@ export interface Guest {
   name: string;
   attendance: boolean;
   remarks: string;
+  camping: boolean;
 }

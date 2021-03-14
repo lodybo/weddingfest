@@ -2,15 +2,17 @@ import React from 'react';
 
 type InputTextAreaProps = {
   name: string,
-  value: string;
+  value: string,
+  small?: boolean,
 };
 
 const InputTextArea = ({
   name,
   value,
+  small,
 }: InputTextAreaProps) => (
   <textarea
-    className="
+    className={`
       bg-primary-light
       p-2
       border
@@ -19,8 +21,8 @@ const InputTextArea = ({
       rounded-md
       text-base
       w-1/3
-      h-24
-    "
+      ${small ? 'h-12' : 'h-24'}
+    `}
     name={name}
   >{value}</textarea>
 );

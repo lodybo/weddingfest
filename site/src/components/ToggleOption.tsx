@@ -1,11 +1,12 @@
 import React from 'react';
-import { InputToggleProps } from './InputToggle';
 
 type ToggleOptionProps = {
+  name: string,
+  attendance: boolean | null,
   value: string,
   caption: string,
   primary?: boolean,
-} & InputToggleProps;
+};
 
 const ToggleOption = ({
   name,
@@ -16,6 +17,7 @@ const ToggleOption = ({
 }: ToggleOptionProps) => (
   <label
     className={`
+      inline-block
       border
       transition
       px-5
