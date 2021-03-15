@@ -47,12 +47,14 @@ export const query = graphql`
   query($householdID: String!) {
     household: sanityRsvp(id: { eq: $householdID } ) {
       id
+      sanityID: _id
       household
       address
       email
       telephone
       members {
         id
+        sanityID: _id
         name
         attendance
         remarks

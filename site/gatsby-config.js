@@ -1,3 +1,5 @@
+const sanityOptions = require('./sanity.json');
+
 module.exports = {
   siteMetadata: {
     title: "Weddingfest",
@@ -6,8 +8,8 @@ module.exports = {
     {
       resolve: "gatsby-source-sanity",
       options: {
-        projectId: "6z35e7wq",
-        dataset: "production",
+        projectId: sanityOptions.projectId,
+        dataset: sanityOptions.dataset,
       },
     },
     "gatsby-plugin-postcss",

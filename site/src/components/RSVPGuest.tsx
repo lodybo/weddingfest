@@ -6,9 +6,9 @@ import { Guest } from '../models';
 
 type Props = {
   changeHandler: (event: RSVPGuestChangeEvent) => void,
-} & Guest;
+} & Omit<Guest, 'sanityID'>;
 
-type GuestDetails = Omit<Guest, 'id'>;
+type GuestDetails = Omit<Guest, 'id' | 'sanityID'>;
 type ValueOf<T> = T[keyof T];
 
 export type RSVPGuestDetailsEvent = {

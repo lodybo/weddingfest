@@ -29,5 +29,11 @@ export default {
       type: 'text',
       description: 'Any remarks?',
     },
+    {
+      title: 'Camping',
+      name: 'camping',
+      type: 'boolean',
+      description: 'Are they staying for breakfast?',
+    },
   ]
 };

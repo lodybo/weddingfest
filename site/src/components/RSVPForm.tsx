@@ -1,32 +1,44 @@
 import React, { ChangeEvent, FormEvent, PureComponent, ReactElement } from 'react';
-import { Guest, Household } from '../models';
+import Sanity, { SanityClient } from '@sanity/client';
+import { Household } from '../models';
 import RSVPGuest, { RSVPGuestChangeEvent } from './RSVPGuest';
 import InputTextArea from './InputTextArea';
 import InputText from './InputText';
+
+import * as sanityOptions from '../../sanity.json';
 
 type RSVPFormProps = {
   subject: string,
   household: Household,
 };
 
-type RSVPFormState = Omit<Household, 'id' | 'household'>;
+type RSVPFormState = Omit<Household, 'id' | 'sanityID' | 'household'>;
 
 class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
+
+  private db: SanityClient;
 
   constructor(props) {
     super(props);
 
     const { household } = this.props;
 
+    this.db = Sanity({
+      projectId: sanityOptions.projectId,
+      dataset: sanityOptions.dataset,
+      useCdn: false,
+    });
+
     this.state = {
       address: household.address || '',
       telephone: household.telephone || '',
       email: household.email || '',
-      members: household.members
+      members: household.members,
     };
 
     this.handleInputChanged = this.handleInputChanged.bind(this);
     this.handleMemberChanged = this.handleMemberChanged.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   handleInputChanged(event: ChangeEvent<HTMLInputElement>) {
@@ -58,13 +70,58 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
   }
 
   handleSubmit(e: FormEvent) {
-    console.log('Form submitted with data');
+    e.preventDefault();
+
+    const {
+      household: { sanityID }
+    } = this.props;
+
+    const {
+      address,
+      telephone,
+      email,
+      members,
+    } = this.state;
+
+    console.log('=== Saving RSVP details...');
+    this.db
+      .patch(sanityID)
+      .set({ address, })
+      .set({ telephone, })
+      .set({ email, })
+      .commit()
+      .then((res) => {
+        console.log('Everything is saved');
+        console.log(res);
+      })
+      .catch(err => {
+        console.error('Action has failed..');
+        console.error(err);
+      });
+
+    console.log('=== Saving Guest(s) details...');
+    members.forEach(member => {
+      this.db
+        .patch(member.sanityID)
+        .set({ name: member.name })
+        .set({ attendance: member.attendance })
+        .set({ remarks: member.remarks })
+        .set({ camping: member.camping })
+        .commit()
+        .then((res) => {
+          console.log('Everything is saved');
+          console.log(res);
+        })
+        .catch(err => {
+          console.error('Action has failed..');
+          console.error(err);
+        });
+    });
   }
 
   render(): ReactElement {
     const {
       subject,
-      household,
     } = this.props;
 
     const { state } = this;
@@ -93,7 +150,7 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
         <label className="block py-2.5">
           <p>En als laatste { subject } e-mailadres?</p>
           <InputText
-            name="emailaddress"
+            name="email"
             value={this.state.email}
             changeHandler={this.handleInputChanged}
           />
@@ -119,6 +176,19 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
             </li>
           ))}
         </ul>
+
+        <div className="flex justify-end">
+          <button className="
+            border
+            border-primary-dark
+            transition
+            px-5
+            py-2.5
+            cursor-pointer
+            bg-primary
+            hover:bg-primary-dark
+          ">Insturen!</button>
+        </div>
       </form>
     );
   }
