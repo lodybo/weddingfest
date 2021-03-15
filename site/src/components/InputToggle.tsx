@@ -1,32 +1,36 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import ToggleOption from './ToggleOption';
 
 export type InputToggleProps = {
   name: string,
-  attendance: boolean | null,
+  isChecked: string,
   captionWhenTrue: string,
   captionWhenFalse: string,
+  changeHandler: (event: ChangeEvent) => void,
 };
 
 const InputToggle = ({
   name,
-  attendance,
+  isChecked,
   captionWhenTrue,
   captionWhenFalse,
+  changeHandler,
 }: InputToggleProps) => (
   <div className="space-x-2">
     <ToggleOption
       caption={captionWhenFalse}
       value={"false"}
       name={name}
-      attendance={attendance === false}
+      isChecked={isChecked === 'false'}
+      changeHandler={changeHandler}
     />
 
     <ToggleOption
       caption={captionWhenTrue}
       value={"true"}
       name={name}
-      attendance={attendance === true}
+      isChecked={isChecked === 'true'}
+      changeHandler={changeHandler}
       primary
     />
   </div>

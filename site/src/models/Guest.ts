@@ -1,7 +1,7 @@
 export interface Guest {
   id: string,
   name: string;
-  attendance: boolean;
+  attendance: string;
   remarks: string;
-  camping: boolean;
+  camping: string;
 }

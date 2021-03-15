@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 type ToggleOptionProps = {
   name: string,
-  attendance: boolean | null,
+  isChecked: boolean,
   value: string,
   caption: string,
   primary?: boolean,
+  changeHandler: (event: ChangeEvent) => void;
 };
 
 const ToggleOption = ({
   name,
-  attendance,
+  isChecked,
   caption,
   value,
-  primary
+  primary,
+  changeHandler,
 }: ToggleOptionProps) => (
   <label
     className={`
@@ -26,7 +28,7 @@ const ToggleOption = ({
       ${primary ? `
         border-primary-dark
         hover:bg-primary-dark
-        ${attendance ? `
+        ${isChecked ? `
           bg-primary-dark
         `: `
           bg-primary
@@ -34,7 +36,7 @@ const ToggleOption = ({
       ` : `
         border-secondary-dark
         hover:bg-secondary-dark
-        ${attendance ? `
+        ${isChecked ? `
           bg-secondary-dark
         `: `
           bg-secondary
@@ -50,7 +52,8 @@ const ToggleOption = ({
       required
       name={name}
       value={value}
-      checked={attendance}
+      checked={isChecked}
+      onChange={changeHandler}
     />
     { caption }
   </label>

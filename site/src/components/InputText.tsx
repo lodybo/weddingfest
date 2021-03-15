@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 
 type InputTextProps = {
   name: string,
   value: string,
+  changeHandler: (event: ChangeEvent) => void,
 };
 
 const InputText = ({
   name,
   value,
+  changeHandler,
 }: InputTextProps) => (
   <input
     className="
@@ -22,7 +24,9 @@ const InputText = ({
     "
     type="text"
     name={name}
-    value={value} />
+    value={value}
+    onChange={changeHandler}
+  />
 );
 
 export default InputText;
