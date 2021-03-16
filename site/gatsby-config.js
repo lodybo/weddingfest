@@ -17,7 +17,7 @@ module.exports = {
       },
     },
     "gatsby-plugin-postcss",
-    "gatsby-plugin-gatsby-cloud",
+    "gatsby-plugin-netlify",
     "gatsby-plugin-image",
     "gatsby-plugin-react-helmet",
     "gatsby-plugin-sitemap",
