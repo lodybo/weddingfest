@@ -16,18 +16,10 @@ type RSVPFormState = Omit<Household, 'id' | 'sanityID' | 'household'>;
 
 class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
 
-  private db: SanityClient;
-
   constructor(props) {
     super(props);
 
     const { household } = this.props;
-
-    this.db = Sanity({
-      projectId: sanityOptions.projectId,
-      dataset: process.env.GATSBY_SANITY_DATASET,
-      useCdn: false,
-    });
 
     this.state = {
       address: household.address || '',
