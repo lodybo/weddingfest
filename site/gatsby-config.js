@@ -1,4 +1,8 @@
-const sanityOptions = require('./sanity.json');
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+})
+
+const { projectId } = require('./sanity.json');
 
 module.exports = {
   siteMetadata: {
@@ -8,8 +12,8 @@ module.exports = {
     {
       resolve: "gatsby-source-sanity",
       options: {
-        projectId: sanityOptions.projectId,
-        dataset: sanityOptions.dataset,
+        projectId,
+        dataset: process.env.GATSBY_SANITY_DATASET,
       },
     },
     "gatsby-plugin-postcss",

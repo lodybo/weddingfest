@@ -18,10 +18,10 @@ const Header = ({
     justify-center
     items-center
   `}>
-    <h1 className="text-mega font-bold">WEDDINGFEST</h1>
-    <h2 className="font-handwriting text-8xl py-20">10 september 2022</h2>
+    <h1 className={ `${ full ? 'text-mega' : 'text-9xl' } font-bold` }>WEDDINGFEST</h1>
+    <h2 className={ `font-handwriting text-8xl ${ full ? 'py-20' : 'py-10'}` }>10 september 2022</h2>
     <Countdown
-      date={new Date(2022, 8, 10)}
+      date={new Date(2022, 7, 27)}
       renderer={CountdownTimer}
     />
   </div>

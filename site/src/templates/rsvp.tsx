@@ -18,7 +18,7 @@ const RSVPPage = ({ data }: RSVPPageProps) => {
 
   return (
     <PageLayout>
-      {/*<Header />*/}
+      <Header />
 
       <div className="p-20">
         { multipleMembers ? (

@@ -25,7 +25,7 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
 
     this.db = Sanity({
       projectId: sanityOptions.projectId,
-      dataset: sanityOptions.dataset,
+      dataset: process.env.GATSBY_SANITY_DATASET,
       useCdn: false,
     });
 
@@ -76,56 +76,30 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
       household: { sanityID }
     } = this.props;
 
-    const {
-      address,
-      telephone,
-      email,
-      members,
-    } = this.state;
-
     console.log('=== Saving RSVP details...');
-    this.db
-      .patch(sanityID)
-      .set({ address, })
-      .set({ telephone, })
-      .set({ email, })
-      .commit()
-      .then((res) => {
-        console.log('Everything is saved');
-        console.log(res);
+    fetch('/.netlify/functions/api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: sanityID,
+        ...this.state,
+      }),
+    })
+      .then(() => {
+        console.log('Data saved');
       })
       .catch(err => {
-        console.error('Action has failed..');
+        console.error('Saving data failed..');
         console.error(err);
-      });
-
-    console.log('=== Saving Guest(s) details...');
-    members.forEach(member => {
-      this.db
-        .patch(member.sanityID)
-        .set({ name: member.name })
-        .set({ attendance: member.attendance })
-        .set({ remarks: member.remarks })
-        .set({ camping: member.camping })
-        .commit()
-        .then((res) => {
-          console.log('Everything is saved');
-          console.log(res);
-        })
-        .catch(err => {
-          console.error('Action has failed..');
-          console.error(err);
-        });
-    });
+      })
   }
 
   render(): ReactElement {
     const {
       subject,
     } = this.props;
-
-    const { state } = this;
-    console.log({ state });
 
     return (
       <form className="text-lg pt-5" onSubmit={this.handleSubmit}>
