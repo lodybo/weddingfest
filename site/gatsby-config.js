@@ -2,8 +2,6 @@ require('dotenv').config({
   path: `.env.${ process.env.NODE_ENV }`,
 });
 
-const { projectId } = require('./sanity.json');
-
 module.exports = {
   siteMetadata: {
     title: 'Weddingfest',
@@ -13,7 +11,7 @@ module.exports = {
     {
       resolve: 'gatsby-source-sanity',
       options: {
-        projectId,
+        projectId: '6z35e7wq',
         dataset: process.env.GATSBY_SANITY_DATASET,
       },
     },
