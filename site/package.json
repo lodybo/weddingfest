@@ -13,7 +13,7 @@
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean",
-    "netlify:dev": "netlify .env --functions=static/functions"
+    "netlify:dev": "netlify dev --functions=static/functions"
   },
   "dependencies": {
     "@fontsource/caveat": "^4.2.2",
@@ -36,6 +36,7 @@
   "devDependencies": {
     "@sindresorhus/slugify": "^1.1.0",
     "autoprefixer": "^10.2.5",
+    "classnames": "^2.2.6",
     "cross-env": "^7.0.3",
     "gatsby-plugin-postcss": "^4.1.0",
     "netlify-cli": "^3.13.1",
