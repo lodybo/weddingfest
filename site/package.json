@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "develop": "gatsby develop",
-    "start": "cross-env ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop -H 0.0.0.0",
+    "start": "cross-env ENABLE_GATSBY_REFRESH_ENDPOINT=true gatsby develop -H 0.0.0.0 --verbose",
     "build": "gatsby build",
     "serve": "gatsby serve",
     "clean": "gatsby clean"

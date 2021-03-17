@@ -45,7 +45,7 @@ export default RSVPPage;
 
 export const query = graphql`
   query($householdID: String!) {
-    household: sanityRsvp(id: { eq: $householdID } ) {
+    household: sanityRsvp(_id: { eq: $householdID } ) {
       id
       sanityID: _id
       household

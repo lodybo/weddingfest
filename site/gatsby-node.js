@@ -23,7 +23,7 @@ async function createRSVPPages({ graphql, actions }) {
     query {
       rsvps: allSanityRsvp {
         nodes {
-          id
+          sanityID: _id
         }
       }
     }
@@ -31,9 +31,9 @@ async function createRSVPPages({ graphql, actions }) {
 
   data.rsvps.nodes.forEach(rsvp => {
     actions.createPage({
-      path: `rsvp/${ rsvp.id }`,
+      path: `rsvp/${ rsvp.sanityID }`,
       component: path.resolve('./src/templates/rsvp.tsx'),
-      context: { householdID: rsvp.id },
+      context: { householdID: rsvp.sanityID },
     });
   });
 }
