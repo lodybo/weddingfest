@@ -13,7 +13,6 @@ exports.handler = async (event) => {
     address,
     telephone,
     email,
-    members,
   } = event.body;
 
   const householdPatch = db
@@ -22,9 +21,9 @@ exports.handler = async (event) => {
     .set({ telephone, })
     .set({ email, });
 
-  const guestPatches = members.map(member => (
+  const guestPatches = event.body.members.map(member => (
     db
-      .patch(member.id)
+      .patch(member.sanityID)
       .set({ name: member.name })
       .set({ attendance: member.attendance })
       .set({ remarks: member.remarks })
