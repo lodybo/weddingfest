@@ -12,7 +12,7 @@ module.exports = {
       resolve: 'gatsby-source-sanity',
       options: {
         projectId: '6z35e7wq',
-        dataset: process.env.GATSBY_SANITY_DATASET,
+        dataset: process.env.SANITY_DATASET,
       },
     },
     'gatsby-plugin-postcss',
