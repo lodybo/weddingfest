@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import classnames from 'classnames';
 
 type InputTextAreaProps = {
   name: string,
@@ -14,17 +15,22 @@ const InputTextArea = ({
   small,
 }: InputTextAreaProps) => (
   <textarea
-    className={`
-      bg-primary-light
-      p-2
-      border
-      border-solid
-      border-black
-      rounded-md
-      text-base
-      w-1/3
-      ${small ? 'h-12' : 'h-24'}
-    `}
+    className={classnames(
+      'bg-primary-light',
+      'p-2',
+      'border',
+      'border-solid',
+      'border-black',
+      'rounded-md',
+      'text-base',
+      'w-full',
+      'sm:w-3/4',
+      'md:w-2/4',
+      {
+        'h-12': small,
+        'h-24': !small,
+      },
+    )}
     name={name}
     value={value}
     onChange={changeHandler}

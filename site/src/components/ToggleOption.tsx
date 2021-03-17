@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import classnames from 'classnames';
 
 type ToggleOptionProps = {
   name: string,
@@ -18,31 +19,26 @@ const ToggleOption = ({
   changeHandler,
 }: ToggleOptionProps) => (
   <label
-    className={`
-      inline-block
-      border
-      transition
-      px-5
-      py-2.5
-      cursor-pointer
-      ${primary ? `
-        border-primary-dark
-        hover:bg-primary-dark
-        ${isChecked ? `
-          bg-primary-dark
-        `: `
-          bg-primary
-        `}
-      ` : `
-        border-secondary-dark
-        hover:bg-secondary-dark
-        ${isChecked ? `
-          bg-secondary-dark
-        `: `
-          bg-secondary
-        `}
-      `}
-    `}
+    className={classnames(
+      'inline-block',
+      'border',
+      'transition',
+      'px-5',
+      'py-2.5',
+      'cursor-pointer',
+      {
+        'border-primary-dark': primary,
+        'hover:bg-primary-dark': primary,
+        'bg-primary-dark': primary && isChecked,
+        'bg-primary': primary && !isChecked,
+      },
+      {
+        'border-secondary-dark': !primary,
+        'hover:bg-secondary-dark': !primary,
+        'bg-secondary-dark': !primary && isChecked,
+        'bg-secondary': !primary && !isChecked,
+      },
+    )}
   >
     <input
       className="

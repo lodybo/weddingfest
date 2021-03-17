@@ -20,7 +20,10 @@ const RSVPPage = ({ data }: RSVPPageProps) => {
     <PageLayout>
       <Header />
 
-      <div className="p-20">
+      <div className="
+        p-10
+        lg:p-20
+      ">
         { multipleMembers ? (
           <h2 className="text-4xl pb-5">Ben je erbij?</h2>
         ) : (

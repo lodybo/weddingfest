@@ -25,7 +25,9 @@ module.exports = {
     },
     fontSize: {
       ...defaultTheme.fontSize,
-      'mega': '12rem'
+      '10xl': '10rem',
+      '11xl': '11rem',
+      '12xl': '12rem',
     }
   },
   variants: {

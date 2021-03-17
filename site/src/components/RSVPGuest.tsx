@@ -58,7 +58,7 @@ class RSVPGuest extends PureComponent<Props> {
 
     return (
       <div>
-        <div className="flex justify-between">
+        <div className="block md:flex md:justify-between">
           <p>{ name }</p>
           <InputToggle
             name={ `attendance-${ this.escapedName }` }

@@ -1,4 +1,5 @@
 import React, { ChangeEvent } from 'react';
+import classnames from 'classnames';
 
 type InputTextProps = {
   name: string,
@@ -12,16 +13,18 @@ const InputText = ({
   changeHandler,
 }: InputTextProps) => (
   <input
-    className="
-      bg-primary-light
-      p-2
-      border
-      border-solid
-      border-black
-      rounded-md
-      text-base
-      w-1/3
-    "
+    className={classnames(
+      'bg-primary-light',
+      'p-2',
+      'border',
+      'border-solid',
+      'border-black',
+      'rounded-md',
+      'text-base',
+      'w-full',
+      'sm:w-3/4',
+      'md:w-2/4',
+    )}
     type="text"
     name={name}
     value={value}
