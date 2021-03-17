@@ -2,7 +2,7 @@ const Sanity = require('@sanity/client');
 
 const db = new Sanity({
   projectId: '6z35e7wq',
-  dataset: 'production',
+  dataset: process.env.SANITY_PROJECT_DATASET,
   token: process.env.SANITY_API_TOKEN,
   useCdn: false,
 });
