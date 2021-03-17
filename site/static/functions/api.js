@@ -3,7 +3,7 @@ const Sanity = require('@sanity/client');
 const db = new Sanity({
   projectId: '6z35e7wq',
   dataset: 'production',
-  token: process.env.GATSBY_SANITY_API_TOKEN,
+  token: process.env.SANITY_API_TOKEN,
   useCdn: false,
 });
 
@@ -13,7 +13,8 @@ exports.handler = async (event) => {
     address,
     telephone,
     email,
-  } = event.body;
+    members
+  } = JSON.parse(event.body);
 
   const householdPatch = db
     .patch(id)
@@ -21,7 +22,7 @@ exports.handler = async (event) => {
     .set({ telephone, })
     .set({ email, });
 
-  const guestPatches = event.body.members.map(member => (
+  const guestPatches = members.map(member => (
     db
       .patch(member.sanityID)
       .set({ name: member.name })
@@ -40,12 +41,18 @@ exports.handler = async (event) => {
   } catch (err) {
     return {
       statusCode: 422,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ message: 'Saving data has failed...', error: err }),
     }
   }
 
   return {
     statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ message: 'Save succeeded' }),
   }
-}
+};
