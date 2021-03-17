@@ -76,11 +76,18 @@ class RSVPForm extends PureComponent<RSVPFormProps, RSVPFormState> {
         ...this.state,
       }),
     })
-      .then(() => {
-        console.log('Data saved');
+      .then((response) => {
+        const body = response.json();
+
+        if (response.ok) {
+          console.log('Data saved');
+        } else {
+          console.error('Saving data failed..');
+          console.error(body);
+        }
       })
       .catch(err => {
-        console.error('Saving data failed..');
+        console.error('Sending request failed..');
         console.error(err);
       })
   }

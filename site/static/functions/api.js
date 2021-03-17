@@ -7,7 +7,7 @@ const db = new Sanity({
   useCdn: false,
 });
 
-exports.handler = async function(event, context) {
+exports.handler = async (event) => {
   const {
     id,
     address,
@@ -16,35 +16,37 @@ exports.handler = async function(event, context) {
     members,
   } = event.body;
 
-  return Promise.all(() => (
-      db
-        .patch(id)
-        .set({ address, })
-        .set({ telephone, })
-        .set({ email, })
-        .commit()
-    ),
-    () => members.map(member => (
-      db
-        .patch(member.id)
-        .set({ name: member.name })
-        .set({ attendance: member.attendance })
-        .set({ remarks: member.remarks })
-        .set({ camping: member.camping })
-        .commit()
-    ))
-  )
-    .then(() => ({
-      statusCode: 200,
-      body: JSON.stringify({ message: 'autoSave succeeded' })
-    }))
-    .catch((err) => ({
-      statusCode: 422,
-      body: JSON.stringify({ message: 'autoSave succeeded', error: err })
-    }));
+  const householdPatch = db
+    .patch(id)
+    .set({ address, })
+    .set({ telephone, })
+    .set({ email, });
 
-  // return {
-  //   statusCode: 200,
-  //   body: JSON.stringify({message: "Hello World"})
-  // };
+  const guestPatches = members.map(member => (
+    db
+      .patch(member.id)
+      .set({ name: member.name })
+      .set({ attendance: member.attendance })
+      .set({ remarks: member.remarks })
+      .set({ camping: member.camping })
+  ));
+
+  try {
+    const transaction = db.transaction();
+    transaction.patch(householdPatch);
+
+    guestPatches.forEach(patch => transaction.patch(patch));
+
+    await transaction.commit();
+  } catch (err) {
+    return {
+      statusCode: 422,
+      body: JSON.stringify({ message: 'Saving data has failed...', error: err }),
+    }
+  }
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: 'Save succeeded' }),
+  }
 }
