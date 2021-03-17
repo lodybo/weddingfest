@@ -1,11 +1,8 @@
 import React, { ChangeEvent, FormEvent, PureComponent, ReactElement } from 'react';
-import Sanity, { SanityClient } from '@sanity/client';
 import { Household } from '../models';
 import RSVPGuest, { RSVPGuestChangeEvent } from './RSVPGuest';
 import InputTextArea from './InputTextArea';
 import InputText from './InputText';
-
-import * as sanityOptions from '../../sanity.json';
 
 type RSVPFormProps = {
   subject: string,
