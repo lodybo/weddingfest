@@ -36,5 +36,18 @@ module.exports = {
       },
       __key: 'images',
     },
+    {
+      resolve: `gatsby-plugin-manifest`,
+      options: {
+        name: `WeddingFest`,
+        short_name: `WeddingFest`,
+        start_url: `/`,
+        background_color: `#ffffff`,
+        theme_color: `#cffafe`,
+        display: `standalone`,
+        icon: './src/images/icon.png',
+      },
+    },
+    'gatsby-plugin-offline',
   ],
 };
