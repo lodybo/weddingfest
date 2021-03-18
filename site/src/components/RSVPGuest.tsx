@@ -53,7 +53,7 @@ class RSVPGuest extends PureComponent<Props> {
       name,
       attendance,
       camping,
-      remarks,
+      remarks = '',
     } = this.props;
 
     return (
