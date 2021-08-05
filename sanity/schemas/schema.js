@@ -7,6 +7,7 @@ import schemaTypes from 'all:part:@sanity/base/schema-type'
 // Import our schemas
 import rsvp from './rsvp';
 import guest from './guest';
+import ticket from './ticket';
 
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
@@ -17,5 +18,6 @@ export default createSchema({
   types: schemaTypes.concat([
     rsvp,
     guest,
+    ticket,
   ]),
 })
