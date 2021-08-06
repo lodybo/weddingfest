@@ -9,6 +9,7 @@ import rsvp from './rsvp';
 import guest from './guest';
 import ticket from './ticket';
 import page from './page';
+import act from './act';
 
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
@@ -21,5 +22,6 @@ export default createSchema({
     guest,
     ticket,
     page,
+    act,
   ]),
 })
