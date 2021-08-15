@@ -1,3 +1,5 @@
+import { defaultLanguage } from '../locales/locales';
+
 export default {
   title: 'Page',
   name: 'page',
@@ -7,7 +9,7 @@ export default {
       title: 'Page title',
       name: 'page_title',
       description: 'The title of the page',
-      type: 'string',
+      type: 'localisedString',
     },
     {
       title: 'Content',
@@ -16,9 +18,14 @@ export default {
       type: 'array',
       of: [
         {
-          type: 'block',
+          type: 'localisedBlock',
         }
       ]
     }
-  ]
+  ],
+  preview: {
+    select: {
+      title: `page_title.${defaultLanguage.id}`
+    }
+  }
 }

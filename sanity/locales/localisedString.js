@@ -13,7 +13,7 @@ export default {
     }
   ],
   fields: supportedLocales.map(locale => ({
-    title: locale.title,
+    title: locale.locale,
     name: locale.id,
     type: 'string',
     fieldset: locale.isDefault ? null : 'translations',

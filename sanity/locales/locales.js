@@ -9,3 +9,5 @@ export const supportedLocales = [
     locale: 'English',
   }
 ];
+
+export const defaultLanguage = supportedLocales.find(l => l.isDefault);

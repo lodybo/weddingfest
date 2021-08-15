@@ -11,6 +11,10 @@ import ticket from './ticket';
 import page from './page';
 import act from './act';
 
+// Import our localisation types
+import localisedString from '../locales/localisedString';
+import localisedBlock from '../locales/localisedBlock';
+
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
   // We name our schema
@@ -23,5 +27,8 @@ export default createSchema({
     ticket,
     page,
     act,
+
+    localisedString,
+    localisedBlock,
   ]),
 })
