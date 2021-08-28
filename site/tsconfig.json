@@ -5,8 +5,20 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "baseUrl": "src",
+    "paths": {
+      "#components/*": ["components/*"],
+      "#models/*": ["models/*"],
+      "#pages/*": ["pages/*"],
+      "#templates/*": ["templates/*"],
+      "#utils/*": ["utils/*"],
+      "#types/*": ["types/*"]
+    },
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules"
   ]

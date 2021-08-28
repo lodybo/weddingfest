@@ -49,5 +49,11 @@ module.exports = {
       },
     },
     'gatsby-plugin-offline',
+    {
+      resolve: `gatsby-plugin-typegen`,
+      options: {
+        outputPath: `src/types/gatsby-types.d.ts`,
+      },
+    },
   ],
 };

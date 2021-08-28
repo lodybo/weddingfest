@@ -2,6 +2,9 @@ const path = require('path');
 const util = require('util');
 const child_process = require('child_process');
 const exec = util.promisify(child_process.exec);
+const slugify = require('@sindresorhus/slugify');
+
+const supportedLocales = ['nl', 'en'];
 
 exports.onPostBuild = async (gatsbyNodeHelpers) => {
   const { reporter } = gatsbyNodeHelpers;
@@ -38,8 +41,58 @@ async function createRSVPPages({ graphql, actions }) {
   });
 }
 
+async function createGenericPages({ graphql, actions }) {
+  const { createPage } = actions;
+  const { data } = await graphql(`
+    query {
+      pages: allSanityPage {
+        nodes {
+          slug {
+            current
+          }
+        }
+      }
+    }
+  `);
+
+  data.pages.nodes.forEach(page => {
+    const { current } = page.slug;
+    createLocalePage({
+      path: current,
+      component: path.resolve('./src/templates/page.tsx'),
+      context: {
+        slug: current,
+      },
+    }, createPage);
+  });
+}
+
+const createLocalePage = (pageData, createPageFunction) => {
+  ['', ...supportedLocales].forEach(locale => {
+    const { path, context, ...rest} = pageData;
+    let localisedPath;
+    let contextData = {
+      ...context,
+    };
+
+    if (locale) {
+      localisedPath = `/${locale}/${path}`;
+      contextData.locale = locale;
+    } else {
+      localisedPath = `/${path}`;
+    }
+
+    createPageFunction({
+      ...rest,
+      path: localisedPath,
+      context: contextData,
+    })
+  });
+};
+
 exports.createPages = async function (params) {
   await Promise.all([
     createRSVPPages(params),
+    createGenericPages(params),
   ]);
 };

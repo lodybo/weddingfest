@@ -12,6 +12,15 @@ export default {
       type: 'localisedString',
     },
     {
+      title: 'Page slug',
+      name: 'slug',
+      description: 'The slug (identifying part of the URL) of the page',
+      type: 'slug',
+      options: {
+        source: `page_title.${defaultLanguage.id}`,
+      }
+    },
+    {
       title: 'Content',
       name: 'content',
       description: 'What\'s the page all about',
