@@ -4964,6 +4964,13 @@ type SitePluginSortInput = {
   readonly order: Maybe<ReadonlyArray<Maybe<SortOrderEnum>>>;
 };
 
+type PageQueryVariables = Exact<{
+  slug: Scalars['String'];
+}>;
+
+
+type PageQuery = { readonly pageData: Maybe<{ readonly title: Maybe<Pick<SanityLocalisedString, '_key' | '_type' | 'nl' | 'en'>>, readonly content: Maybe<ReadonlyArray<Maybe<{ en: SanityLocalisedBlock['_rawEn'], nl: SanityLocalisedBlock['_rawNl'] }>>> }> };
+
 type userslodySitesweddingfestsitesrctemplatesrsvpTsx125436356QueryVariables = Exact<{
   householdID: Scalars['String'];
 }>;
@@ -4977,18 +4984,6 @@ type userslodySitesweddingfestsitesrctemplatesrsvpTsx125436356Query = { readonly
       & { sanityID: SanityGuest['_id'] }
     )>>> }
   )> };
-
-type PageQueryVariables = Exact<{
-  slug: Scalars['String'];
-}>;
-
-
-type PageQuery = { readonly pageData: Maybe<{ readonly title: Maybe<Pick<SanityLocalisedString, '_key' | '_type' | 'nl' | 'en'>>, readonly content: Maybe<ReadonlyArray<Maybe<{ en: SanityLocalisedBlock['_rawEn'], nl: SanityLocalisedBlock['_rawNl'] }>>> }> };
-
-type PagesQueryQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-type PagesQueryQuery = { readonly allSitePage: { readonly nodes: ReadonlyArray<Pick<SitePage, 'path'>> } };
 
 type GatsbySanityImageFixedFragment = Pick<SanityImageFixed, 'base64' | 'width' | 'height' | 'src' | 'srcSet' | 'srcWebp' | 'srcSetWebp'>;
 
@@ -5031,5 +5026,10 @@ type GatsbyImageSharpFluid_withWebp_tracedSVGFragment = Pick<ImageSharpFluid, 't
 type GatsbyImageSharpFluid_noBase64Fragment = Pick<ImageSharpFluid, 'aspectRatio' | 'src' | 'srcSet' | 'sizes'>;
 
 type GatsbyImageSharpFluid_withWebp_noBase64Fragment = Pick<ImageSharpFluid, 'aspectRatio' | 'src' | 'srcSet' | 'srcWebp' | 'srcSetWebp' | 'sizes'>;
+
+type PagesQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+type PagesQueryQuery = { readonly allSitePage: { readonly nodes: ReadonlyArray<Pick<SitePage, 'path'>> } };
 
 }
