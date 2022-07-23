@@ -12,4 +12,4 @@ export const attendanceIsValid = (attendance: any): attendance is string =>
   (attendance === 'true' || attendance === 'false');
 
 export const potluckIsValid = (potluck: any): potluck is string =>
-  typeof potluck === 'string' && Array.isArray(potluck.split(','));
+  typeof potluck === 'string';
