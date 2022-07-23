@@ -15,7 +15,6 @@ model User {
   updatedAt DateTime @updatedAt
 
   password Password?
-  notes    Note[]
 }
 
 model Password {
@@ -25,11 +24,12 @@ model Password {
   userId String @unique
 }
 
-//model RSVP {
-//  id          String @id @default(cuid())
-//  Name        String
-//  Attendance  String
-//
-//  createdAt DateTime @default(now())
-//  updatedAt DateTime @updatedAt
-//}
+model Rsvp {
+  id          String @id @default(cuid())
+  name        String
+  attendance  Boolean
+  potluck     String[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

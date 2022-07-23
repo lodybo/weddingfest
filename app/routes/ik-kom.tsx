@@ -17,6 +17,8 @@ import PotluckField from '~/components/PotluckField';
 import ErrorMessage from '~/components/ErrorMessage';
 import CountdownTimer from '~/components/CountdownTimer';
 
+import { createRSVP } from '~/models/rsvp.server';
+
 import type {
   RSVP,
   AttendanceResponse,
@@ -64,15 +66,13 @@ export async function action({ request }: ActionArgs) {
     potluck: potluck.split(','),
   };
 
+  await createRSVP(entry);
+
   return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
 }
 
 export default function AttendancePage() {
   let data = useActionData<typeof action>();
-
-  if (!data) {
-    data = { success: true, name: '', attendance: true, potluck: [] };
-  }
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -85,7 +85,7 @@ export default function AttendancePage() {
       />
 
       {data?.success ? (
-        <div className="prose mb-10 max-w-none md:prose-lg">
+        <div className="prose mb-10 w-3/4 max-w-none md:prose-lg md:w-1/2">
           <h2>Dank je wel voor het opgeven van je aanwezigheid</h2>
 
           {data.attendance ? (
@@ -140,15 +140,15 @@ export default function AttendancePage() {
           )}
         </div>
       ) : (
-        <>
-          <p className="prose md:prose-lg">
+        <div className="w-full px-8">
+          <p className="prose mx-auto text-center md:prose-lg">
             Wij gaan trouwen en willen graag weten of je erbij bent! <br />
             We vragen je daarom onderstaand formulier in te vullen voor ons.
           </p>
 
           <Form
             method="post"
-            className="my-10 flex w-1/4 flex-1 flex-col items-center justify-center gap-5"
+            className="my-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
           >
             <div className="w-full">
               <NameField />
@@ -167,7 +167,7 @@ export default function AttendancePage() {
               Verzenden
             </button>
           </Form>
-        </>
+        </div>
       )}
     </div>
   );
