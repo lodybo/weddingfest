@@ -12,10 +12,18 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import {
+  faSquarePlus,
+  faSquareMinus,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 
 import tailwindStylesheetUrl from './styles/tailwind.css';
 
 import { getUser } from './session.server';
+
+library.add(faSquarePlus, faSquareMinus, faTrash);
 
 export const links: LinksFunction = () => {
   return [
@@ -64,7 +72,7 @@ export default function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        <LiveReload />
+        <LiveReload port={4200} />
       </body>
     </html>
   );

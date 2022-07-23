@@ -35,8 +35,10 @@
     "/public/build"
   ],
   "dependencies": {
-    "@fontsource/caveat": "^4.5.7",
-    "@fontsource/dm-sans": "^4.5.7",
+    "@fortawesome/fontawesome-svg-core": "^6.1.1",
+    "@fortawesome/free-brands-svg-icons": "^6.1.1",
+    "@fortawesome/free-regular-svg-icons": "^6.1.1",
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@prisma/client": "^4.0.0",
     "@remix-run/express": "^1.6.5",
     "@remix-run/node": "^1.6.5",

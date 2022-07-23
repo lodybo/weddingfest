@@ -9,10 +9,16 @@ export interface ToggleOption {
 type Props = {
   name: string;
   options: ToggleOption[];
+  onSelect: (selectedOption: string) => void;
 };
 
-export default function ToggleInput({ options, name }: Props) {
+export default function ToggleInput({ options, name, onSelect }: Props) {
   const [selectedOption, setSelectedOption] = useState<string>('');
+
+  const handleSelect = (selected: string) => {
+    setSelectedOption(selected);
+    onSelect(selected);
+  };
 
   return (
     <span className="mb-10 flex flex-row items-center justify-center gap-5">
@@ -21,7 +27,7 @@ export default function ToggleInput({ options, name }: Props) {
           color === 'green'
             ? value === selectedOption
               ? 'bg-emerald-300'
-              : 'bg-emerald-200'
+              : 'bg-zinc-200'
             : value === selectedOption
             ? 'bg-zinc-300'
             : 'bg-zinc-200'
@@ -34,7 +40,7 @@ export default function ToggleInput({ options, name }: Props) {
             name={name}
             value={value}
             type="button"
-            onClick={() => setSelectedOption(value)}
+            onClick={() => handleSelect(value)}
           >
             {label}
           </button>
