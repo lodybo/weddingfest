@@ -8,35 +8,22 @@ import {
   potluckIsValid,
 } from '~/validations';
 import invariant from 'tiny-invariant';
+import Countdown from 'react-countdown';
 
 import Navigation from '~/components/Navigation';
 import NameField from '~/components/NameField';
 import AttendanceField from '~/components/AttendanceField';
 import PotluckField from '~/components/PotluckField';
 import ErrorMessage from '~/components/ErrorMessage';
+import CountdownTimer from '~/components/CountdownTimer';
 
-import type { RSVP } from '~/types/RSVP';
+import type {
+  RSVP,
+  AttendanceResponse,
+  FailedAttendanceResponse,
+} from '~/types/RSVP';
 
 import weddingCouple from '~/images/wedding-couple.jpg';
-
-interface BaseAttendanceResponse {
-  success: boolean;
-}
-
-interface SuccessfulAttendanceResponse extends BaseAttendanceResponse {
-  success: true;
-}
-
-interface FailedAttendanceResponse extends BaseAttendanceResponse {
-  success: false;
-  name?: string;
-  attendance?: string;
-  potluck?: string;
-}
-
-type AttendanceResponse =
-  | SuccessfulAttendanceResponse
-  | FailedAttendanceResponse;
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
@@ -77,14 +64,14 @@ export async function action({ request }: ActionArgs) {
     potluck: potluck.split(','),
   };
 
-  return json<AttendanceResponse>({ success: true }, { status: 200 });
+  return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
 }
 
 export default function AttendancePage() {
-  const data = useActionData<typeof action>();
+  let data = useActionData<typeof action>();
 
-  if (data?.success) {
-    return <p>Thank you!</p>;
+  if (!data) {
+    data = { success: true, name: '', attendance: true, potluck: [] };
   }
 
   return (
@@ -97,30 +84,91 @@ export default function AttendancePage() {
         alt="wedding couple"
       />
 
-      <p className="prose md:prose-lg">
-        Wij gaan trouwen en willen graag weten of je erbij bent! <br />
-        We vragen je daarom onderstaand formulier in te vullen voor ons.
-      </p>
+      {data?.success ? (
+        <div className="prose mb-10 max-w-none md:prose-lg">
+          <h2>Dank je wel voor het opgeven van je aanwezigheid</h2>
 
-      <Form
-        method="post"
-        className="my-10 flex w-1/4 flex-1 flex-col items-center justify-center gap-5"
-      >
-        <div className="w-full">
-          <NameField />
-          {data?.name ? <ErrorMessage message={data.name} /> : null}
+          {data.attendance ? (
+            <>
+              <p>
+                We hebben het genoteerd en kijken ernaar uit om met jou/jullie
+                onze bruiloft te vieren. <br />
+                Vergeet niet regelmatig op deze website terug te kijken voor
+                belangrijke informatie.
+              </p>
+
+              <p className="text-center">
+                We zien je graag op <strong>27 augustus</strong>!<br />
+                Locatie: <strong>Krijgertje 42, Best</strong>
+                <br />
+                Tijd: <strong>14:00</strong>, de ceremonie begint om 16:00
+              </p>
+
+              <h3>
+                Kan je niet wachten? Het zijn nog maar een paar nachtjes slapen!
+              </h3>
+
+              <Countdown
+                date={new Date(2022, 7, 27, 16)}
+                renderer={CountdownTimer}
+              />
+            </>
+          ) : (
+            <>
+              <p>
+                We vinden het jammer dat je er niet bij kan zijn, maar dat kan
+                gebeuren.
+              </p>
+
+              <h3>
+                <strong>Hé, psst...</strong>
+              </h3>
+
+              <p>
+                Dit jaar vieren we de bruiloft op klein vanwege het nageslacht
+                dat staat te popelen om geboren te worden. Maar wist je dat we
+                volgend jaar de bruiloft groots willen vieren? Dat gaat gebeuren
+                op <strong>19 augustus 2023</strong>.
+              </p>
+
+              <p>
+                We hebben grootse plannen voor die dag, maar die houden we nog
+                even geheim. Zet de datum maar alvast in je agenda want dit wil
+                je niet missen!
+              </p>
+            </>
+          )}
         </div>
+      ) : (
+        <>
+          <p className="prose md:prose-lg">
+            Wij gaan trouwen en willen graag weten of je erbij bent! <br />
+            We vragen je daarom onderstaand formulier in te vullen voor ons.
+          </p>
 
-        <AttendanceField />
-        {data?.attendance ? <ErrorMessage message={data.attendance} /> : null}
+          <Form
+            method="post"
+            className="my-10 flex w-1/4 flex-1 flex-col items-center justify-center gap-5"
+          >
+            <div className="w-full">
+              <NameField />
+              {data?.name ? <ErrorMessage message={data.name} /> : null}
+            </div>
 
-        <PotluckField />
-        {data?.potluck ? <ErrorMessage message={data.potluck} /> : null}
+            <AttendanceField />
+            {data?.attendance ? (
+              <ErrorMessage message={data.attendance} />
+            ) : null}
 
-        <button className="bg-cyan-200 px-8 py-4 text-slate-800 transition hover:bg-cyan-400 hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2">
-          Verzenden
-        </button>
-      </Form>
+            <PotluckField />
+            {data?.potluck ? <ErrorMessage message={data.potluck} /> : null}
+
+            <button className="bg-cyan-200 px-8 py-4 text-slate-800 transition hover:bg-cyan-400 hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2">
+              Verzenden
+            </button>
+          </Form>
+        </>
+      )}
     </div>
   );
 }
