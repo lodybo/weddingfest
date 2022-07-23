@@ -20,16 +20,20 @@ module.exports = {
         white: colors.stone['50'],
         black: colors.stone['800'],
       },
+      spacing: {
+        'grow-x': 'clamp(1rem, 3vw, 2.5rem);',
+      },
+      fontSize: {
+        '10xl': '10rem',
+        '11xl': '11rem',
+        '12xl': '12rem',
+        hero: ['clamp(2rem, 10vw, 8rem)', '1'],
+        resp: ['clamp(1rem, 3vw, 5rem)', '1'],
+      },
     },
     fontFamily: {
       sans: ['DM Sans', ...defaultTheme.fontFamily.sans],
       handwriting: ['Caveat', 'cursive'],
-    },
-    fontSize: {
-      ...defaultTheme.fontSize,
-      '10xl': '10rem',
-      '11xl': '11rem',
-      '12xl': '12rem',
     },
   },
   variants: {

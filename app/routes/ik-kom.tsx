@@ -8,14 +8,13 @@ import {
   potluckIsValid,
 } from '~/validations';
 import invariant from 'tiny-invariant';
-import Countdown from 'react-countdown';
 
-import Navigation from '~/components/Navigation';
 import NameField from '~/components/NameField';
 import AttendanceField from '~/components/AttendanceField';
 import PotluckField from '~/components/PotluckField';
 import ErrorMessage from '~/components/ErrorMessage';
-import CountdownTimer from '~/components/CountdownTimer';
+import SmallWeddingTimer from '~/components/SmallWeddingTimer';
+import Page from '~/layouts/Page';
 
 import { createRSVP } from '~/models/rsvp.server';
 
@@ -24,8 +23,6 @@ import type {
   AttendanceResponse,
   FailedAttendanceResponse,
 } from '~/types/RSVP';
-
-import weddingCouple from '~/images/wedding-couple.jpg';
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
@@ -75,15 +72,7 @@ export default function AttendancePage() {
   let data = useActionData<typeof action>();
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <Navigation />
-
-      <img
-        className="mb-10 h-[50vh] w-full object-cover object-center"
-        src={weddingCouple}
-        alt="wedding couple"
-      />
-
+    <Page>
       {data?.success ? (
         <div className="prose mb-10 w-3/4 max-w-none md:prose-lg md:w-1/2">
           <h2>Dank je wel voor het opgeven van je aanwezigheid</h2>
@@ -108,10 +97,7 @@ export default function AttendancePage() {
                 Kan je niet wachten? Het zijn nog maar een paar nachtjes slapen!
               </h3>
 
-              <Countdown
-                date={new Date(2022, 7, 27, 16)}
-                renderer={CountdownTimer}
-              />
+              <SmallWeddingTimer />
             </>
           ) : (
             <>
@@ -169,6 +155,6 @@ export default function AttendancePage() {
           </Form>
         </div>
       )}
-    </div>
+    </Page>
   );
 }
