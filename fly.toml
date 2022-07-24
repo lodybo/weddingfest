@@ -1,4 +1,4 @@
-app = "weddingfest-9af2"
+app = "weddingfest"
 kill_signal = "SIGINT"
 kill_timeout = 5
 processes = [ ]
