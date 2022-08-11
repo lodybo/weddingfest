@@ -1,25 +1,15 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
+import { json, redirect } from '@remix-run/node';
+import { Form, Link, useActionData } from '@remix-run/react';
+import type { ActionFunction, MetaFunction } from '@remix-run/node';
 
+import Button from '~/components/Button';
 import EmailInput from '~/components/EmailInput';
 import PasswordInput from '~/components/PasswordInput';
-import Button from '~/components/Button';
 
-import { createUserSession, getUserId } from "~/session.server";
-import { verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { safeRedirect, validateEmail } from '~/utils';
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
-  return json({});
-};
+import { getUserByEmail, changeUserPassword } from '~/models/user.server';
+import * as React from 'react';
 
 interface ActionData {
   errors?: {
@@ -32,8 +22,7 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/admin");
-  const remember = formData.get("remember");
+  const redirectTo = safeRedirect(formData.get("redirectTo"), "/login");
 
   if (!validateEmail(email)) {
     return json<ActionData>(
@@ -56,7 +45,15 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
+  const existingUser = await getUserByEmail(email);
+  if (!existingUser) {
+    return json<ActionData>(
+      { errors: { email: "No user found with this email" } },
+      { status: 400 }
+    );
+  }
+
+  const user = await changeUserPassword(email, password);
 
   if (!user) {
     return json<ActionData>(
@@ -65,34 +62,17 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: remember === "on",
-    redirectTo,
-  });
+  return redirect(redirectTo);
 };
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Login",
+    title: "Verander wachtwoord",
   };
 };
 
-export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/admin";
-  const actionData = useActionData() as ActionData;
-  const emailRef = React.useRef<HTMLInputElement>(null);
-  const passwordRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    }
-  }, [actionData]);
+export default function ResetPasswordPage() {
+  const actionData = useActionData<ActionData>();
 
   return (
     <div className="flex min-h-full flex-col justify-center">
@@ -103,11 +83,10 @@ export default function LoginPage() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-700"
             >
-              Email address
+              E-mailadres
             </label>
             <div className="mt-1">
               <EmailInput
-                ref={emailRef}
                 id="email"
                 required
                 autoFocus={true}
@@ -129,14 +108,31 @@ export default function LoginPage() {
               htmlFor="password"
               className="block text-sm font-medium text-gray-700"
             >
-              Password
+              Nieuw wachtwoord
             </label>
             <div className="mt-1">
               <PasswordInput
                 id="password"
-                ref={passwordRef}
                 name="password"
-                autoComplete="current-password"
+                autoComplete="new-password"
+                aria-invalid={actionData?.errors?.password ? true : undefined}
+                aria-describedby="password-error"
+              />
+            </div>
+          </div>
+
+          <div>
+            <div className="mt-1">
+              <label
+                htmlFor="verify-password"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Voer nogmaals het nieuwe wachtwoord in
+              </label>
+              <PasswordInput
+                id="verified-password"
+                name="verified-password"
+                autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
               />
@@ -148,40 +144,22 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <Button
-            className="w-full"
-            variant="primary"
-            type="submit"
-          >
-            Inloggen
-          </Button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
+          <div className="flex flex-row justify-between">
+            <Link to="/login">
+              <Button
+                variant="normal"
+                type="submit"
               >
-                Onthoud mij
-              </label>
-            </div>
-            <div className="text-center text-sm text-gray-500">
-              Wachtwoord vergeten?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/reset-password",
-                }}
-              >
-                Klik hier
-              </Link>
-            </div>
+                Terug
+              </Button>
+            </Link>
+
+            <Button
+              variant="primary"
+              type="submit"
+            >
+              Verander wachtwoord
+            </Button>
           </div>
         </Form>
       </div>
