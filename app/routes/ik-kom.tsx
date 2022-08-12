@@ -23,10 +23,20 @@ import type {
   AttendanceResponse,
   FailedAttendanceResponse,
 } from '~/types/RSVP';
+import HoneyPotField from '~/components/HoneyPotField';
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
   const errors: Omit<FailedAttendanceResponse, 'success'> = {};
+
+  if (body.get('emailfield') !== '') {
+    const entry: RSVP = {
+      name: '',
+      attendance: false,
+      potluck: [],
+    };
+    return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
+  }
 
   const name = body.get('name');
   if (!nameIsValid(name)) {
@@ -136,6 +146,8 @@ export default function AttendancePage() {
             method="post"
             className="my-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
           >
+            <HoneyPotField />
+
             <div className="w-full">
               <NameField />
               {data?.name ? <ErrorMessage message={data.name} /> : null}

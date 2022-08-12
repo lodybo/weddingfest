@@ -2,10 +2,10 @@ import Input from './Input';
 
 type Props = Omit<JSX.IntrinsicElements['input'], 'type'>;
 
-export default function TextInput({ className, ...props }: Props) {
+export default function PasswordInput({ className, ...props }: Props) {
   return (
     <Input
-      type="text"
+      type="password"
       {...props}
     />
   );
