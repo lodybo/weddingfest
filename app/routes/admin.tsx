@@ -1,19 +1,28 @@
 import { json, redirect } from '@remix-run/node';
 import type { LoaderFunction } from '@remix-run/node';
-import { Link } from '@remix-run/react';
+import { Link, useLoaderData } from '@remix-run/react';
+
+import AttendanceList from '~/components/AttendanceList';
 import PageLayout from '~/layouts/Page';
 
 import { getUserId } from '~/session.server';
-import { useUser } from '~/utils';
+import { getRSVPs } from '~/models/rsvp.server';
+import type { Rsvp } from '~/models/rsvp.server';
+
+type LoaderData = {
+  rsvps: Omit<Rsvp, 'createdAt' | 'updatedAt'>[];
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
   if (!userId) return redirect("/");
-  return json({});
+
+  const rsvps = await getRSVPs();
+  return json<LoaderData>({ rsvps, });
 };
 
 export default function AdminPage() {
-  const user = useUser();
+  const { rsvps } = useLoaderData<LoaderData>();
 
   return (
     <PageLayout>
@@ -25,8 +34,11 @@ export default function AdminPage() {
           </Link>
         </div>
 
-        <div className="flex-none w-3/4 px-4">
-          <h1>Hallo { user.email }</h1>
+        <div className="flex-none w-3/4 px-4 prose">
+          <h1 className="text-4xl mb-5">RSVP lijst</h1>
+          <p>In totaal hebben {rsvps.length} mensen hun aanwezigheid opgegeven.</p>
+
+          <AttendanceList rsvps={rsvps} />
         </div>
       </div>
     </PageLayout>
