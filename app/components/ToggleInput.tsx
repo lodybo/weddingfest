@@ -10,10 +10,11 @@ type Props = {
   name: string;
   options: ToggleOption[];
   onSelect: (selectedOption: string) => void;
+  value?: string;
 };
 
-export default function ToggleInput({ options, name, onSelect }: Props) {
-  const [selectedOption, setSelectedOption] = useState<string>('');
+export default function ToggleInput({ options, name, onSelect, value }: Props) {
+  const [selectedOption, setSelectedOption] = useState<string>(value || '');
 
   const handleSelect = (selected: string) => {
     setSelectedOption(selected);

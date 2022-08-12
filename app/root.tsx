@@ -17,13 +17,14 @@ import {
   faSquarePlus,
   faSquareMinus,
   faTrash,
+  faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
 
 import tailwindStylesheetUrl from './styles/tailwind.css';
 
 import { getUser } from './session.server';
 
-library.add(faSquarePlus, faSquareMinus, faTrash);
+library.add(faSquarePlus, faSquareMinus, faTrash, faPenToSquare);
 
 export const links: LinksFunction = () => {
   return [

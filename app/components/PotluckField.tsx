@@ -4,9 +4,17 @@ import TextInput from './TextInput';
 import Icon from './Icon';
 import List from './List';
 
-export default function PotluckField() {
+type Props = {
+  value?: string[];
+};
+
+export default function PotluckField({ value }: Props) {
   const [dishes, setDishes] = useState<string[]>([]);
   const [newDish, setNewDish] = useState('');
+
+  if (value && value.length) {
+    setDishes([...value]);
+  }
 
   const commitDish = () => {
     setDishes([...dishes, newDish]);
