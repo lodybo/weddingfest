@@ -1,9 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ToggleInput from '~/components/ToggleInput';
 import type { ToggleOption } from '~/components/ToggleInput';
 
-export default function AttendanceField() {
+type Props = {
+  value?: boolean;
+};
+
+export default function AttendanceField({ value }: Props) {
   const [selectedOption, setSelectedOption] = useState('');
+
+  useEffect(() => {
+    if (value !== undefined) {
+      setSelectedOption(value ? 'true' : 'false');
+    }
+  }, [value]);
 
   const attendanceOptions: ToggleOption[] = [
     { label: 'Ja', value: 'true', color: 'green' },
@@ -16,12 +26,13 @@ export default function AttendanceField() {
 
   return (
     <>
-      <input type="hidden" name="attendance" value={selectedOption} />
+      <input type="hidden" name="attendance" defaultValue={selectedOption} />
       <p className="mb-2 text-center">Aanwezig</p>
       <ToggleInput
         name="attendance"
         options={attendanceOptions}
         onSelect={handleSelect}
+        value={selectedOption}
       />
     </>
   );

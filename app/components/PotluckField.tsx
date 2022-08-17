@@ -1,12 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Label from './Label';
 import TextInput from './TextInput';
 import Icon from './Icon';
 import List from './List';
 
-export default function PotluckField() {
+type Props = {
+  value?: string[];
+};
+
+export default function PotluckField({ value }: Props) {
   const [dishes, setDishes] = useState<string[]>([]);
   const [newDish, setNewDish] = useState('');
+
+  useEffect(() => {
+    if (value && value.length) {
+      const filteredValue = value.filter(Boolean);
+      setDishes([...filteredValue]);
+    }
+  }, [value])
 
   const commitDish = () => {
     setDishes([...dishes, newDish]);

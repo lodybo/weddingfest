@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export interface ToggleOption {
   label: string;
@@ -10,10 +10,17 @@ type Props = {
   name: string;
   options: ToggleOption[];
   onSelect: (selectedOption: string) => void;
+  value?: string;
 };
 
-export default function ToggleInput({ options, name, onSelect }: Props) {
+export default function ToggleInput({ options, name, onSelect, value }: Props) {
   const [selectedOption, setSelectedOption] = useState<string>('');
+
+  useEffect(() => {
+    if (value) {
+      setSelectedOption(value);
+    }
+  }, [value]);
 
   const handleSelect = (selected: string) => {
     setSelectedOption(selected);
