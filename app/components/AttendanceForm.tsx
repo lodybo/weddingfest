@@ -16,7 +16,7 @@ type Props = {
 
 export default function AttendanceForm({ response, rsvp }: Props) {
   const { name: nameMessage, attendance: attendanceMessage, potluck: potluckMessage } = response || {};
-  const { name, attendance, potluck } = rsvp || {};
+  const { id, name, attendance, potluck } = rsvp || {};
 
   return (
     <Form
@@ -24,6 +24,10 @@ export default function AttendanceForm({ response, rsvp }: Props) {
       className="my-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
     >
       <HoneyPotField />
+
+      { id && (
+        <input type="hidden" name="attendee" value={id} />
+      )}
 
       <div className="w-full">
         <NameField value={name} />

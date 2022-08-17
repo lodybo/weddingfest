@@ -19,6 +19,7 @@ export interface FailedAttendanceResponse extends BaseAttendanceResponse {
   name?: string;
   attendance?: string;
   potluck?: string;
+  attendeeID?: string;
 }
 
 export type AttendanceResponse =
