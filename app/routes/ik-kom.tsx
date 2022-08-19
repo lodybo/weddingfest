@@ -1,6 +1,6 @@
 import type { ActionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { Form, useActionData } from '@remix-run/react';
+import { useActionData } from '@remix-run/react';
 import {
   VALIDATIONS,
   nameIsValid,
@@ -9,12 +9,10 @@ import {
 } from '~/validations';
 import invariant from 'tiny-invariant';
 
-import NameField from '~/components/NameField';
-import AttendanceField from '~/components/AttendanceField';
-import PotluckField from '~/components/PotluckField';
-import ErrorMessage from '~/components/ErrorMessage';
 import SmallWeddingTimer from '~/components/SmallWeddingTimer';
-import Page from '~/layouts/Page';
+import AttendanceForm from '~/components/AttendanceForm';
+
+import PageLayout from '~/layouts/Page';
 
 import { createRSVP } from '~/models/rsvp.server';
 
@@ -23,7 +21,6 @@ import type {
   AttendanceResponse,
   FailedAttendanceResponse,
 } from '~/types/RSVP';
-import HoneyPotField from '~/components/HoneyPotField';
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
@@ -82,7 +79,7 @@ export default function AttendancePage() {
   let data = useActionData<typeof action>();
 
   return (
-    <Page>
+    <PageLayout>
       {data?.success ? (
         <div className="prose mb-10 w-3/4 max-w-none md:prose-lg md:w-1/2">
           <h2>Dank je wel voor het opgeven van je aanwezigheid</h2>
@@ -142,31 +139,9 @@ export default function AttendancePage() {
             We vragen je daarom onderstaand formulier in te vullen voor ons.
           </p>
 
-          <Form
-            method="post"
-            className="my-10 mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
-          >
-            <HoneyPotField />
-
-            <div className="w-full">
-              <NameField />
-              {data?.name ? <ErrorMessage message={data.name} /> : null}
-            </div>
-
-            <AttendanceField />
-            {data?.attendance ? (
-              <ErrorMessage message={data.attendance} />
-            ) : null}
-
-            <PotluckField />
-            {data?.potluck ? <ErrorMessage message={data.potluck} /> : null}
-
-            <button className="bg-cyan-200 px-8 py-4 text-slate-800 transition hover:bg-cyan-400 hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2">
-              Verzenden
-            </button>
-          </Form>
+          <AttendanceForm response={data} />
         </div>
       )}
-    </Page>
+    </PageLayout>
   );
 }
