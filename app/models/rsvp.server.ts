@@ -49,3 +49,11 @@ export function editRSVP(
     },
   });
 }
+
+export function deleteRSVP(id: Rsvp['id'],) {
+  return prisma.rsvp.delete({
+    where: {
+      id,
+    }
+  });
+}
