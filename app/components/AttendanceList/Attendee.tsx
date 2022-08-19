@@ -23,11 +23,19 @@ export default function Attendee({ rsvp: { id, name, potluck } }: Props) {
         )}
       </div>
 
-      <Link to={`/edit/${id}`}>
-        <Button variant="primary" size="small">
-          <Icon name="pen-to-square" />
-        </Button>
-      </Link>
+      <div className="ml-auto flex flex-row gap-2 h-full">
+        <Link to={`/edit/${id}`}>
+          <Button variant="primary" size="small">
+            <Icon name="pen-to-square" />
+          </Button>
+        </Link>
+
+        <Link to={`/delete/${id}`}>
+          <Button size="small">
+            <Icon name="trash" />
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }
