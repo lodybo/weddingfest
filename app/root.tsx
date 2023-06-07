@@ -20,7 +20,7 @@ import {
   faPenToSquare,
 } from '@fortawesome/free-solid-svg-icons';
 
-import tailwindStylesheetUrl from './styles/tailwind.css';
+import tailwindStylesheetUrl from './tailwind.css';
 
 import { getUser } from './session.server';
 
