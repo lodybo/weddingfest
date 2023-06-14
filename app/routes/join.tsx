@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import type {
   ActionFunction,
   LoaderFunction,
-  MetaFunction
+  V2_MetaFunction
 } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Form, useActionData } from '@remix-run/react';
@@ -85,11 +85,9 @@ export const action: ActionFunction = async ({ request }) => {
   });
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: 'Opgeven'
-  };
-};
+export const meta: V2_MetaFunction = () => [{
+  title: 'Opgeven'
+}];
 
 export default function Join() {
   const actionData = useActionData() as ActionData;

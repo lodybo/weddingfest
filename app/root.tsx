@@ -3,7 +3,7 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, V2_MetaFunction } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -65,13 +65,13 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const meta: MetaFunction = () => ({
+export const meta: V2_MetaFunction = () => [{
   charset: 'utf-8',
   title: 'Weddingfest 2022',
   viewport: 'width=device-width,initial-scale=1',
   'msapplication-TileColor': '#00aba9',
   'theme-color': '#ffffff',
-});
+}];
 
 type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;

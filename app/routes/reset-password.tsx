@@ -1,4 +1,4 @@
-import { json, redirect } from '@remix-run/node';
+import { json, redirect, V2_MetaFunction } from '@remix-run/node';
 import { Form, Link, useActionData } from '@remix-run/react';
 import type { ActionFunction, MetaFunction } from '@remix-run/node';
 
@@ -65,11 +65,9 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect(redirectTo);
 };
 
-export const meta: MetaFunction = () => {
-  return {
-    title: "Verander wachtwoord",
-  };
-};
+export const meta: V2_MetaFunction = () => [{
+  title: "Verander wachtwoord",
+}];
 
 export default function ResetPasswordPage() {
   const actionData = useActionData<ActionData>();
