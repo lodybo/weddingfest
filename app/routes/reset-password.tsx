@@ -10,6 +10,7 @@ import { safeRedirect, validateEmail } from '~/utils/utils';
 
 import { getUserByEmail, changeUserPassword } from '~/models/user.server';
 import * as React from 'react';
+import PageLayout from '~/layouts/Page';
 
 interface ActionData {
   errors?: {
@@ -75,88 +76,86 @@ export default function ResetPasswordPage() {
   const actionData = useActionData<ActionData>();
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6" noValidate>
-          <div>
+    <PageLayout>
+      <Form method="post" className="w-full max-w-md space-y-6 px-8" noValidate>
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            E-mailadres
+          </label>
+          <div className="mt-1">
+            <EmailInput
+              id="email"
+              required
+              autoFocus={true}
+              name="email"
+              autoComplete="email"
+              aria-invalid={actionData?.errors?.email ? true : undefined}
+              aria-describedby="email-error"
+            />
+            {actionData?.errors?.email && (
+              <div className="pt-1 text-red-700" id="email-error">
+                {actionData.errors.email}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Nieuw wachtwoord
+          </label>
+          <div className="mt-1">
+            <PasswordInput
+              id="password"
+              name="password"
+              autoComplete="new-password"
+              aria-invalid={actionData?.errors?.password ? true : undefined}
+              aria-describedby="password-error"
+            />
+          </div>
+        </div>
+
+        <div>
+          <div className="mt-1">
             <label
-              htmlFor="email"
+              htmlFor="verify-password"
               className="block text-sm font-medium text-gray-700"
             >
-              E-mailadres
+              Voer nogmaals het nieuwe wachtwoord in
             </label>
-            <div className="mt-1">
-              <EmailInput
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-              />
-              {actionData?.errors?.email && (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
-            </div>
+            <PasswordInput
+              id="verified-password"
+              name="verified-password"
+              autoComplete="new-password"
+              aria-invalid={actionData?.errors?.password ? true : undefined}
+              aria-describedby="password-error"
+            />
+            {actionData?.errors?.password && (
+              <div className="pt-1 text-red-700" id="password-error">
+                {actionData.errors.password}
+              </div>
+            )}
           </div>
+        </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Nieuw wachtwoord
-            </label>
-            <div className="mt-1">
-              <PasswordInput
-                id="password"
-                name="password"
-                autoComplete="new-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-              />
-            </div>
-          </div>
-
-          <div>
-            <div className="mt-1">
-              <label
-                htmlFor="verify-password"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Voer nogmaals het nieuwe wachtwoord in
-              </label>
-              <PasswordInput
-                id="verified-password"
-                name="verified-password"
-                autoComplete="new-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-              />
-              {actionData?.errors?.password && (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-row justify-between">
-            <Link to="/login">
-              <Button variant="normal" type="submit">
-                Terug
-              </Button>
-            </Link>
-
-            <Button variant="primary" type="submit">
-              Verander wachtwoord
+        <div className="flex flex-row justify-between">
+          <Link to="/login">
+            <Button variant="normal" type="submit">
+              Terug
             </Button>
-          </div>
-        </Form>
-      </div>
-    </div>
+          </Link>
+
+          <Button variant="primary" type="submit">
+            Verander wachtwoord
+          </Button>
+        </div>
+      </Form>
+    </PageLayout>
   );
 }
