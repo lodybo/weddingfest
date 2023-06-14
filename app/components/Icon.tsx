@@ -1,9 +1,13 @@
-import React from 'react';
 import type { IconName, IconPrefix } from '@fortawesome/fontawesome-svg-core';
 import {
   icon as fontAwesomeIcon,
+  library,
   toHtml,
 } from '@fortawesome/fontawesome-svg-core';
+import * as faIcons from '~/utils/icons';
+
+const icons = Object.values(faIcons);
+library.add(...icons);
 
 export type Props = {
   name: IconName;

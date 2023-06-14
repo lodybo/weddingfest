@@ -5,21 +5,12 @@ import type {
 } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { isRouteErrorResponse, Outlet, useRouteError } from '@remix-run/react';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import {
-  faSquarePlus,
-  faSquareMinus,
-  faTrash,
-  faPenToSquare,
-} from '@fortawesome/free-solid-svg-icons';
 
 import tailwindStylesheetUrl from './tailwind.css';
 
 import { getUser } from './session.server';
 import Document from '~/components/Document';
 import { getErrorMessage } from '~/utils';
-
-library.add(faSquarePlus, faSquareMinus, faTrash, faPenToSquare);
 
 export const links: LinksFunction = () => {
   return [
@@ -63,7 +54,7 @@ export const links: LinksFunction = () => {
 export const meta: V2_MetaFunction = () => [
   {
     charset: 'utf-8',
-    title: 'Weddingfest 2022',
+    title: 'Weddingfest',
     viewport: 'width=device-width,initial-scale=1',
     'msapplication-TileColor': '#00aba9',
     'theme-color': '#ffffff',
