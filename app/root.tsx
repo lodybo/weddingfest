@@ -1,17 +1,10 @@
 import type {
   LinksFunction,
   LoaderFunction,
-  MetaFunction,
+  V2_MetaFunction,
 } from '@remix-run/node';
-import { json, V2_MetaFunction } from '@remix-run/node';
-import {
-  Links,
-  LiveReload,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-} from '@remix-run/react';
+import { json } from '@remix-run/node';
+import { isRouteErrorResponse, Outlet, useRouteError } from '@remix-run/react';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faSquarePlus,
@@ -23,6 +16,8 @@ import {
 import tailwindStylesheetUrl from './tailwind.css';
 
 import { getUser } from './session.server';
+import Document from '~/components/Document';
+import { getErrorMessage } from '~/utils';
 
 library.add(faSquarePlus, faSquareMinus, faTrash, faPenToSquare);
 
@@ -65,13 +60,15 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const meta: V2_MetaFunction = () => [{
-  charset: 'utf-8',
-  title: 'Weddingfest 2022',
-  viewport: 'width=device-width,initial-scale=1',
-  'msapplication-TileColor': '#00aba9',
-  'theme-color': '#ffffff',
-}];
+export const meta: V2_MetaFunction = () => [
+  {
+    charset: 'utf-8',
+    title: 'Weddingfest 2022',
+    viewport: 'width=device-width,initial-scale=1',
+    'msapplication-TileColor': '#00aba9',
+    'theme-color': '#ffffff',
+  },
+];
 
 type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
@@ -85,17 +82,38 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body className="h-full font-sans">
-        <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload port={4200} />
-      </body>
-    </html>
+    <Document>
+      <Outlet />
+    </Document>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let title = 'Oeps...';
+  let message: string;
+
+  if (isRouteErrorResponse(error)) {
+    console.error(error.data.message);
+    title = 'Oh nee!';
+    message = error.data.message;
+  } else {
+    message = getErrorMessage(error);
+    console.error(message);
+    if (error instanceof Error) {
+      console.trace(error.stack);
+    }
+  }
+
+  return (
+    <Document>
+      <div className="flex h-full w-full place-content-center place-items-center">
+        <div>
+          <h1 className="text-center font-handwriting text-7xl">{title}</h1>
+          <p className="text-xl">{message}</p>
+        </div>
+      </div>
+    </Document>
   );
 }
