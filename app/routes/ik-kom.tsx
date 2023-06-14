@@ -6,7 +6,7 @@ import {
   nameIsValid,
   attendanceIsValid,
   potluckIsValid,
-} from '~/validations';
+} from '~/validations/validations';
 import invariant from 'tiny-invariant';
 
 import SmallWeddingTimer from '~/components/SmallWeddingTimer';
@@ -32,7 +32,10 @@ export async function action({ request }: ActionArgs) {
       attendance: false,
       potluck: [],
     };
-    return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
+    return json<AttendanceResponse>(
+      { success: true, ...entry },
+      { status: 200 }
+    );
   }
 
   const name = body.get('name');

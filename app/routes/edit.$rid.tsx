@@ -9,8 +9,18 @@ import PageLayout from '~/layouts/Page';
 
 import { editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
-import type { AttendanceResponse, FailedAttendanceResponse, RSVP } from '~/types/RSVP';
-import { attendanceIsValid, attendeeIDIsValid, nameIsValid, potluckIsValid, VALIDATIONS } from '~/validations';
+import type {
+  AttendanceResponse,
+  FailedAttendanceResponse,
+  RSVP,
+} from '~/types/RSVP';
+import {
+  attendanceIsValid,
+  attendeeIDIsValid,
+  nameIsValid,
+  potluckIsValid,
+  VALIDATIONS,
+} from '~/validations/validations';
 import Anchor from '~/components/Anchor';
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -21,7 +31,7 @@ export const loader = async ({ params }: LoaderArgs) => {
   invariant(rsvp !== null, 'No RSVP found.');
 
   return json({ rsvp });
-}
+};
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
@@ -33,7 +43,10 @@ export async function action({ request }: ActionArgs) {
       attendance: false,
       potluck: [],
     };
-    return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
+    return json<AttendanceResponse>(
+      { success: true, ...entry },
+      { status: 200 }
+    );
   }
 
   const name = body.get('name');
@@ -89,14 +102,14 @@ export default function EditRSVP() {
   return (
     <PageLayout>
       <div className="w-full px-8">
-        { data?.success ? (
-          <div className="flex flex-col gap-5 justify-center items-center">
-            <h1 className="text-4xl mt-10">RSVP van <strong>{ data.name }</strong> is bijgewerkt!</h1>
+        {data?.success ? (
+          <div className="flex flex-col items-center justify-center gap-5">
+            <h1 className="mt-10 text-4xl">
+              RSVP van <strong>{data.name}</strong> is bijgewerkt!
+            </h1>
 
             <Link to="/admin">
-              <Button variant="primary">
-                Terug
-              </Button>
+              <Button variant="primary">Terug</Button>
             </Link>
           </div>
         ) : (

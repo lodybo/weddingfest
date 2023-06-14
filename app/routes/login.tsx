@@ -1,23 +1,23 @@
 import type {
   ActionFunction,
   LoaderFunction,
-  MetaFunction, V2_MetaFunction
+  V2_MetaFunction,
 } from '@remix-run/node';
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
+import { json, redirect } from '@remix-run/node';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
+import * as React from 'react';
 
 import EmailInput from '~/components/EmailInput';
 import PasswordInput from '~/components/PasswordInput';
 import Button from '~/components/Button';
 
-import { createUserSession, getUserId } from "~/session.server";
-import { verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { createUserSession, getUserId } from '~/session.server';
+import { verifyLogin } from '~/models/user.server';
+import { safeRedirect, validateEmail } from '~/utils/utils';
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  if (userId) return redirect('/');
   return json({});
 };
 
@@ -30,28 +30,28 @@ interface ActionData {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/admin");
-  const remember = formData.get("remember");
+  const email = formData.get('email');
+  const password = formData.get('password');
+  const redirectTo = safeRedirect(formData.get('redirectTo'), '/admin');
+  const remember = formData.get('remember');
 
   if (!validateEmail(email)) {
     return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
+      { errors: { email: 'Email is invalid' } },
       { status: 400 }
     );
   }
 
-  if (typeof password !== "string" || password.length === 0) {
+  if (typeof password !== 'string' || password.length === 0) {
     return json<ActionData>(
-      { errors: { password: "Password is required" } },
+      { errors: { password: 'Password is required' } },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
-      { errors: { password: "Password is too short" } },
+      { errors: { password: 'Password is too short' } },
       { status: 400 }
     );
   }
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!user) {
     return json<ActionData>(
-      { errors: { email: "Invalid email or password" } },
+      { errors: { email: 'Invalid email or password' } },
       { status: 400 }
     );
   }
@@ -68,18 +68,20 @@ export const action: ActionFunction = async ({ request }) => {
   return createUserSession({
     request,
     userId: user.id,
-    remember: remember === "on",
+    remember: remember === 'on',
     redirectTo,
   });
 };
 
-export const meta: V2_MetaFunction = () => [{
-  title: "Login",
-}];
+export const meta: V2_MetaFunction = () => [
+  {
+    title: 'Login',
+  },
+];
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/admin";
+  const redirectTo = searchParams.get('redirectTo') || '/admin';
   const actionData = useActionData() as ActionData;
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
@@ -147,11 +149,7 @@ export default function LoginPage() {
           </div>
 
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <Button
-            className="w-full"
-            variant="primary"
-            type="submit"
-          >
+          <Button className="w-full" variant="primary" type="submit">
             Inloggen
           </Button>
           <div className="flex items-center justify-between">
@@ -170,11 +168,11 @@ export default function LoginPage() {
               </label>
             </div>
             <div className="text-center text-sm text-gray-500">
-              Wachtwoord vergeten?{" "}
+              Wachtwoord vergeten?{' '}
               <Link
                 className="text-blue-500 underline"
                 to={{
-                  pathname: "/reset-password",
+                  pathname: '/reset-password',
                 }}
               >
                 Klik hier

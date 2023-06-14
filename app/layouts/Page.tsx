@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import Navigation from '~/components/Navigation';
 import Hero from '~/components/Hero';
 
-import { useOptionalUser } from '~/utils';
+import { useOptionalUser } from '~/utils/utils';
 
 type Props = {
   children: ReactNode;
@@ -15,11 +15,7 @@ export default function PageLayout({ children }: Props) {
   return (
     <div className="flex flex-col items-center justify-center">
       <Navigation user={user} />
-      { !user ? (
-        <Hero />
-      ) : (
-        <div className="h-4" />
-      )}
+      {!user ? <Hero /> : <div className="h-4" />}
 
       {children}
     </div>

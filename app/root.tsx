@@ -10,7 +10,7 @@ import tailwindStylesheetUrl from './tailwind.css';
 
 import { getUser } from './session.server';
 import Document from '~/components/Document';
-import { getErrorMessage } from '~/utils';
+import { getErrorMessage } from '~/utils/utils';
 
 export const links: LinksFunction = () => {
   return [

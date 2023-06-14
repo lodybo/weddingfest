@@ -1,12 +1,12 @@
-import { json, redirect, V2_MetaFunction } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { Form, Link, useActionData } from '@remix-run/react';
-import type { ActionFunction, MetaFunction } from '@remix-run/node';
+import type { ActionFunction, V2_MetaFunction } from '@remix-run/node';
 
 import Button from '~/components/Button';
 import EmailInput from '~/components/EmailInput';
 import PasswordInput from '~/components/PasswordInput';
 
-import { safeRedirect, validateEmail } from '~/utils';
+import { safeRedirect, validateEmail } from '~/utils/utils';
 
 import { getUserByEmail, changeUserPassword } from '~/models/user.server';
 import * as React from 'react';
@@ -20,27 +20,27 @@ interface ActionData {
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/login");
+  const email = formData.get('email');
+  const password = formData.get('password');
+  const redirectTo = safeRedirect(formData.get('redirectTo'), '/login');
 
   if (!validateEmail(email)) {
     return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
+      { errors: { email: 'Email is invalid' } },
       { status: 400 }
     );
   }
 
-  if (typeof password !== "string" || password.length === 0) {
+  if (typeof password !== 'string' || password.length === 0) {
     return json<ActionData>(
-      { errors: { password: "Password is required" } },
+      { errors: { password: 'Password is required' } },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
     return json<ActionData>(
-      { errors: { password: "Password is too short" } },
+      { errors: { password: 'Password is too short' } },
       { status: 400 }
     );
   }
@@ -48,7 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
   const existingUser = await getUserByEmail(email);
   if (!existingUser) {
     return json<ActionData>(
-      { errors: { email: "No user found with this email" } },
+      { errors: { email: 'No user found with this email' } },
       { status: 400 }
     );
   }
@@ -57,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (!user) {
     return json<ActionData>(
-      { errors: { email: "Invalid email or password" } },
+      { errors: { email: 'Invalid email or password' } },
       { status: 400 }
     );
   }
@@ -65,9 +65,11 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect(redirectTo);
 };
 
-export const meta: V2_MetaFunction = () => [{
-  title: "Verander wachtwoord",
-}];
+export const meta: V2_MetaFunction = () => [
+  {
+    title: 'Verander wachtwoord',
+  },
+];
 
 export default function ResetPasswordPage() {
   const actionData = useActionData<ActionData>();
@@ -144,18 +146,12 @@ export default function ResetPasswordPage() {
 
           <div className="flex flex-row justify-between">
             <Link to="/login">
-              <Button
-                variant="normal"
-                type="submit"
-              >
+              <Button variant="normal" type="submit">
                 Terug
               </Button>
             </Link>
 
-            <Button
-              variant="primary"
-              type="submit"
-            >
+            <Button variant="primary" type="submit">
               Verander wachtwoord
             </Button>
           </div>
