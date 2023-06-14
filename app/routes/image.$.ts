@@ -13,7 +13,7 @@
  */
 
 import type { ReadStream } from 'fs';
-import { createReadStream, statSync } from 'fs';
+import * as fs from 'fs';
 import path from 'path';
 import { PassThrough } from 'stream';
 
@@ -22,6 +22,7 @@ import type { FitEnum } from 'sharp';
 import sharp from 'sharp';
 
 const ASSETS_ROOT = 'images';
+const { createReadStream, statSync } = fs;
 
 interface ResizeParams {
   src: string;
