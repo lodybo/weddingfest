@@ -33,7 +33,6 @@ export default function Navigation({ user }: Props) {
         ) : (
           <>
             <NavLink to="/login">Inloggen</NavLink>
-            <NavLink to="/join">Aanmelden</NavLink>
           </>
         )}
       </ul>

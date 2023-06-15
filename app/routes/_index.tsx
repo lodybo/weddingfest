@@ -6,13 +6,15 @@ import Button from '~/components/Button';
 export default function Index() {
   return (
     <PageLayout>
-      <div className="w-full space-y-20 px-8 sm:w-3/4">
+      <div className="w-full space-y-10 px-8 sm:w-3/4 xl:space-y-20">
         <Title>Wij gaan trouwen!</Title>
 
         <Subtitle>
           Wij geven elkaar op <strong>19 augustus</strong>{' '}
-          <small className="align-middle text-lg">(nog een keertje)</small> het
-          ja-woord.
+          <small className="align-middle text-xs xl:text-lg">
+            (nog een keertje)
+          </small>{' '}
+          het ja-woord.
         </Subtitle>
 
         <SmallWeddingTimer />
@@ -24,7 +26,7 @@ export default function Index() {
         </Paragraph>
 
         <Button
-          className="mx-auto w-1/2"
+          className="mx-auto w-3/4 xl:w-1/2"
           variant="primary"
           size="large"
           to="/ik-kom"
@@ -47,5 +49,5 @@ const Subtitle = ({ children }: { children: ReactNode }) => (
 );
 
 const Paragraph = ({ children }: { children: ReactNode }) => (
-  <p className="text-center text-4xl">{children}</p>
+  <p className="text-center text-xl xl:text-4xl">{children}</p>
 );

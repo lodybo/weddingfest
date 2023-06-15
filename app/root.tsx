@@ -55,9 +55,6 @@ export const meta: V2_MetaFunction = () => [
   {
     charset: 'utf-8',
     title: 'Weddingfest',
-    viewport: 'width=device-width,initial-scale=1',
-    'msapplication-TileColor': '#00aba9',
-    'theme-color': '#ffffff',
   },
 ];
 
