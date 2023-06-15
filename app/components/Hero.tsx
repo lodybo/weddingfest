@@ -11,8 +11,8 @@ export default function Hero({ size = 'small' }: Props) {
   return (
     <Image
       className={`${
-        size === 'small' ? 'h-32' : 'h-[50vh]'
-      } w-full object-cover object-center`}
+        size === 'small' ? 'h-40 object-[center_45%]' : 'h-[50vh] object-center'
+      } w-full object-cover`}
       alt="Trouwfoto van het bruidspaar"
       src="/image/trouw2.jpg?w=600"
       srcSet="/image/trouw2.jpg?w=800  800w,

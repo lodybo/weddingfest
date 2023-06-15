@@ -5,6 +5,8 @@ import Navigation from '~/components/Navigation';
 import Hero from '~/components/Hero';
 
 import { useOptionalUser } from '~/utils/utils';
+import Spacer from '~/components/Spacer';
+import Footer from '~/components/Footer';
 
 type Props = {
   children: ReactNode;
@@ -15,15 +17,17 @@ export default function PageLayout({ children }: Props) {
   const location = useLocation();
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      {!user ? (
-        <Hero size={location.pathname === '/' ? 'large' : 'small'} />
-      ) : (
-        <div className="h-4" />
-      )}
+    <div className="relative flex min-h-full flex-col items-center justify-center">
       <Navigation user={user} />
+      <Hero size={location.pathname === '/' ? 'large' : 'small'} />
+
+      <Spacer />
 
       {children}
+
+      <Spacer size="large" />
+
+      <Footer />
     </div>
   );
 }

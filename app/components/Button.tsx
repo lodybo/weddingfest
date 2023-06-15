@@ -1,4 +1,9 @@
-type Props = JSX.IntrinsicElements['button'] & {
+import type { LinkProps } from '@remix-run/react';
+import { Link } from '@remix-run/react';
+
+type JSXButtonProps = JSX.IntrinsicElements['button'];
+
+type BaseProps = {
   /**
    * The variant (color scheme) of the button.
    */
@@ -7,8 +12,16 @@ type Props = JSX.IntrinsicElements['button'] & {
   /**
    * The size of the button.
    */
-  size?: 'small' | 'normal';
+  size?: 'small' | 'normal' | 'large';
 };
+
+interface ButtonProps extends JSXButtonProps, BaseProps {
+  to?: never;
+}
+
+interface ButtonLinkProps extends LinkProps, BaseProps {}
+
+type Props = ButtonProps | ButtonLinkProps;
 
 const variantStyles = new Map();
 variantStyles.set('normal', 'bg-zinc-200 hover:bg-zinc-300');
@@ -16,13 +29,27 @@ variantStyles.set('primary', 'bg-cyan-200 hover:bg-cyan-400');
 variantStyles.set('success', 'bg-zinc-200 hover:bg-emerald-300');
 
 const sizes = new Map();
-sizes.set('small', 'px-4 py-2');
-sizes.set('normal', 'px-8 py-4');
+sizes.set('small', 'px-4 py-2 text-sm');
+sizes.set('normal', 'px-8 py-4 text-md');
+sizes.set('large', 'px-12 py-6 text-xl');
 
-export default function Button({ className = '', children, variant = 'normal', size = 'normal' }: Props) {
-  return (
-    <button className={ `${className} ${ variantStyles.get(variant) } ${ sizes.get(size) } text-slate-800 transition hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2` }>
-      {children}
-    </button>
-  );
+export default function Button({
+  to,
+  className = '',
+  children,
+  variant = 'normal',
+  size = 'normal',
+}: Props) {
+  const classes = `${className} ${variantStyles.get(variant)} ${sizes.get(
+    size
+  )} text-slate-800 transition hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2`;
+  if (to) {
+    return (
+      <Link to={to} className={`block text-center ${classes}`}>
+        {children}
+      </Link>
+    );
+  }
+
+  return <button className={classes}>{children}</button>;
 }

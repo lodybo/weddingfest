@@ -14,7 +14,7 @@ type Props = {
 
 export default function Navigation({ user }: Props) {
   return (
-    <div className="sticky top-0 mb-10 flex h-20 w-full items-center justify-between bg-white px-8 shadow-md">
+    <div className="sticky top-0 flex h-20 w-full items-center justify-between bg-white px-8 shadow-md">
       <Link to="/">
         <h1 className={`font-handwriting text-4xl ${user ? 'ml-auto' : ''}`}>
           Weddingfest
