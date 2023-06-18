@@ -52,3 +52,41 @@ model Rsvp {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String? @unique
 }
+
+model Payment {
+  id         String   @id @default(cuid())
+
+  tickets   Ticket[]
+  total     Decimal @db.Money
+  paid      Boolean @default(false)
+
+  stripePaymentId String?
+}
+
+model Ticket {
+  id         String   @id @default(cuid())
+
+  name       String
+  amount     Decimal @db.Money
+
+  payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paymentId  String
+
+  discount   Discount? @relation(fields: [discountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  discountId String?
+}
+
+model Discount {
+  id         String   @id @default(cuid())
+
+  name       String
+  amount     Decimal @db.Money
+  code       String   @unique
+  used       Boolean  @default(false)
+  singleUse  Boolean  @default(false)
+
+  tickets    Ticket[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
