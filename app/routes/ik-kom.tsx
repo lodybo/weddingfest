@@ -56,7 +56,6 @@ export async function action({ request }: ActionArgs) {
     remarks
   );
 
-  console.log(hasErrors);
   if (!hasErrors) {
     invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
     invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
