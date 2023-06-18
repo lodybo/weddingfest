@@ -67,6 +67,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, InputProps>(
           style={{ height: textareaHeight }}
         />
         <button
+          tabIndex={-1}
           ref={resizeContainerRef}
           type="button"
           className="flex w-full cursor-pointer select-none items-center justify-center bg-cyan-100 text-sm transition hover:bg-cyan-200 focus:outline-none
