@@ -7,7 +7,7 @@ import AttendanceForm from '~/components/AttendanceForm';
 
 import PageLayout from '~/layouts/Page';
 
-import { editRSVP, getRSVP } from '~/models/rsvp.server';
+import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
 import type {
   AttendanceResponse,
@@ -17,11 +17,15 @@ import type {
 import {
   attendanceIsValid,
   attendeeIDIsValid,
+  campingIsValid,
+  guestsAreValid,
+  guestTotalIsValid,
   nameIsValid,
-  potluckIsValid,
+  validateRSVP,
   VALIDATIONS,
 } from '~/validations/validations';
 import Anchor from '~/components/Anchor';
+import type { RSVPValidationErrors } from '~/types/RSVP';
 
 export const loader = async ({ params }: LoaderArgs) => {
   const id = params.rid;
@@ -35,13 +39,16 @@ export const loader = async ({ params }: LoaderArgs) => {
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
-  const errors: Omit<FailedAttendanceResponse, 'success'> = {};
+  const errors: RSVPValidationErrors = {};
 
   if (body.get('emailfield') !== '') {
     const entry: RSVP = {
       name: '',
       attendance: false,
-      potluck: [],
+      diet: '',
+      guests: 1,
+      camping: false,
+      remarks: '',
     };
     return json<AttendanceResponse>(
       { success: true, ...entry },
@@ -49,50 +56,53 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const name = body.get('name');
-  if (!nameIsValid(name)) {
-    errors.name = VALIDATIONS.MISSING_NAME;
-  }
+  const { name, attendance, guests, camping, diet, remarks, attendeeID } =
+    Object.fromEntries(body);
 
-  const attendance = body.get('attendance');
-  if (!attendanceIsValid(attendance)) {
-    errors.attendance = VALIDATIONS.MISSING_ATTENDANCE;
-  }
+  const hasErrors = validateRSVP(
+    name,
+    attendance,
+    guests,
+    camping,
+    diet,
+    remarks,
+    attendeeID
+  );
+  if (!hasErrors) {
+    invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
+    invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
+    invariant(guestsAreValid(guests), VALIDATIONS.MISSING_GUESTS);
+    invariant(guestTotalIsValid(guests), VALIDATIONS.INCORRECT_GUEST_TOTAL);
+    invariant(campingIsValid(camping), VALIDATIONS.MISSING_CAMPING);
+    invariant(
+      typeof diet === 'string' && typeof remarks === 'string',
+      'Diet and remarks should be strings'
+    );
 
-  const potluck = body.get('potluck');
-  if (!potluckIsValid(potluck)) {
-    errors.potluck = VALIDATIONS.MISSING_POTLUCK;
-  }
+    const entry: RSVP = {
+      name,
+      attendance: attendance === 'true',
+      guests: parseInt(guests as string, 10),
+      camping: camping === 'true',
+      diet,
+      remarks,
+    };
 
-  const attendeeID = body.get('attendee');
-  if (!attendeeIDIsValid(attendeeID)) {
-    errors.attendeeID = VALIDATIONS.MISSING_ATTENDEE_ID;
-  }
+    await createRSVP(entry);
 
-  if (Object.keys(errors).length) {
+    return json<AttendanceResponse>(
+      { success: true, ...entry },
+      { status: 200 }
+    );
+  } else {
     return json<AttendanceResponse>(
       {
         success: false,
-        ...errors,
+        errors,
       },
       { status: 422 }
     );
   }
-
-  invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
-  invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
-  invariant(potluckIsValid(potluck), VALIDATIONS.MISSING_POTLUCK);
-  invariant(attendeeIDIsValid(attendeeID), VALIDATIONS.MISSING_ATTENDEE_ID);
-
-  const entry: RSVP = {
-    name,
-    attendance: attendance === 'true',
-    potluck: potluck.split(','),
-  };
-
-  await editRSVP(attendeeID, entry);
-
-  return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
 }
 
 export default function EditRSVP() {

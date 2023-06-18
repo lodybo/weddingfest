@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 export interface ToggleOption {
   label: string;
   value: string;
-  color?: 'green' | 'grey';
+  color?: 'green' | 'grey' | 'blue';
 }
 
 type Props = {
@@ -14,13 +14,7 @@ type Props = {
 };
 
 export default function ToggleInput({ options, name, onSelect, value }: Props) {
-  const [selectedOption, setSelectedOption] = useState<string>('');
-
-  useEffect(() => {
-    if (value) {
-      setSelectedOption(value);
-    }
-  }, [value]);
+  const [selectedOption, setSelectedOption] = useState<string>(value || '');
 
   const handleSelect = (selected: string) => {
     setSelectedOption(selected);
@@ -35,10 +29,20 @@ export default function ToggleInput({ options, name, onSelect, value }: Props) {
             ? value === selectedOption
               ? 'bg-emerald-300'
               : 'bg-zinc-200'
+            : color === 'blue'
+            ? value === selectedOption
+              ? 'bg-cyan-300'
+              : 'bg-zinc-200'
             : value === selectedOption
             ? 'bg-zinc-300'
             : 'bg-zinc-200'
-        } ${color === 'green' ? 'hover:bg-emerald-300' : 'hover:bg-zinc-300'}`;
+        } ${
+          color === 'green'
+            ? 'hover:bg-emerald-300'
+            : color === 'blue'
+            ? 'hover:bg-cyan-300'
+            : 'hover:bg-zinc-300'
+        }`;
 
         return (
           <button

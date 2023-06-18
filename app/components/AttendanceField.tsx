@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import ToggleInput from '~/components/ToggleInput';
 import type { ToggleOption } from '~/components/ToggleInput';
+import ErrorMessage from '~/components/ErrorMessage';
 
 type Props = {
   value?: boolean;
+  error?: string;
 };
 
-export default function AttendanceField({ value }: Props) {
+export default function AttendanceField({ value, error }: Props) {
   const [selectedOption, setSelectedOption] = useState('');
 
   useEffect(() => {
@@ -25,15 +27,16 @@ export default function AttendanceField({ value }: Props) {
   };
 
   return (
-    <>
+    <div className="w-full">
       <input type="hidden" name="attendance" defaultValue={selectedOption} />
-      <p className="mb-2 text-center">Aanwezig</p>
+      <p className="mb-2 text-center text-gray-700">Aanwezig</p>
       <ToggleInput
         name="attendance"
         options={attendanceOptions}
         onSelect={handleSelect}
         value={selectedOption}
       />
-    </>
+      {error ? <ErrorMessage message={error} /> : null}
+    </div>
   );
 }

@@ -5,7 +5,10 @@ import {
   VALIDATIONS,
   nameIsValid,
   attendanceIsValid,
-  potluckIsValid,
+  guestsAreValid,
+  guestTotalIsValid,
+  campingIsValid,
+  validateRSVP,
 } from '~/validations/validations';
 import invariant from 'tiny-invariant';
 
@@ -19,18 +22,21 @@ import { createRSVP } from '~/models/rsvp.server';
 import type {
   RSVP,
   AttendanceResponse,
-  FailedAttendanceResponse,
+  RSVPValidationErrors,
 } from '~/types/RSVP';
 
 export async function action({ request }: ActionArgs) {
   const body = await request.formData();
-  const errors: Omit<FailedAttendanceResponse, 'success'> = {};
+  const errors: RSVPValidationErrors = {};
 
   if (body.get('emailfield') !== '') {
     const entry: RSVP = {
       name: '',
       attendance: false,
-      potluck: [],
+      diet: '',
+      guests: 1,
+      camping: false,
+      remarks: '',
     };
     return json<AttendanceResponse>(
       { success: true, ...entry },
@@ -38,44 +44,54 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const name = body.get('name');
-  if (!nameIsValid(name)) {
-    errors.name = VALIDATIONS.MISSING_NAME;
-  }
+  const { name, attendance, guests, camping, diet, remarks } =
+    Object.fromEntries(body);
 
-  const attendance = body.get('attendance');
-  if (!attendanceIsValid(attendance)) {
-    errors.attendance = VALIDATIONS.MISSING_ATTENDANCE;
-  }
+  const hasErrors = validateRSVP(
+    name,
+    attendance,
+    guests,
+    camping,
+    diet,
+    remarks
+  );
 
-  const potluck = body.get('potluck');
-  if (!potluckIsValid(potluck)) {
-    errors.potluck = VALIDATIONS.MISSING_POTLUCK;
-  }
+  console.log(hasErrors);
+  if (!hasErrors) {
+    invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
+    invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
+    invariant(guestsAreValid(guests), VALIDATIONS.MISSING_GUESTS);
+    invariant(guestTotalIsValid(guests), VALIDATIONS.INCORRECT_GUEST_TOTAL);
+    invariant(campingIsValid(camping), VALIDATIONS.MISSING_CAMPING);
+    invariant(
+      typeof diet === 'string' && typeof remarks === 'string',
+      'Diet and remarks should be strings'
+    );
 
-  if (Object.keys(errors).length) {
+    const entry: RSVP = {
+      name,
+      attendance: attendance === 'true',
+      guests: parseInt(guests as string, 10),
+      camping: camping === 'true',
+      diet,
+      remarks,
+    };
+
+    await createRSVP(entry);
+
+    return json<AttendanceResponse>(
+      { success: true, ...entry },
+      { status: 200 }
+    );
+  } else {
     return json<AttendanceResponse>(
       {
         success: false,
-        ...errors,
+        errors: hasErrors,
       },
       { status: 422 }
     );
   }
-
-  invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
-  invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
-  invariant(potluckIsValid(potluck), VALIDATIONS.MISSING_POTLUCK);
-
-  const entry: RSVP = {
-    name,
-    attendance: attendance === 'true',
-    potluck: potluck.split(','),
-  };
-
-  await createRSVP(entry);
-
-  return json<AttendanceResponse>({ success: true, ...entry }, { status: 200 });
 }
 
 export default function AttendancePage() {
@@ -137,9 +153,10 @@ export default function AttendancePage() {
         </div>
       ) : (
         <div className="w-full px-8">
-          <p className="prose mx-auto text-center md:prose-lg">
-            Wij gaan trouwen en willen graag weten of je erbij bent! <br />
-            We vragen je daarom onderstaand formulier in te vullen voor ons.
+          <p className="prose mx-auto md:prose-lg">
+            Wij gaan trouwen en zouden het leuk vinden als je er bij bent! We
+            vragen je daarom dit formulier in te vullen zodat wij weten of je
+            komt en waar we rekening mee moeten houden.
           </p>
 
           <AttendanceForm response={data} />

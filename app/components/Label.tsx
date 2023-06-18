@@ -13,7 +13,9 @@ export default function Label({ label, children, flex = false }: Props) {
         flex ? 'flex flex-col items-center gap-2 sm:flex-row' : ''
       }`}
     >
-      <p className={`text-center ${flex ? 'mb-0 flex-1' : 'mb-2'}`}>{label}</p>
+      <p className={`text-left text-gray-700 ${flex ? 'mb-0 flex-1' : 'mb-2'}`}>
+        {label}
+      </p>
       {children}
     </label>
   );

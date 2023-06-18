@@ -15,11 +15,14 @@ enum Role {
 model User {
   id    String @id @default(cuid())
   email String @unique
+  name  String @default("")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   password Password?
+
+  rsvp Rsvp?
 
   role Role @default(USER)
 }
@@ -33,10 +36,19 @@ model Password {
 
 model Rsvp {
   id         String   @id @default(cuid())
+
   name       String
+  guests     Int
+
   attendance Boolean
-  potluck    String[]
+
+  camping    Boolean
+  diet       String?
+  remarks    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
 }
