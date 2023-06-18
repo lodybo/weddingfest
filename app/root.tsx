@@ -4,13 +4,22 @@ import type {
   V2_MetaFunction,
 } from '@remix-run/node';
 import { json } from '@remix-run/node';
-import { isRouteErrorResponse, Outlet, useRouteError } from '@remix-run/react';
+import {
+  isRouteErrorResponse,
+  Outlet,
+  useLoaderData,
+  useRouteError,
+} from '@remix-run/react';
 
 import tailwindStylesheetUrl from './tailwind.css';
 
-import { getUser } from './session.server';
+import { getSession, getUser, sessionStorage } from './session.server';
 import Document from '~/components/Document';
 import { getErrorMessage } from '~/utils/utils';
+import {
+  AuthenticityTokenProvider,
+  createAuthenticityToken,
+} from 'remix-utils';
 
 export const links: LinksFunction = () => {
   return [
@@ -60,19 +69,35 @@ export const meta: V2_MetaFunction = () => [
 
 type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
+  csrf: string;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  return json<LoaderData>({
-    user: await getUser(request),
-  });
+  const session = await getSession(request);
+  const csrfToken = createAuthenticityToken(session);
+
+  return json<LoaderData>(
+    {
+      user: await getUser(request),
+      csrf: csrfToken,
+    },
+    {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
+    }
+  );
 };
 
 export default function App() {
+  const { csrf } = useLoaderData<typeof loader>();
+
   return (
-    <Document>
-      <Outlet />
-    </Document>
+    <AuthenticityTokenProvider token={csrf}>
+      <Document>
+        <Outlet />
+      </Document>
+    </AuthenticityTokenProvider>
   );
 }
 

@@ -3,17 +3,13 @@ import { json } from '@remix-run/node';
 import { Link, useActionData, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
-import AttendanceForm from '~/components/AttendanceForm';
+import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
-import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
+import { createRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
-import type {
-  AttendanceResponse,
-  FailedAttendanceResponse,
-  RSVP,
-} from '~/types/RSVP';
+import type { AttendanceResponse, RSVP } from '~/types/RSVP';
 import {
   attendanceIsValid,
   attendeeIDIsValid,
@@ -26,6 +22,8 @@ import {
 } from '~/validations/validations';
 import Anchor from '~/components/Anchor';
 import type { RSVPValidationErrors } from '~/types/RSVP';
+import { getSession } from '~/session.server';
+import { verifyAuthenticityToken } from 'remix-utils';
 
 export const loader = async ({ params }: LoaderArgs) => {
   const id = params.rid;
@@ -38,6 +36,9 @@ export const loader = async ({ params }: LoaderArgs) => {
 };
 
 export async function action({ request }: ActionArgs) {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+
   const body = await request.formData();
   const errors: RSVPValidationErrors = {};
 
@@ -78,6 +79,7 @@ export async function action({ request }: ActionArgs) {
       typeof diet === 'string' && typeof remarks === 'string',
       'Diet and remarks should be strings'
     );
+    invariant(attendeeIDIsValid(attendeeID), VALIDATIONS.MISSING_ATTENDEE_ID);
 
     const entry: RSVP = {
       name,
@@ -125,7 +127,7 @@ export default function EditRSVP() {
         ) : (
           <>
             <Anchor to="/admin">Terug</Anchor>
-            <AttendanceForm response={data} rsvp={rsvp} />
+            <RSVPForm response={data} rsvp={rsvp} />
           </>
         )}
       </div>

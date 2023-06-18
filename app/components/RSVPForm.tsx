@@ -9,13 +9,14 @@ import GuestsField from '~/components/GuestsField';
 import CampingField from '~/components/CampingField';
 import DietField from '~/components/DietField';
 import RemarksField from '~/components/RemarksField';
+import { AuthenticityTokenInput } from 'remix-utils';
 
 type Props = {
   rsvp?: RSVP;
   response?: FailedAttendanceResponse;
 };
 
-export default function AttendanceForm({ response, rsvp }: Props) {
+export default function RSVPForm({ response, rsvp }: Props) {
   const {
     name: nameMessage,
     attendance: attendanceMessage,
@@ -28,6 +29,7 @@ export default function AttendanceForm({ response, rsvp }: Props) {
       method="post"
       className="mx-auto my-10 flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
     >
+      <AuthenticityTokenInput />
       <HoneyPotField />
 
       {id && <input type="hidden" name="attendee" value={id} />}

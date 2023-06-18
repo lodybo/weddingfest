@@ -13,21 +13,21 @@ import {
 import invariant from 'tiny-invariant';
 
 import SmallWeddingTimer from '~/components/SmallWeddingTimer';
-import AttendanceForm from '~/components/AttendanceForm';
+import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
 import { createRSVP } from '~/models/rsvp.server';
 
-import type {
-  RSVP,
-  AttendanceResponse,
-  RSVPValidationErrors,
-} from '~/types/RSVP';
+import type { RSVP, AttendanceResponse } from '~/types/RSVP';
+import { verifyAuthenticityToken } from 'remix-utils';
+import { getSession } from '~/session.server';
 
 export async function action({ request }: ActionArgs) {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+
   const body = await request.formData();
-  const errors: RSVPValidationErrors = {};
 
   if (body.get('emailfield') !== '') {
     const entry: RSVP = {
@@ -159,7 +159,7 @@ export default function AttendancePage() {
             komt en waar we rekening mee moeten houden.
           </p>
 
-          <AttendanceForm response={data} />
+          <RSVPForm response={data} />
         </div>
       )}
     </PageLayout>
