@@ -31,6 +31,7 @@
     "db:reset": "prisma migrate reset --force",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
     "db:studio": "prisma studio --browser none"
   },
   "prettier": {
@@ -47,6 +48,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@prisma/client": "^4.15.0",
+    "@radix-ui/react-select": "^1.2.2",
     "@remix-run/express": "^1.17.0",
     "@remix-run/node": "^1.17.0",
     "@remix-run/react": "^1.17.0",

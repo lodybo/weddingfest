@@ -1,5 +1,5 @@
 import type { ActionArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useActionData } from '@remix-run/react';
 import {
   VALIDATIONS,
@@ -12,16 +12,19 @@ import {
 } from '~/validations/validations';
 import invariant from 'tiny-invariant';
 
-import SmallWeddingTimer from '~/components/SmallWeddingTimer';
 import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
 import { createRSVP } from '~/models/rsvp.server';
 
-import type { RSVP, AttendanceResponse } from '~/types/RSVP';
+import type {
+  RSVP,
+  AttendanceResponse,
+  FailedAttendanceResponse,
+} from '~/types/RSVP';
 import { verifyAuthenticityToken } from 'remix-utils';
-import { getSession } from '~/session.server';
+import { getSession, sessionStorage } from '~/session.server';
 
 export async function action({ request }: ActionArgs) {
   const session = await getSession(request);
@@ -76,12 +79,16 @@ export async function action({ request }: ActionArgs) {
       remarks,
     };
 
-    await createRSVP(entry);
+    const { id: rsvpID } = await createRSVP(entry);
 
-    return json<AttendanceResponse>(
-      { success: true, ...entry },
-      { status: 200 }
-    );
+    const session = await getSession(request);
+    session.set('rsvpID', rsvpID);
+
+    return redirect('/tickets', {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
+    });
   } else {
     return json<AttendanceResponse>(
       {
@@ -94,73 +101,19 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function AttendancePage() {
-  let data = useActionData<typeof action>();
+  let data = useActionData<FailedAttendanceResponse>();
 
   return (
     <PageLayout>
-      {data?.success ? (
-        <div className="prose mb-10 w-3/4 max-w-none md:prose-lg md:w-1/2">
-          <h2>Dank je wel voor het opgeven van je aanwezigheid</h2>
+      <div className="w-full px-8">
+        <p className="prose mx-auto md:prose-lg">
+          Wij gaan trouwen en zouden het leuk vinden als je er bij bent! We
+          vragen je daarom dit formulier in te vullen zodat wij weten of je komt
+          en waar we rekening mee moeten houden.
+        </p>
 
-          {data.attendance ? (
-            <>
-              <p>
-                We hebben het genoteerd en kijken ernaar uit om met jou/jullie
-                onze bruiloft te vieren. <br />
-                Vergeet niet regelmatig op deze website terug te kijken voor
-                belangrijke informatie.
-              </p>
-
-              <p className="text-center">
-                We zien je graag op <strong>27 augustus</strong>!<br />
-                Locatie: <strong>Krijgertje 42, Best</strong>
-                <br />
-                Tijd: <strong>14:00</strong>, de ceremonie begint om 16:00
-              </p>
-
-              <h3>
-                Kan je niet wachten? Het zijn nog maar een paar nachtjes slapen!
-              </h3>
-
-              <SmallWeddingTimer />
-            </>
-          ) : (
-            <>
-              <p>
-                We vinden het jammer dat je er niet bij kan zijn, maar dat kan
-                gebeuren.
-              </p>
-
-              <h3>
-                <strong>Hé, psst...</strong>
-              </h3>
-
-              <p>
-                Dit jaar vieren we de bruiloft op klein vanwege het nageslacht
-                dat staat te popelen om geboren te worden. Maar wist je dat we
-                volgend jaar de bruiloft groots willen vieren? Dat gaat gebeuren
-                op <strong>19 augustus 2023</strong>.
-              </p>
-
-              <p>
-                We hebben grootse plannen voor die dag, maar die houden we nog
-                even geheim. Zet de datum maar alvast in je agenda want dit wil
-                je niet missen!
-              </p>
-            </>
-          )}
-        </div>
-      ) : (
-        <div className="w-full px-8">
-          <p className="prose mx-auto md:prose-lg">
-            Wij gaan trouwen en zouden het leuk vinden als je er bij bent! We
-            vragen je daarom dit formulier in te vullen zodat wij weten of je
-            komt en waar we rekening mee moeten houden.
-          </p>
-
-          <RSVPForm response={data} />
-        </div>
-      )}
+        <RSVPForm response={data} />
+      </div>
     </PageLayout>
   );
 }

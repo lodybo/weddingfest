@@ -2,6 +2,7 @@ import { useMatches } from '@remix-run/react';
 import { useMemo } from 'react';
 
 import type { User } from '~/models/user.server';
+import type { PriceOption, SelectedPriceOption } from '~/models/payment.server';
 
 const DEFAULT_REDIRECT = '/';
 
@@ -78,4 +79,54 @@ export function getErrorMessage(err: unknown) {
   else message = String(err);
 
   return message;
+}
+
+// Generate a slugify function that converts a string to a slug
+// and removes any characters that aren't [a-zA-Z0-9-_].
+// This is used to generate slugs for the title of each post.
+// See https://stackoverflow.com/a/29202363/247243
+export function slugify(str: string) {
+  const a = 'àáäâãåăæąçćčđďèéëêęěğìíïîłñńòóöôõøőðřšßśťțùúüûůűŵýÿžżź·/_,:;';
+  const b = 'aaaaaaaaacccddeeeeeeeegiiiiilnnooooooooðrsttuuuuuuuuuwyyzzz------';
+  const p = new RegExp(a.split('').join('|'), 'g');
+
+  return str
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(p, (c) => b.charAt(a.indexOf(c))) // Replace special characters
+    .replace(/&/g, '-and-') // Replace & with 'and'
+    .replace(/[^\w-]+/g, '') // Remove all non-word characters
+    .replace(/--+/g, '-') // Replace multiple - with single -
+    .replace(/^-+/, '') // Trim - from start of text
+    .replace(/-+$/, ''); // Trim - from end of text
+}
+
+export const formatAmountInLocale = (amount: number) =>
+  new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(
+    amount
+  );
+
+export function calculateAndFormatPrice(amount: number, quantity: string) {
+  return formatAmountInLocale(amount * parseInt(quantity));
+}
+
+export function calculateTotal(amount: number, quantity: string) {
+  return amount * parseInt(quantity);
+}
+
+export function calculatAndFormatTotalPrice(
+  selectedTickets: SelectedPriceOption[]
+) {
+  return formatAmountInLocale(
+    selectedTickets.reduce(
+      (total, ticket) =>
+        total + calculateTotal(ticket.option.amount, ticket.quantity),
+      0
+    )
+  );
+}
+
+export function calculateTotalPrice(tickets: PriceOption[]) {
+  return tickets.reduce((total, ticket) => total + ticket.amount, 0);
 }

@@ -34,16 +34,17 @@ sizes.set('normal', 'px-8 py-4 text-md');
 sizes.set('large', 'px-12 py-6 text-xl');
 
 export default function Button({
-  to,
   className = '',
   children,
   variant = 'normal',
   size = 'normal',
+  ...props
 }: Props) {
   const classes = `${className} ${variantStyles.get(variant)} ${sizes.get(
     size
   )} text-slate-800 transition hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2`;
-  if (to) {
+  if ('to' in props) {
+    const { to = '' } = props;
     return (
       <Link to={to} className={`block text-center ${classes}`}>
         {children}
@@ -51,5 +52,9 @@ export default function Button({
     );
   }
 
-  return <button className={classes}>{children}</button>;
+  return (
+    <button className={classes} onClick={props.onClick}>
+      {children}
+    </button>
+  );
 }

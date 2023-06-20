@@ -95,3 +95,11 @@ export async function logout(request: Request) {
     },
   });
 }
+
+export async function getRsvpIDFromSession(request: Request) {
+  const session = await getSession(request);
+  const rsvpID = session.get('rsvpID') as string | undefined;
+  invariant(rsvpID, 'No RSVP ID found in session');
+
+  return rsvpID;
+}

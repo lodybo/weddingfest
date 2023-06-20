@@ -39,5 +39,11 @@ module.exports = {
   variants: {
     extend: {},
   },
-  plugins: [require('@tailwindcss/typography'), require('@tailwindcss/forms')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('@tailwindcss/forms'),
+    require('tailwindcss/plugin')(({ addVariant }) => {
+      addVariant('has-checked', '&:has(:checked)');
+    }),
+  ],
 };

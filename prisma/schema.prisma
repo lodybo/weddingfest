@@ -51,6 +51,8 @@ model Rsvp {
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String? @unique
+
+  Payment Payment?
 }
 
 model Payment {
@@ -61,12 +63,18 @@ model Payment {
   paid      Boolean @default(false)
 
   stripePaymentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rsvp Rsvp? @relation(fields: [rsvpId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  rsvpId String? @unique
 }
 
 model Ticket {
   id         String   @id @default(cuid())
 
-  name       String
+  slug       String
   amount     Decimal @db.Money
 
   payment    Payment  @relation(fields: [paymentId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -74,13 +82,16 @@ model Ticket {
 
   discount   Discount? @relation(fields: [discountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   discountId String?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Discount {
   id         String   @id @default(cuid())
 
-  name       String
-  amount     Decimal @db.Money
+  slug       String
+  amount     Decimal  @db.Money
   code       String   @unique
   used       Boolean  @default(false)
   singleUse  Boolean  @default(false)
