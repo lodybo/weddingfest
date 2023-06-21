@@ -10,6 +10,7 @@
     "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config --require ./mocks ./build/server.js",
     "dev:build": "cross-env NODE_ENV=development npm run build:server -- --watch",
     "dev:remix": "cross-env NODE_ENV=development remix watch",
+    "dev:stripe-webhook": "npm run stripe:forward-webhook",
     "docker:start": "docker-compose up -d",
     "docker:stop": "docker-compose down",
     "format": "prettier --write .",
@@ -32,7 +33,9 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
-    "db:studio": "prisma studio --browser none"
+    "db:studio": "prisma studio --browser none",
+    "stripe:forward-webhook": "stripe listen --forward-to http://localhost:3000/webhook",
+    "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID"
   },
   "prettier": {
     "singleQuote": true

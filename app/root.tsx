@@ -1,5 +1,6 @@
 import type {
   LinksFunction,
+  LoaderArgs,
   LoaderFunction,
   V2_MetaFunction,
 } from '@remix-run/node';
@@ -67,12 +68,13 @@ export const meta: V2_MetaFunction = () => [
   },
 ];
 
-type LoaderData = {
+export type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
   csrf: string;
+  ENV: Window['ENV'];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader = async ({ request }: LoaderArgs) => {
   const session = await getSession(request);
   const csrfToken = createAuthenticityToken(session);
 
@@ -80,6 +82,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     {
       user: await getUser(request),
       csrf: csrfToken,
+      ENV: {
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      },
     },
     {
       headers: {

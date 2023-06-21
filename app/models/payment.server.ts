@@ -1,16 +1,8 @@
-import type {
-  Ticket as PrismaTicket,
-  Payment as PrismaPayment,
-  Discount as PrismaDiscount,
-} from '@prisma/client';
-import type { SerializeFrom } from '@remix-run/node';
+import type { Ticket } from '@prisma/client';
 
 import { prisma } from '~/db.server';
-import { calculateTotal, calculateTotalPrice } from '~/utils/utils';
-
-export type Ticket = SerializeFrom<PrismaTicket>;
-export type Payment = SerializeFrom<PrismaPayment>;
-export type Discount = SerializeFrom<PrismaDiscount>;
+import { calculateTotalPrice } from '~/utils/utils';
+import invariant from 'tiny-invariant';
 
 export type PriceOption = {
   slug: string;
@@ -64,6 +56,36 @@ export function createPayment(tickets: PriceOption[], rsvpId: string) {
   });
 }
 
+export function getPaymentForRsvp(rsvpId: string) {
+  return prisma.payment.findFirst({
+    where: {
+      rsvpId,
+    },
+    include: {
+      tickets: true,
+    },
+  });
+}
+
+export async function getTotalPriceForRsvp(rsvpId: string) {
+  const payment = await getPaymentForRsvp(rsvpId);
+  invariant(payment, `Payment not found for rsvp ${rsvpId}`);
+
+  return parseInt(payment.total.toString());
+}
+
+export function markPaymentAsComplete(rsvpId: string, stripePaymentId: string) {
+  return prisma.payment.update({
+    where: {
+      rsvpId,
+    },
+    data: {
+      paid: true,
+      stripePaymentId,
+    },
+  });
+}
+
 export function convertSelectedTicketsToPriceOptions(
   selectedTickets: SelectedPriceOption[]
 ): PriceOption[] {
@@ -76,4 +98,35 @@ export function convertSelectedTicketsToPriceOptions(
   });
 
   return options;
+}
+
+export function convertPriceOptionsToSelectedTickets(
+  tickets: Ticket[]
+): SelectedPriceOption[] {
+  const selectedTickets: SelectedPriceOption[] = [];
+
+  tickets.forEach((priceOption) => {
+    const selectedTicket = selectedTickets.find(
+      (ticket) => ticket.option.slug === priceOption.slug
+    );
+
+    if (selectedTicket) {
+      selectedTicket.quantity = (
+        parseInt(selectedTicket.quantity) + 1
+      ).toString();
+    } else {
+      selectedTickets.push({
+        option: {
+          slug: priceOption.slug,
+          description: priceOptions.find(
+            (option) => option.slug === priceOption.slug
+          )?.description as string,
+          amount: parseInt(priceOption.amount.toString()),
+        },
+        quantity: '1',
+      });
+    }
+  });
+
+  return selectedTickets;
 }

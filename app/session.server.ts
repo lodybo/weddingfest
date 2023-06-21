@@ -3,6 +3,7 @@ import invariant from 'tiny-invariant';
 
 import type { User } from '~/models/user.server';
 import { getUserById } from '~/models/user.server';
+import { getRSVP } from '~/models/rsvp.server';
 
 invariant(process.env.SESSION_SECRET, 'SESSION_SECRET must be set');
 
@@ -102,4 +103,12 @@ export async function getRsvpIDFromSession(request: Request) {
   invariant(rsvpID, 'No RSVP ID found in session');
 
   return rsvpID;
+}
+
+export async function getRsvpFromSession(request: Request) {
+  const rsvpID = await getRsvpIDFromSession(request);
+  const rsvp = await getRSVP(rsvpID);
+  invariant(rsvp, 'No RSVP found for ID');
+
+  return rsvp;
 }

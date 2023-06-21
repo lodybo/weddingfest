@@ -19,7 +19,7 @@ export default function PageLayout({ children }: Props) {
   return (
     <div className="relative flex min-h-full flex-col items-center justify-center">
       <Navigation user={user} />
-      <Hero size={location.pathname === '/' ? 'large' : 'small'} />
+      {/*<Hero size={location.pathname === '/' ? 'large' : 'small'} />*/}
 
       <Spacer />
 

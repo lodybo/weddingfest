@@ -6,12 +6,18 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react';
+import { useMatchesData } from '~/utils/utils';
+import type { LoaderData } from '~/root';
 
 type Props = {
   children: ReactNode;
 };
 
 export default function Document({ children }: Props) {
+  const data = useMatchesData('root');
+
+  const { ENV } = (data as LoaderData) || {};
+
   return (
     <html lang="en" className="h-full">
       <head>
@@ -26,6 +32,11 @@ export default function Document({ children }: Props) {
         {children}
         <ScrollRestoration />
         <Scripts />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(ENV)}`,
+          }}
+        />
         <LiveReload port={4200} />
       </body>
     </html>

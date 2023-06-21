@@ -1,5 +1,5 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 import TicketForm from '~/components/AttendanceList/TicketForm';
@@ -52,7 +52,7 @@ export async function action({ request }: ActionArgs) {
 
   await createPayment(tickets, rsvpID);
 
-  return null;
+  return redirect('/betalen');
 }
 
 export default function TicketRoute() {

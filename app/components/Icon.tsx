@@ -14,6 +14,7 @@ export type Props = {
   className?: React.HTMLAttributes<HTMLSpanElement>['className'];
   prefix?: Extract<IconPrefix, 'fas' | 'fab' | 'far'>;
   sizes?: 's' | 'm' | 'l' | 'xl' | 'full';
+  faClasses?: string;
 };
 
 const sizeMap = new Map<Props['sizes'], string>();
@@ -23,14 +24,20 @@ sizeMap.set('l', 'fa-2x');
 sizeMap.set('xl', 'fa-3x');
 sizeMap.set('full', 'fa-5x');
 
-const Icon = ({ name, prefix = 'fas', className = '', sizes = 'm' }: Props) => {
+const Icon = ({
+  name,
+  prefix = 'fas',
+  className = '',
+  sizes = 'm',
+  faClasses = '',
+}: Props) => {
   const icon = fontAwesomeIcon(
     {
       prefix,
       iconName: name,
     },
     {
-      classes: [sizeMap.get(sizes) || ''],
+      classes: [faClasses, sizeMap.get(sizes) || ''],
     }
   ).abstract.shift();
 

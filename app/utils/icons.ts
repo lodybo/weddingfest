@@ -7,4 +7,5 @@ export {
   faChevronDown,
   faChevronUp,
   faCheck,
+  faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
