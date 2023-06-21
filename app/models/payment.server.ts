@@ -4,37 +4,70 @@ import { prisma } from '~/db.server';
 import { calculateTotalPrice } from '~/utils/utils';
 import invariant from 'tiny-invariant';
 
-export type PriceOption = {
+interface BasePriceOption {
   slug: string;
   description: string;
   amount: number;
-};
+  type: 'ticket' | 'gift';
+}
 
-export type SelectedPriceOption = {
-  option: PriceOption;
+interface TicketPriceOption extends BasePriceOption {
+  type: 'ticket';
+}
+
+interface GiftPriceOption extends BasePriceOption {
+  type: 'gift';
+}
+
+export type PriceOption = TicketPriceOption | GiftPriceOption;
+
+interface BaseSelectedPriceOption {
   quantity: string;
-};
+}
+
+interface TicketSelectedPriceOption extends BaseSelectedPriceOption {
+  option: TicketPriceOption;
+}
+
+interface GiftSelectedPriceOption extends BaseSelectedPriceOption {
+  option: GiftPriceOption;
+}
+
+export type SelectedPriceOption =
+  | TicketSelectedPriceOption
+  | GiftSelectedPriceOption;
 
 export const priceOptions: readonly PriceOption[] = Object.freeze([
   {
     slug: 'adult',
     description: 'Volwassenen ticket',
+    type: 'ticket',
     amount: 0,
   },
   {
     slug: 'baby',
     description: 'Kinder ticket (0-3 jaar)',
+    type: 'ticket',
     amount: 0,
   },
   {
     slug: 'child',
     description: 'Kinder (3+) ticket',
+    type: 'ticket',
     amount: 0,
   },
   {
     slug: 'camping',
     description: 'Camping ticket (per tent, incl. ontbijt)',
+    type: 'ticket',
     amount: 25,
+  },
+  {
+    slug: 'gift',
+    description:
+      'Een gift voor de bruiloft (die we al kunnen gebruiken voor het feest)',
+    type: 'gift',
+    amount: 0,
   },
 ]);
 
@@ -103,11 +136,11 @@ export function convertSelectedTicketsToPriceOptions(
 export function convertPriceOptionsToSelectedTickets(
   tickets: Ticket[]
 ): SelectedPriceOption[] {
-  const selectedTickets: SelectedPriceOption[] = [];
+  const selectedPriceOptions: SelectedPriceOption[] = [];
 
-  tickets.forEach((priceOption) => {
-    const selectedTicket = selectedTickets.find(
-      (ticket) => ticket.option.slug === priceOption.slug
+  tickets.forEach((ticket) => {
+    const selectedTicket = selectedPriceOptions.find(
+      ({ option }) => option.slug === ticket.slug
     );
 
     if (selectedTicket) {
@@ -115,18 +148,19 @@ export function convertPriceOptionsToSelectedTickets(
         parseInt(selectedTicket.quantity) + 1
       ).toString();
     } else {
-      selectedTickets.push({
+      selectedPriceOptions.push({
         option: {
-          slug: priceOption.slug,
+          slug: ticket.slug,
           description: priceOptions.find(
-            (option) => option.slug === priceOption.slug
+            (option) => option.slug === ticket.slug
           )?.description as string,
-          amount: parseInt(priceOption.amount.toString()),
+          type: 'ticket',
+          amount: parseInt(ticket.amount.toString()),
         },
         quantity: '1',
       });
     }
   });
 
-  return selectedTickets;
+  return selectedPriceOptions;
 }

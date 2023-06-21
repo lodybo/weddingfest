@@ -2,6 +2,7 @@ import type { PriceOption } from '~/models/payment.server';
 import { useState } from 'react';
 import { Select, SelectItem } from '~/components/Select';
 import { formatAmountInLocale } from '~/utils/utils';
+import GiftField from '~/components/GiftField';
 
 type Props = {
   option: PriceOption;
@@ -16,6 +17,11 @@ export default function TicketSelector({ option, onQuantityChange }: Props) {
     onQuantityChange(option, value);
   };
 
+  const handleGiftChange = (amount: string) => {
+    option.amount = parseFloat(amount);
+    onQuantityChange(option, '1');
+  };
+
   return (
     <div
       className={`flex w-full flex-col items-center gap-4 border-cyan-200 px-4 transition-all ${
@@ -23,42 +29,48 @@ export default function TicketSelector({ option, onQuantityChange }: Props) {
       }`}
     >
       <div className="flex w-full flex-row gap-4">
-        <div className="flex w-1/2 flex-col">
-          <h2 className="w-full text-lg">
-            {option.description}
-            <span className="text-sm italic text-gray-400">
-              {' '}
-              - {formatAmountInLocale(option.amount)}
-            </span>
-          </h2>
-          <p className="text-sm italic text-gray-400">
-            {numberOfTickets !== '0' && numberOfTickets !== '10+' ? (
-              <span>
-                {formatAmountInLocale(option.amount)} x {numberOfTickets} ={' '}
-                {formatAmountInLocale(
-                  option.amount * parseInt(numberOfTickets)
-                )}
-              </span>
-            ) : null}
-          </p>
-        </div>
+        {option.type !== 'gift' ? (
+          <>
+            <div className="flex w-3/4 flex-col">
+              <h2 className="w-full text-lg">
+                {option.description}
+                <span className="text-sm italic text-gray-400">
+                  {' '}
+                  - {formatAmountInLocale(option.amount)}
+                </span>
+              </h2>
+              <p className="text-sm italic text-gray-400">
+                {numberOfTickets !== '0' && numberOfTickets !== '10+' ? (
+                  <span>
+                    {formatAmountInLocale(option.amount)} x {numberOfTickets} ={' '}
+                    {formatAmountInLocale(
+                      option.amount * parseInt(numberOfTickets)
+                    )}
+                  </span>
+                ) : null}
+              </p>
+            </div>
 
-        <div className="w-1/2">
-          <Select
-            name="numberOfTickets"
-            value={numberOfTickets.toString()}
-            onValueChange={(value) =>
-              handleNumberOfTicketsChange(option, value)
-            }
-          >
-            {Array.from({ length: 11 }, (_, i) => i).map((number) => (
-              <SelectItem key={number} value={number.toString()}>
-                {number}
-              </SelectItem>
-            ))}
-            <SelectItem value="10+">10+</SelectItem>
-          </Select>
-        </div>
+            <div className="w-1/4">
+              <Select
+                name="numberOfTickets"
+                value={numberOfTickets.toString()}
+                onValueChange={(value) =>
+                  handleNumberOfTicketsChange(option, value)
+                }
+              >
+                {Array.from({ length: 11 }, (_, i) => i).map((number) => (
+                  <SelectItem key={number} value={number.toString()}>
+                    {number}
+                  </SelectItem>
+                ))}
+                <SelectItem value="10+">10+</SelectItem>
+              </Select>
+            </div>
+          </>
+        ) : (
+          <GiftField onAmountChange={handleGiftChange} />
+        )}
       </div>
       {numberOfTickets === '10+' ? (
         <p className="text-sm italic text-gray-400">

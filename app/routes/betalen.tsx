@@ -18,7 +18,7 @@ import PageLayout from '~/layouts/Page';
 import { getErrorMessage } from '~/utils/utils';
 import CheckoutForm from '~/components/CheckoutForm';
 import { stripe } from '~/stripe.server';
-import TicketsSummary from '~/components/AttendanceList/TicketsSummary';
+import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
 
 export interface StripeLoaderData {
   clientSecret: string;
@@ -106,7 +106,7 @@ export default function PayRoute() {
             ) : null}
           </div>
           <div className="w-full flex-1">
-            <TicketsSummary selectedTickets={tickets} />
+            <PaymentSummary selectedTickets={tickets} />
           </div>
         </div>
       </div>

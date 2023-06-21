@@ -115,7 +115,7 @@ export function calculateTotal(amount: number, quantity: string) {
   return amount * parseInt(quantity);
 }
 
-export function calculatAndFormatTotalPrice(
+export function calculateAndFormatTotalPrice(
   selectedTickets: SelectedPriceOption[]
 ) {
   return formatAmountInLocale(

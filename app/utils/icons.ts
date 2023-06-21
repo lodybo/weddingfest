@@ -8,4 +8,5 @@ export {
   faChevronUp,
   faCheck,
   faSpinner,
+  faEuroSign,
 } from '@fortawesome/free-solid-svg-icons';

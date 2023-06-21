@@ -13,7 +13,7 @@ import {
   priceOptions,
 } from '~/models/payment.server';
 import { useState } from 'react';
-import TicketsSummary from '~/components/AttendanceList/TicketsSummary';
+import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
 import Button from '~/components/Button';
 
 export async function loader({ request }: LoaderArgs) {
@@ -101,15 +101,15 @@ export default function TicketRoute() {
         </p>
 
         <div className="not-prose flex flex-col gap-8 md:gap-16 lg:flex-row">
-          <div className="w-full md:w-2/3">
+          <div className="w-full flex-auto md:w-2/3">
             <TicketForm
               options={options}
               onSelectionChange={handleSelectionChange}
             />
           </div>
 
-          <div className="w-full space-y-4 md:w-1/3">
-            <TicketsSummary selectedTickets={selectedTickets} />
+          <div className="w-full flex-auto space-y-4 md:w-1/3">
+            <PaymentSummary selectedTickets={selectedTickets} />
             <Button variant="primary" onClick={triggerPayment}>
               Bestellen
             </Button>

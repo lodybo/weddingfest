@@ -12,8 +12,15 @@ export default function TicketForm({ options, onSelectionChange }: Props) {
 
   const handleQuantityChange = (option: PriceOption, quantity: string) => {
     const newTickets = tickets.filter((t) => t.option.slug !== option.slug);
-    if (quantity !== '0') {
-      newTickets.push({ option, quantity });
+
+    if (option.type === 'gift') {
+      if (option.amount) {
+        newTickets.push({ option, quantity });
+      }
+    } else {
+      if (quantity !== '0') {
+        newTickets.push({ option, quantity });
+      }
     }
 
     setTickets(newTickets);
