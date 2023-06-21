@@ -42,7 +42,7 @@ export async function loader({ request }: LoaderArgs) {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: totalPrice * 1000,
+      amount: totalPrice * 100,
       currency: 'eur',
       automatic_payment_methods: {
         enabled: true,

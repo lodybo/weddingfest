@@ -19,7 +19,7 @@ export const priceOptions: readonly PriceOption[] = Object.freeze([
   {
     slug: 'adult',
     description: 'Volwassenen ticket',
-    amount: 70,
+    amount: 0,
   },
   {
     slug: 'baby',
@@ -29,11 +29,11 @@ export const priceOptions: readonly PriceOption[] = Object.freeze([
   {
     slug: 'child',
     description: 'Kinder (3+) ticket',
-    amount: 50,
+    amount: 0,
   },
   {
     slug: 'camping',
-    description: 'Camping ticket (per tent)',
+    description: 'Camping ticket (per tent, incl. ontbijt)',
     amount: 25,
   },
 ]);

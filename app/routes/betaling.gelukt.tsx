@@ -6,7 +6,7 @@ export default function PaymentSucceededRoute() {
       <h1 className="font-handwriting text-7xl">Betaling gelukt!</h1>
 
       <p className="text-2xl">
-        Bedankt voor je betaling! Je ontvangt een bevestiging per e-mail.
+        Bedankt voor je betaling, we zien je op 19 augustus!
       </p>
     </CenteredContentLayout>
   );
