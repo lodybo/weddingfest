@@ -12,6 +12,12 @@ enum Role {
   USER
 }
 
+enum ATTENDANCE {
+  ALL_DAY
+  EVENING
+  NONE
+}
+
 model User {
   id    String @id @default(cuid())
   email String @unique
@@ -38,9 +44,8 @@ model Rsvp {
   id         String   @id @default(cuid())
 
   name       String
-  guests     Int
 
-  attendance Boolean
+  attendance ATTENDANCE
 
   camping    Boolean
   diet       String?

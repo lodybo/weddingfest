@@ -1,11 +1,10 @@
 import type { RSVPValidationErrors } from '~/types/RSVP';
+import type { ATTENDANCE } from '@prisma/client';
 
 export enum VALIDATIONS {
   MISSING_NAME = 'Er is geen naam ingevuld, zo kunnen we niet zien wie je bent.',
   MISSING_ATTENDANCE = 'Laat je ons weten of je wel, of niet kan?',
   MISSING_ATTENDEE_ID = 'Er is geen aanwezige bekend.',
-  MISSING_GUESTS = 'Er is geen aantal gasten ingevuld.',
-  INCORRECT_GUEST_TOTAL = 'Het aantal gasten is niet correct.',
   MISSING_CAMPING = 'We willen graag weten of je blijft kamperen.',
   WRONG_TYPE = 'Er is iets fout gegaan met het versturen van het formulier.',
 }
@@ -13,18 +12,14 @@ export enum VALIDATIONS {
 export const nameIsValid = (name: any): name is string =>
   typeof name === 'string' && name !== '';
 
-export const attendanceIsValid = (attendance: any): attendance is string =>
+export const attendanceIsValid = (attendance: any): attendance is ATTENDANCE =>
   typeof attendance === 'string' &&
-  (attendance === 'true' || attendance === 'false');
+  (attendance === 'ALL_DAY' ||
+    attendance === 'EVENING' ||
+    attendance === 'NONE');
 
 export const attendeeIDIsValid = (attendeeID: any): attendeeID is string =>
   typeof attendeeID === 'string' && attendeeID !== '';
-
-export const guestsAreValid = (guests: any): guests is string =>
-  typeof guests === 'string' && guests !== '';
-
-export const guestTotalIsValid = (guestTotal: string): boolean =>
-  guestTotal !== '0';
 
 export const campingIsValid = (camping: any): camping is string =>
   typeof camping === 'string' && (camping === 'true' || camping === 'false');
@@ -32,7 +27,6 @@ export const campingIsValid = (camping: any): camping is string =>
 export function validateRSVP(
   name: FormDataEntryValue | null,
   attendance: FormDataEntryValue | null,
-  guests: FormDataEntryValue | null,
   camping: FormDataEntryValue | null,
   diet: FormDataEntryValue | null,
   remarks: FormDataEntryValue | null,
@@ -46,12 +40,6 @@ export function validateRSVP(
 
   if (!attendanceIsValid(attendance)) {
     errors.attendance = VALIDATIONS.MISSING_ATTENDANCE;
-  }
-
-  if (!guestsAreValid(guests)) {
-    errors.guests = VALIDATIONS.MISSING_GUESTS;
-  } else if (!guestTotalIsValid(guests)) {
-    errors.guests = VALIDATIONS.INCORRECT_GUEST_TOTAL;
   }
 
   if (!campingIsValid(camping)) {

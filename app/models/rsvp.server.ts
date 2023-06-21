@@ -1,4 +1,4 @@
-import type { Rsvp, Prisma } from '@prisma/client';
+import type { Rsvp } from '@prisma/client';
 import type { RSVP as RSVPData } from '~/types/RSVP';
 
 import { prisma } from '~/db.server';
@@ -26,7 +26,6 @@ export function getRSVP(id: Rsvp['id']) {
 export function createRSVP({
   name,
   attendance,
-  guests,
   camping,
   diet,
   remarks,
@@ -36,7 +35,6 @@ export function createRSVP({
     data: {
       name,
       attendance,
-      guests,
       camping,
       diet,
       remarks,
@@ -47,7 +45,7 @@ export function createRSVP({
 
 export function editRSVP(
   id: Rsvp['id'],
-  { name, attendance, guests, camping, diet, remarks }: RSVPData
+  { name, attendance, camping, diet, remarks }: RSVPData
 ) {
   return prisma.rsvp.update({
     where: {
@@ -56,7 +54,6 @@ export function editRSVP(
     data: {
       name,
       attendance,
-      guests,
       camping,
       diet,
       remarks,

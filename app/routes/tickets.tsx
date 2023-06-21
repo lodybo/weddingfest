@@ -22,6 +22,10 @@ export async function loader({ request }: LoaderArgs) {
   const rsvp = await getRSVP(rsvpID);
   invariant(rsvp, 'No RSVP found for ID');
 
+  if (rsvp.attendance === 'NONE') {
+    return redirect('/niet-aanwezig');
+  }
+
   return json(
     {
       name: rsvp.name,

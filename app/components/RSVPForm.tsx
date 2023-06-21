@@ -5,7 +5,6 @@ import NameField from '~/components/NameField';
 import AttendanceField from '~/components/AttendanceField';
 
 import type { FailedAttendanceResponse, RSVP } from '~/types/RSVP';
-import GuestsField from '~/components/GuestsField';
 import CampingField from '~/components/CampingField';
 import DietField from '~/components/DietField';
 import RemarksField from '~/components/RemarksField';
@@ -35,8 +34,6 @@ export default function RSVPForm({ response, rsvp }: Props) {
       {id && <input type="hidden" name="attendee" value={id} />}
 
       <NameField value={name} error={nameMessage} />
-
-      <GuestsField value={'1'} />
 
       <AttendanceField value={attendance} error={attendanceMessage} />
 

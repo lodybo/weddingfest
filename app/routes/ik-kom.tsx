@@ -5,8 +5,6 @@ import {
   VALIDATIONS,
   nameIsValid,
   attendanceIsValid,
-  guestsAreValid,
-  guestTotalIsValid,
   campingIsValid,
   validateRSVP,
 } from '~/validations/validations';
@@ -35,9 +33,8 @@ export async function action({ request }: ActionArgs) {
   if (body.get('emailfield') !== '') {
     const entry: RSVP = {
       name: '',
-      attendance: false,
+      attendance: 'NONE',
       diet: '',
-      guests: 1,
       camping: false,
       remarks: '',
     };
@@ -47,23 +44,13 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const { name, attendance, guests, camping, diet, remarks } =
-    Object.fromEntries(body);
+  const { name, attendance, camping, diet, remarks } = Object.fromEntries(body);
 
-  const hasErrors = validateRSVP(
-    name,
-    attendance,
-    guests,
-    camping,
-    diet,
-    remarks
-  );
+  const hasErrors = validateRSVP(name, attendance, camping, diet, remarks);
 
   if (!hasErrors) {
     invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
     invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
-    invariant(guestsAreValid(guests), VALIDATIONS.MISSING_GUESTS);
-    invariant(guestTotalIsValid(guests), VALIDATIONS.INCORRECT_GUEST_TOTAL);
     invariant(campingIsValid(camping), VALIDATIONS.MISSING_CAMPING);
     invariant(
       typeof diet === 'string' && typeof remarks === 'string',
@@ -72,8 +59,7 @@ export async function action({ request }: ActionArgs) {
 
     const entry: RSVP = {
       name,
-      attendance: attendance === 'true',
-      guests: parseInt(guests as string, 10),
+      attendance,
       camping: camping === 'true',
       diet,
       remarks,

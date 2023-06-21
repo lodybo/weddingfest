@@ -9,7 +9,6 @@ export type RSVPValidationErrors = {
   name?: string;
   attendance?: string;
   attendeeID?: string;
-  guests?: string;
   camping?: string;
   diet?: string;
   remarks?: string;
