@@ -110,7 +110,11 @@ export default function TicketRoute() {
 
           <div className="w-full flex-auto space-y-4 md:w-1/3">
             <PaymentSummary selectedTickets={selectedTickets} />
-            <Button variant="primary" onClick={triggerPayment}>
+            <Button
+              variant="primary"
+              onClick={triggerPayment}
+              disabled={!selectedTickets.length}
+            >
               Bestellen
             </Button>
           </div>

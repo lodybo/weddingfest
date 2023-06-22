@@ -1,18 +1,17 @@
 import type { LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { ClientOnly, serverError } from 'remix-utils';
 import type { StripeElementsOptions } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import invariant from 'tiny-invariant';
-import { getRsvpFromSession, getRsvpIDFromSession } from '~/session.server';
+import { getRsvpIDFromSession } from '~/session.server';
+import type { SelectedPriceOption } from '~/models/payment.server';
 import {
   convertPriceOptionsToSelectedTickets,
-  convertSelectedTicketsToPriceOptions,
   getPaymentForRsvp,
   getTotalPriceForRsvp,
-  SelectedPriceOption,
 } from '~/models/payment.server';
 import PageLayout from '~/layouts/Page';
 import { getErrorMessage } from '~/utils/utils';
@@ -37,6 +36,10 @@ export async function loader({ request }: LoaderArgs) {
   invariant(payment && payment.tickets, 'No payment found for RSVP');
 
   const totalPrice = await getTotalPriceForRsvp(rsvpId);
+
+  if (totalPrice === 0) {
+    return redirect('/betaling/niet-nodig');
+  }
 
   const selectedTickets = convertPriceOptionsToSelectedTickets(payment.tickets);
 

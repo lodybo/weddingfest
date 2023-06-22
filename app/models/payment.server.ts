@@ -107,7 +107,10 @@ export async function getTotalPriceForRsvp(rsvpId: string) {
   return parseInt(payment.total.toString());
 }
 
-export function markPaymentAsComplete(rsvpId: string, stripePaymentId: string) {
+export function markPaymentAsComplete(
+  rsvpId: string,
+  stripePaymentId?: string
+) {
   return prisma.payment.update({
     where: {
       rsvpId,
