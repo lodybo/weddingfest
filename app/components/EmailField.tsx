@@ -1,6 +1,6 @@
-import TextInput from '~/components/TextInput';
 import Label from '~/components/Label';
 import ErrorMessage from '~/components/ErrorMessage';
+import EmailInput from '~/components/EmailInput';
 
 type Props = {
   label: string;
@@ -8,11 +8,11 @@ type Props = {
   error?: string;
 };
 
-export default function NameField({ value, error, label }: Props) {
+export default function EmailField({ label, value, error }: Props) {
   return (
     <div className="w-full">
       <Label label={label}>
-        <TextInput name="name" defaultValue={value} />
+        <EmailInput name="email" defaultValue={value} />
       </Label>
       {error ? <ErrorMessage message={error} /> : null}
     </div>

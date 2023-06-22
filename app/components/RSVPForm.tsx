@@ -33,7 +33,11 @@ export default function RSVPForm({ response, rsvp }: Props) {
 
       {id && <input type="hidden" name="attendee" value={id} />}
 
-      <NameField value={name} error={nameMessage} />
+      <NameField
+        label="Wat is je naam/jullie namen?"
+        value={name}
+        error={nameMessage}
+      />
 
       <AttendanceField value={attendance} error={attendanceMessage} />
 

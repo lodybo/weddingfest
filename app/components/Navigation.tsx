@@ -24,7 +24,7 @@ export default function Navigation({ user }: Props) {
       <ul className="flex flex-row gap-4">
         {user ? (
           <li>
-            <form className="ml-auto mr-4" action="/logout" method="post">
+            <form className="ml-auto mr-4" action="/uitloggen" method="post">
               <Button variant="primary" type="submit">
                 Uitloggen
               </Button>
@@ -32,7 +32,7 @@ export default function Navigation({ user }: Props) {
           </li>
         ) : (
           <>
-            <NavLink to="/login">Inloggen</NavLink>
+            <NavLink to="/inloggen">Inloggen</NavLink>
           </>
         )}
       </ul>

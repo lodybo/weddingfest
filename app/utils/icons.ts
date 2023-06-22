@@ -9,4 +9,6 @@ export {
   faCheck,
   faSpinner,
   faEuroSign,
+  faEye,
+  faEyeSlash,
 } from '@fortawesome/free-solid-svg-icons';
