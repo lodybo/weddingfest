@@ -7,7 +7,7 @@ import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
-import { createRSVP, getRSVP } from '~/models/rsvp.server';
+import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
 import type { AttendanceResponse, RSVP } from '~/types/RSVP';
 import {
@@ -43,7 +43,7 @@ export async function action({ request }: ActionArgs) {
   if (body.get('emailfield') !== '') {
     const entry: RSVP = {
       name: '',
-      attendance: false,
+      attendance: 'NONE',
       diet: '',
       camping: false,
       remarks: '',
@@ -54,19 +54,20 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const { name, attendance, guests, camping, diet, remarks, attendeeID } =
+  const { name, attendee, attendance, camping, diet, remarks, attendeeID } =
     Object.fromEntries(body);
 
   const hasErrors = validateRSVP(
     name,
     attendance,
-    guests,
     camping,
     diet,
     remarks,
     attendeeID
   );
   if (!hasErrors) {
+    invariant(attendee !== undefined, 'Attendee needs to be set');
+    invariant(typeof attendee === 'string', 'Attendee is of wrong type');
     invariant(nameIsValid(name), VALIDATIONS.MISSING_NAME);
     invariant(attendanceIsValid(attendance), VALIDATIONS.MISSING_ATTENDANCE);
     invariant(campingIsValid(camping), VALIDATIONS.MISSING_CAMPING);
@@ -78,13 +79,13 @@ export async function action({ request }: ActionArgs) {
 
     const entry: RSVP = {
       name,
-      attendance: attendance === 'true',
+      attendance,
       camping: camping === 'true',
       diet,
       remarks,
     };
 
-    await createRSVP(entry);
+    await editRSVP(attendee, entry);
 
     return json<AttendanceResponse>(
       { success: true, ...entry },

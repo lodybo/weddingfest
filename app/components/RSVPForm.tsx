@@ -11,7 +11,7 @@ import RemarksField from '~/components/RemarksField';
 import { AuthenticityTokenInput } from 'remix-utils';
 
 type Props = {
-  rsvp?: RSVP;
+  rsvp?: RSVP | null;
   response?: FailedAttendanceResponse;
 };
 

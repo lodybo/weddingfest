@@ -1,8 +1,8 @@
 import type { Rsvp } from '@prisma/client';
 
 export type RSVP = Omit<Rsvp, 'id' | 'userId' | 'createdAt' | 'updatedAt'> & {
-  id?: string;
-  userId?: string;
+  id?: string | null;
+  userId?: string | null;
 };
 
 export type RSVPValidationErrors = {

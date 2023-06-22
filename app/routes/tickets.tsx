@@ -8,8 +8,13 @@ import { getRsvpIDFromSession } from '~/session.server';
 import { getRSVP } from '~/models/rsvp.server';
 import type { SelectedPriceOption } from '~/models/payment.server';
 import {
+  convertPriceOptionsToSelectedTickets,
   convertSelectedTicketsToPriceOptions,
   createPayment,
+  deletePayment,
+  getPaymentForRsvp,
+  getTicketsForPayment,
+  hasPayment,
   priceOptions,
 } from '~/models/payment.server';
 import { useState } from 'react';
@@ -26,10 +31,18 @@ export async function loader({ request }: LoaderArgs) {
     return redirect('/niet-aanwezig');
   }
 
+  let selectedTickets: SelectedPriceOption[] = [];
+  const payment = await hasPayment(rsvpID);
+  if (payment) {
+    const tickets = await getTicketsForPayment(payment.id);
+    selectedTickets = convertPriceOptionsToSelectedTickets(tickets);
+  }
+
   return json(
     {
       name: rsvp.name,
       options: priceOptions,
+      tickets: selectedTickets,
     },
     { status: 200 }
   );
@@ -54,6 +67,11 @@ export async function action({ request }: ActionArgs) {
 
   const tickets = convertSelectedTicketsToPriceOptions(selectedTickets);
 
+  const payment = await getPaymentForRsvp(rsvpID);
+  if (payment) {
+    await deletePayment(payment.id);
+  }
+
   await createPayment(tickets, rsvpID);
 
   return redirect('/betalen');
@@ -61,10 +79,9 @@ export async function action({ request }: ActionArgs) {
 
 export default function TicketRoute() {
   const fetcher = useFetcher();
-  const { name, options } = useLoaderData<typeof loader>();
-  const [selectedTickets, setSelectedTickets] = useState<SelectedPriceOption[]>(
-    []
-  );
+  const { name, options, tickets } = useLoaderData<typeof loader>();
+  const [selectedTickets, setSelectedTickets] =
+    useState<SelectedPriceOption[]>(tickets);
 
   const handleSelectionChange = (selection: SelectedPriceOption[]) => {
     setSelectedTickets(selection);
@@ -105,6 +122,7 @@ export default function TicketRoute() {
             <TicketForm
               options={options}
               onSelectionChange={handleSelectionChange}
+              selectedTickets={selectedTickets}
             />
           </div>
 

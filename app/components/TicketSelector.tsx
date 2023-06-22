@@ -1,4 +1,4 @@
-import type { PriceOption } from '~/models/payment.server';
+import type { PriceOption, SelectedPriceOption } from '~/models/payment.server';
 import { useState } from 'react';
 import { Select, SelectItem } from '~/components/Select';
 import { formatAmountInLocale } from '~/utils/utils';
@@ -7,10 +7,17 @@ import GiftField from '~/components/GiftField';
 type Props = {
   option: PriceOption;
   onQuantityChange: (option: PriceOption, quantity: string) => void;
+  ticket?: SelectedPriceOption;
 };
 
-export default function TicketSelector({ option, onQuantityChange }: Props) {
-  const [numberOfTickets, setNumberOfTickets] = useState('0');
+export default function TicketSelector({
+  option,
+  onQuantityChange,
+  ticket,
+}: Props) {
+  const [numberOfTickets, setNumberOfTickets] = useState(
+    ticket?.quantity ?? '0'
+  );
 
   const handleNumberOfTicketsChange = (option: PriceOption, value: string) => {
     setNumberOfTickets(value);
@@ -69,7 +76,10 @@ export default function TicketSelector({ option, onQuantityChange }: Props) {
             </div>
           </>
         ) : (
-          <GiftField onAmountChange={handleGiftChange} />
+          <GiftField
+            value={ticket?.option.amount ?? 0}
+            onAmountChange={handleGiftChange}
+          />
         )}
       </div>
       {numberOfTickets === '10+' ? (

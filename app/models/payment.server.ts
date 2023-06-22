@@ -122,6 +122,30 @@ export function markPaymentAsComplete(
   });
 }
 
+export function hasPayment(rsvpId: string) {
+  return prisma.payment.findFirst({
+    where: {
+      rsvpId,
+    },
+  });
+}
+
+export function getTicketsForPayment(paymentId: string) {
+  return prisma.ticket.findMany({
+    where: {
+      paymentId,
+    },
+  });
+}
+
+export function deletePayment(paymentId: string) {
+  return prisma.payment.delete({
+    where: {
+      id: paymentId,
+    },
+  });
+}
+
 export function convertSelectedTicketsToPriceOptions(
   selectedTickets: SelectedPriceOption[]
 ): PriceOption[] {

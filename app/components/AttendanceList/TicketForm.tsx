@@ -5,10 +5,16 @@ import { useState } from 'react';
 type Props = {
   options: PriceOption[];
   onSelectionChange: (selection: SelectedPriceOption[]) => void;
+  selectedTickets: SelectedPriceOption[];
 };
 
-export default function TicketForm({ options, onSelectionChange }: Props) {
-  const [tickets, setTickets] = useState<SelectedPriceOption[]>([]);
+export default function TicketForm({
+  options,
+  onSelectionChange,
+  selectedTickets,
+}: Props) {
+  const [tickets, setTickets] =
+    useState<SelectedPriceOption[]>(selectedTickets);
 
   const handleQuantityChange = (option: PriceOption, quantity: string) => {
     const newTickets = tickets.filter((t) => t.option.slug !== option.slug);
@@ -36,6 +42,9 @@ export default function TicketForm({ options, onSelectionChange }: Props) {
             <TicketSelector
               option={option}
               onQuantityChange={handleQuantityChange}
+              ticket={selectedTickets.find(
+                (t) => t.option.slug === option.slug
+              )}
             />
           </li>
         ))}

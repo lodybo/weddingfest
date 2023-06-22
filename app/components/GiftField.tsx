@@ -4,10 +4,11 @@ import { useState } from 'react';
 import NumberInput from '~/components/NumberInput';
 
 type Props = {
+  value: number;
   onAmountChange: (amount: string) => void;
 };
 
-export default function GiftField({ onAmountChange }: Props) {
+export default function GiftField({ value, onAmountChange }: Props) {
   const [showAmountField, setShowAmountField] = useState(true);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,7 +54,7 @@ export default function GiftField({ onAmountChange }: Props) {
       {showAmountField ? (
         <div className="flex w-full flex-row gap-4">
           <p className="w-full">Dat stellen we zeer op prijs, dank je!</p>
-          <NumberInput onChange={handleAmountChange} />
+          <NumberInput onChange={handleAmountChange} defaultValue={value} />
         </div>
       ) : null}
     </div>

@@ -118,7 +118,6 @@ export function calculateTotal(amount: number, quantity: string) {
 export function calculateAndFormatTotalPrice(
   selectedTickets: SelectedPriceOption[]
 ) {
-  console.log({ selectedTickets });
   return formatAmountInLocale(
     selectedTickets.reduce(
       (total, ticket) =>

@@ -55,14 +55,14 @@ export default function PaymentSummary({ selectedTickets }: Props) {
                   </div>
                   <p className="text-sm italic text-gray-400">
                     {ticket.quantity !== '0' && ticket.quantity !== '10+' ? (
-                      <p>
+                      <span className="block">
                         {ticket.quantity} x{' '}
                         {formatAmountInLocale(ticket.option.amount)} ={' '}
                         {calculateAndFormatPrice(
                           ticket.option.amount,
                           ticket.quantity
                         )}
-                      </p>
+                      </span>
                     ) : null}
                   </p>
                 </div>

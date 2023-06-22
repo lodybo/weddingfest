@@ -1,6 +1,6 @@
-import type { ActionArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { useActionData } from '@remix-run/react';
+import { useActionData, useLoaderData } from '@remix-run/react';
 import {
   VALIDATIONS,
   nameIsValid,
@@ -14,7 +14,7 @@ import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
-import { createRSVP } from '~/models/rsvp.server';
+import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
 
 import type {
   RSVP,
@@ -23,6 +23,19 @@ import type {
 } from '~/types/RSVP';
 import { verifyAuthenticityToken } from 'remix-utils';
 import { getSession, sessionStorage } from '~/session.server';
+import type { Rsvp } from '@prisma/client';
+
+export async function loader({ request }: LoaderArgs) {
+  const session = await getSession(request);
+  const rsvpID = session.get('rsvpID');
+
+  let rsvp: Rsvp | null = null;
+  if (rsvpID) {
+    rsvp = await getRSVP(rsvpID);
+  }
+
+  return json({ rsvp });
+}
 
 export async function action({ request }: ActionArgs) {
   const session = await getSession(request);
@@ -44,7 +57,8 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const { name, attendance, camping, diet, remarks } = Object.fromEntries(body);
+  const { attendee, name, attendance, camping, diet, remarks } =
+    Object.fromEntries(body);
 
   const hasErrors = validateRSVP(name, attendance, camping, diet, remarks);
 
@@ -65,15 +79,21 @@ export async function action({ request }: ActionArgs) {
       remarks,
     };
 
-    const { id: rsvpID } = await createRSVP(entry);
-
-    const session = await getSession(request);
-    session.set('rsvpID', rsvpID);
+    let headers = {};
+    console.log({ attendee });
+    if (attendee && typeof attendee === 'string') {
+      await editRSVP(attendee, entry);
+    } else {
+      const { id: rsvpID } = await createRSVP(entry);
+      const session = await getSession(request);
+      session.set('rsvpID', rsvpID);
+      headers = {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      };
+    }
 
     return redirect('/tickets', {
-      headers: {
-        'Set-Cookie': await sessionStorage.commitSession(session),
-      },
+      headers,
     });
   } else {
     return json<AttendanceResponse>(
@@ -87,6 +107,7 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function AttendancePage() {
+  const { rsvp } = useLoaderData<typeof loader>();
   let data = useActionData<FailedAttendanceResponse>();
 
   return (
@@ -98,7 +119,7 @@ export default function AttendancePage() {
           en waar we rekening mee moeten houden.
         </p>
 
-        <RSVPForm response={data} />
+        <RSVPForm rsvp={rsvp} response={data} />
       </div>
     </PageLayout>
   );
