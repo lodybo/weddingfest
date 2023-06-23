@@ -6,13 +6,7 @@ import { prisma } from '~/db.server';
 export type { Rsvp } from '@prisma/client';
 
 export function getRSVPs() {
-  return prisma.rsvp.findMany({
-    select: {
-      id: true,
-      name: true,
-      attendance: true,
-    },
-  });
+  return prisma.rsvp.findMany();
 }
 
 export function getRSVP(id: Rsvp['id']) {
