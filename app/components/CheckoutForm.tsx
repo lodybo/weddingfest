@@ -12,7 +12,11 @@ import ErrorMessage from '~/components/ErrorMessage';
 import { Form } from '@remix-run/react';
 import Loader from '~/components/Loader';
 
-export default function CheckoutForm() {
+type Props = {
+  returnUrl: string;
+};
+
+export default function CheckoutForm({ returnUrl }: Props) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -37,7 +41,7 @@ export default function CheckoutForm() {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: 'http://localhost:3000/betaling',
+        return_url: returnUrl,
       },
     });
 

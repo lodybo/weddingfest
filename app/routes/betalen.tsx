@@ -14,7 +14,7 @@ import {
   getTotalPriceForRsvp,
 } from '~/models/payment.server';
 import PageLayout from '~/layouts/Page';
-import { getErrorMessage } from '~/utils/utils';
+import { getDomainUrl, getErrorMessage } from '~/utils/utils';
 import CheckoutForm from '~/components/CheckoutForm';
 import { stripe } from '~/stripe.server';
 import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
@@ -22,6 +22,7 @@ import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
 export interface StripeLoaderData {
   clientSecret: string;
   tickets: SelectedPriceOption[];
+  returnUrl: string;
 }
 
 interface ErrorLoaderData {
@@ -43,6 +44,8 @@ export async function loader({ request }: LoaderArgs) {
 
   const selectedTickets = convertPriceOptionsToSelectedTickets(payment.tickets);
 
+  const returnUrl = getDomainUrl(request) + '/betaling';
+
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: totalPrice * 100,
@@ -62,6 +65,7 @@ export async function loader({ request }: LoaderArgs) {
     return json<LoaderData>({
       clientSecret: paymentIntent.client_secret,
       tickets: selectedTickets,
+      returnUrl,
     });
   } catch (error) {
     console.error('Stripe error', error);
@@ -72,7 +76,8 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function PayRoute() {
-  const { clientSecret, tickets } = useLoaderData<StripeLoaderData>();
+  const { clientSecret, tickets, returnUrl } =
+    useLoaderData<StripeLoaderData>();
 
   const options: StripeElementsOptions = {
     clientSecret,
@@ -99,7 +104,7 @@ export default function PayRoute() {
                         options={options}
                       >
                         <>
-                          <CheckoutForm />
+                          <CheckoutForm returnUrl={returnUrl} />
                         </>
                       </Elements>
                     </>
