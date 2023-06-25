@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Rsvp" ALTER COLUMN "diet" DROP NOT NULL,
+ALTER COLUMN "remarks" DROP NOT NULL;

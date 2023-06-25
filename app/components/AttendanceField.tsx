@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
+import type { ATTENDANCE } from '@prisma/client';
 import ToggleInput from '~/components/ToggleInput';
 import type { ToggleOption } from '~/components/ToggleInput';
+import ErrorMessage from '~/components/ErrorMessage';
 
 type Props = {
-  value?: boolean;
+  value?: ATTENDANCE;
+  error?: string;
 };
 
-export default function AttendanceField({ value }: Props) {
-  const [selectedOption, setSelectedOption] = useState('');
+export default function AttendanceField({ value, error }: Props) {
+  const [selectedOption, setSelectedOption] = useState<string>(value ?? '');
 
   useEffect(() => {
     if (value !== undefined) {
@@ -16,8 +19,9 @@ export default function AttendanceField({ value }: Props) {
   }, [value]);
 
   const attendanceOptions: ToggleOption[] = [
-    { label: 'Ja', value: 'true', color: 'green' },
-    { label: 'Nee', value: 'false' },
+    { label: 'Ja, de hele dag', value: 'ALL_DAY', color: 'green' },
+    { label: "Ja, alleen 's avonds", value: 'EVENING', color: 'blue' },
+    { label: 'Nee', value: 'NONE' },
   ];
 
   const handleSelect = (option: string) => {
@@ -25,15 +29,18 @@ export default function AttendanceField({ value }: Props) {
   };
 
   return (
-    <>
+    <div className="w-full">
       <input type="hidden" name="attendance" defaultValue={selectedOption} />
-      <p className="mb-2 text-center">Aanwezig</p>
+      <p className="mb-2 text-center text-gray-700">
+        Zijn jullie die dag aanwezig?
+      </p>
       <ToggleInput
         name="attendance"
         options={attendanceOptions}
         onSelect={handleSelect}
         value={selectedOption}
       />
-    </>
+      {error ? <ErrorMessage message={error} /> : null}
+    </div>
   );
 }

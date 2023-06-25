@@ -8,22 +8,14 @@ type Props = {
   rsvp: Omit<Rsvp, 'createdAt' | 'updatedAt'>;
 };
 
-export default function Attendee({ rsvp: { id, name, potluck } }: Props) {
-  const filteredPotluck = potluck.filter(Boolean);
-
+export default function Attendee({ rsvp: { id, name } }: Props) {
   return (
-    <div className="flex flex-row justify-between items-center">
+    <div className="flex flex-row items-center justify-between">
       <div className="">
-        <p className="m-0">
-          { name }
-        </p>
-
-        { filteredPotluck.length > 0 && (
-          <small><em>Neemt mee: { filteredPotluck.join(', ')}</em></small>
-        )}
+        <p className="m-0">{name}</p>
       </div>
 
-      <div className="ml-auto flex flex-row gap-2 h-full">
+      <div className="ml-auto flex h-full flex-row gap-2">
         <Link to={`/edit/${id}`}>
           <Button variant="primary" size="small">
             <Icon name="pen-to-square" />

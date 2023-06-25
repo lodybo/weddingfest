@@ -1,23 +1,28 @@
-import type { Password, User } from "@prisma/client";
-import bcrypt from "bcryptjs";
+import type { Password, User } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
-import { prisma } from "~/db.server";
+import { prisma } from '~/db.server';
 
-export type { User } from "@prisma/client";
+export type { User } from '@prisma/client';
 
-export async function getUserById(id: User["id"]) {
+export async function getUserById(id: User['id']) {
   return prisma.user.findUnique({ where: { id } });
 }
 
-export async function getUserByEmail(email: User["email"]) {
+export async function getUserByEmail(email: User['email']) {
   return prisma.user.findUnique({ where: { email } });
 }
 
-export async function createUser(email: User["email"], password: string) {
+export async function createUser(
+  name: User['name'],
+  email: User['email'],
+  password: string
+) {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return prisma.user.create({
     data: {
+      name,
       email,
       password: {
         create: {
@@ -28,7 +33,10 @@ export async function createUser(email: User["email"], password: string) {
   });
 }
 
-export async function changeUserPassword(email: User['email'], newPassword: string) {
+export async function changeUserPassword(
+  email: User['email'],
+  newPassword: string
+) {
   const hashedPassword = await bcrypt.hash(newPassword, 10);
 
   return prisma.user.update({
@@ -39,19 +47,19 @@ export async function changeUserPassword(email: User['email'], newPassword: stri
       password: {
         update: {
           hash: hashedPassword,
-        }
-      }
-    }
-  })
+        },
+      },
+    },
+  });
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
+export async function deleteUserByEmail(email: User['email']) {
   return prisma.user.delete({ where: { email } });
 }
 
 export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"]
+  email: User['email'],
+  password: Password['hash']
 ) {
   const userWithPassword = await prisma.user.findUnique({
     where: { email },
@@ -76,4 +84,22 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export function coupleRsvpToUser(
+  userId: User['id'],
+  rsvpId: User['id']
+): Promise<User> {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      rsvp: {
+        connect: {
+          id: rsvpId,
+        },
+      },
+    },
+  });
 }

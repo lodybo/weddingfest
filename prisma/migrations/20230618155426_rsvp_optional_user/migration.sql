@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Rsvp" ALTER COLUMN "userId" DROP NOT NULL;

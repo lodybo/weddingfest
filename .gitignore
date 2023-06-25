@@ -7,7 +7,9 @@ node_modules
 
 /cypress/screenshots
 /cypress/videos
+
 /postgres-data
+images/
 
 /app/styles/tailwind.css
 

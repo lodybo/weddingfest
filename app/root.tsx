@@ -1,30 +1,26 @@
 import type {
   LinksFunction,
+  LoaderArgs,
   LoaderFunction,
-  MetaFunction,
+  V2_MetaFunction,
 } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import {
-  Links,
-  LiveReload,
-  Meta,
+  isRouteErrorResponse,
   Outlet,
-  Scripts,
-  ScrollRestoration,
+  useLoaderData,
+  useRouteError,
 } from '@remix-run/react';
-import { library } from '@fortawesome/fontawesome-svg-core';
+
+import tailwindStylesheetUrl from './tailwind.css';
+
+import { getSession, getUser, sessionStorage } from './session.server';
+import Document from '~/components/Document';
+import { getErrorMessage } from '~/utils/utils';
 import {
-  faSquarePlus,
-  faSquareMinus,
-  faTrash,
-  faPenToSquare,
-} from '@fortawesome/free-solid-svg-icons';
-
-import tailwindStylesheetUrl from './styles/tailwind.css';
-
-import { getUser } from './session.server';
-
-library.add(faSquarePlus, faSquareMinus, faTrash, faPenToSquare);
+  AuthenticityTokenProvider,
+  createAuthenticityToken,
+} from 'remix-utils';
 
 export const links: LinksFunction = () => {
   return [
@@ -65,37 +61,77 @@ export const links: LinksFunction = () => {
   ];
 };
 
-export const meta: MetaFunction = () => ({
-  charset: 'utf-8',
-  title: 'Weddingfest 2022',
-  viewport: 'width=device-width,initial-scale=1',
-  'msapplication-TileColor': '#00aba9',
-  'theme-color': '#ffffff',
-});
+export const meta: V2_MetaFunction = () => [
+  {
+    charset: 'utf-8',
+    title: 'Weddingfest',
+  },
+];
 
-type LoaderData = {
+export type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
+  csrf: string;
+  ENV: Window['ENV'];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  return json<LoaderData>({
-    user: await getUser(request),
-  });
+export const loader = async ({ request }: LoaderArgs) => {
+  const session = await getSession(request);
+  const csrfToken = createAuthenticityToken(session);
+
+  return json<LoaderData>(
+    {
+      user: await getUser(request),
+      csrf: csrfToken,
+      ENV: {
+        STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
+      },
+    },
+    {
+      headers: {
+        'Set-Cookie': await sessionStorage.commitSession(session),
+      },
+    }
+  );
 };
 
 export default function App() {
+  const { csrf } = useLoaderData<typeof loader>();
+
   return (
-    <html lang="en" className="h-full">
-      <head>
-        <Meta />
-        <Links />
-      </head>
-      <body className="h-full font-sans">
+    <AuthenticityTokenProvider token={csrf}>
+      <Document>
         <Outlet />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload port={4200} />
-      </body>
-    </html>
+      </Document>
+    </AuthenticityTokenProvider>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let title = 'Oeps...';
+  let message: string;
+
+  if (isRouteErrorResponse(error)) {
+    console.error(error.data.message);
+    title = 'Oh nee!';
+    message = error.data.message;
+  } else {
+    message = getErrorMessage(error);
+    console.error(message);
+    if (error instanceof Error) {
+      console.trace(error.stack);
+    }
+  }
+
+  return (
+    <Document>
+      <div className="flex h-full w-full place-content-center place-items-center">
+        <div>
+          <h1 className="text-center font-handwriting text-7xl">{title}</h1>
+          <p className="text-xl">{message}</p>
+        </div>
+      </div>
+    </Document>
   );
 }

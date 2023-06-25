@@ -1,8 +1,18 @@
-export interface RSVP {
-  name: string;
-  attendance: boolean;
-  potluck: string[];
-}
+import type { Rsvp } from '@prisma/client';
+
+export type RSVP = Omit<Rsvp, 'id' | 'userId' | 'createdAt' | 'updatedAt'> & {
+  id?: string | null;
+  userId?: string | null;
+};
+
+export type RSVPValidationErrors = {
+  name?: string;
+  attendance?: string;
+  attendeeID?: string;
+  camping?: string;
+  diet?: string;
+  remarks?: string;
+};
 
 interface BaseAttendanceResponse {
   success: boolean;
@@ -16,10 +26,7 @@ export interface SuccessfulAttendanceResponse
 
 export interface FailedAttendanceResponse extends BaseAttendanceResponse {
   success: false;
-  name?: string;
-  attendance?: string;
-  potluck?: string;
-  attendeeID?: string;
+  errors: RSVPValidationErrors;
 }
 
 export type AttendanceResponse =
