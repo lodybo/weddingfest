@@ -4,12 +4,27 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-type SeedUser = { email: string; password: string; role: Role };
+type SeedUser = { name: string; email: string; password: string; role: Role };
 
 const users: SeedUser[] = [
-  { email: 'hi@lodybo.nl', password: 'lodyiscool', role: 'ADMIN' },
-  { email: 'kaylee@drakenfruit.com', password: 'kayleeiscool', role: 'ADMIN' },
-  { email: 'arantja@arantja.nl', password: 'arantjaiscool', role: 'USER' },
+  {
+    name: 'Lody',
+    email: 'hi@lodybo.nl',
+    password: 'lodyiscool',
+    role: 'ADMIN',
+  },
+  {
+    name: 'Kaylee',
+    email: 'kaylee@drakenfruit.com',
+    password: 'kayleeiscool',
+    role: 'ADMIN',
+  },
+  {
+    name: 'Arantja',
+    email: 'arantja@arantja.nl',
+    password: 'arantjaiscool',
+    role: 'USER',
+  },
 ];
 
 function createUser({ email, password, role }: SeedUser) {

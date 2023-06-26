@@ -6,6 +6,13 @@ export type AuthErrors = {
   existingUser?: string;
 };
 
+export type ChangePasswordErrors = {
+  currentPassword?: string;
+  newPassword?: string;
+  verifyPassword?: string;
+  passwordMismatch?: string;
+};
+
 type Registration = {
   name: FormDataEntryValue | null;
   email: FormDataEntryValue | null;
@@ -22,6 +29,13 @@ type ResetPassword = {
   email: FormDataEntryValue | null;
   password: FormDataEntryValue | null;
   verifyPassword: FormDataEntryValue | null;
+};
+
+type ChangePassword = {
+  currentPassword: FormDataEntryValue | null;
+  newPassword: FormDataEntryValue | null;
+  verifyPassword: FormDataEntryValue | null;
+  passwordMismatch?: string;
 };
 
 export const nameIsValid = (name: any): name is string =>
@@ -110,6 +124,37 @@ export function validateResetPasswordForm({
 
   if (password !== verifyPassword) {
     errors.verifyPassword = 'De wachtwoorden komen niet overeen.';
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return errors;
+  }
+
+  return undefined;
+}
+
+export function validateChangePasswordForm({
+  currentPassword,
+  newPassword,
+  verifyPassword,
+  passwordMismatch,
+}: ChangePassword) {
+  const errors: ChangePasswordErrors = {};
+
+  if (!passwordIsValid(currentPassword)) {
+    errors.currentPassword = 'Er is geen geldig wachtwoord ingevuld.';
+  }
+
+  if (!passwordIsValid(newPassword)) {
+    errors.newPassword = 'Er is geen geldig wachtwoord ingevuld.';
+  }
+
+  if (!passwordIsValid(verifyPassword)) {
+    errors.verifyPassword = 'Er is geen geldig wachtwoord ingevuld.';
+  }
+
+  if (newPassword !== verifyPassword) {
+    errors.passwordMismatch = 'De wachtwoorden komen niet overeen.';
   }
 
   if (Object.keys(errors).length > 0) {
