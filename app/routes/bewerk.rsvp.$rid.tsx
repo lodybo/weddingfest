@@ -1,5 +1,5 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { Link, useActionData, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
 
@@ -7,7 +7,7 @@ import RSVPForm from '~/components/RSVPForm';
 
 import PageLayout from '~/layouts/Page';
 
-import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
+import { editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
 import type { AttendanceResponse, RSVP } from '~/types/RSVP';
 import {
@@ -20,7 +20,7 @@ import {
 } from '~/validations/validations';
 import Anchor from '~/components/Anchor';
 import type { RSVPValidationErrors } from '~/types/RSVP';
-import { getSession } from '~/session.server';
+import { getSession, sessionStorage } from '~/session.server';
 import { verifyAuthenticityToken } from 'remix-utils';
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -54,7 +54,7 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const { name, attendee, attendance, camping, diet, remarks, attendeeID } =
+  const { name, attendee, attendance, camping, diet, remarks } =
     Object.fromEntries(body);
 
   const hasErrors = validateRSVP(
@@ -63,8 +63,9 @@ export async function action({ request }: ActionArgs) {
     camping,
     diet,
     remarks,
-    attendeeID
+    attendee
   );
+  console.log(hasErrors, Object.fromEntries(body));
   if (!hasErrors) {
     invariant(attendee !== undefined, 'Attendee needs to be set');
     invariant(typeof attendee === 'string', 'Attendee is of wrong type');
@@ -75,7 +76,7 @@ export async function action({ request }: ActionArgs) {
       typeof diet === 'string' && typeof remarks === 'string',
       'Diet and remarks should be strings'
     );
-    invariant(attendeeIDIsValid(attendeeID), VALIDATIONS.MISSING_ATTENDEE_ID);
+    invariant(attendeeIDIsValid(attendee), VALIDATIONS.MISSING_ATTENDEE_ID);
 
     const entry: RSVP = {
       name,
@@ -85,12 +86,22 @@ export async function action({ request }: ActionArgs) {
       remarks,
     };
 
-    await editRSVP(attendee, entry);
+    const rsvpPreEdit = await getRSVP(attendee);
+    invariant(rsvpPreEdit !== null, 'No RSVP found to compare with.');
 
-    return json<AttendanceResponse>(
-      { success: true, ...entry },
-      { status: 200 }
-    );
+    const rsvp = await editRSVP(attendee, entry);
+
+    if (!rsvpPreEdit.camping && entry.camping) {
+      const session = await getSession(request);
+      session.set('rsvpID', rsvp.id);
+      return redirect('/tickets', {
+        headers: {
+          'Set-Cookie': await sessionStorage.commitSession(session),
+        },
+      });
+    }
+
+    return redirect('/account');
   } else {
     return json<AttendanceResponse>(
       {
@@ -121,8 +132,8 @@ export default function EditRSVP() {
           </div>
         ) : (
           <>
-            <Anchor to="/admin">Terug</Anchor>
-            <RSVPForm response={data} rsvp={rsvp} />
+            <Anchor to="/account">Terug</Anchor>
+            <RSVPForm response={data} rsvp={rsvp} mode="edit" />
           </>
         )}
       </div>

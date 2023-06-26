@@ -103,3 +103,17 @@ export function coupleRsvpToUser(
     },
   });
 }
+
+export function changeUserEmail(
+  userId: User['id'],
+  newEmail: User['email']
+): Promise<User> {
+  return prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      email: newEmail,
+    },
+  });
+}

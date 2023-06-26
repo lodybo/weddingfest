@@ -1,15 +1,17 @@
+import type { SerializeFrom } from '@remix-run/server-runtime';
 import type { LinkProps } from '@remix-run/react';
 import { Link } from '@remix-run/react';
 import type { User } from '@prisma/client';
 
 import Button from '~/components/Button';
 import Anchor from '~/components/Anchor';
+import Icon from '~/components/Icon';
 
 type Props = {
   /**
    * The user, if available.
    */
-  user?: User;
+  user?: User | SerializeFrom<User>;
 };
 
 export default function Navigation({ user }: Props) {
@@ -21,15 +23,22 @@ export default function Navigation({ user }: Props) {
         </h1>
       </Link>
 
-      <ul className="flex flex-row gap-4">
+      <ul className="flex flex-row items-center gap-4">
         {user ? (
-          <li>
-            <form className="ml-auto mr-4" action="/uitloggen" method="post">
-              <Button variant="primary" type="submit">
-                Uitloggen
-              </Button>
-            </form>
-          </li>
+          <>
+            <li>
+              <Link className="text-2xl" to="/account">
+                <Icon name="user-circle" prefix="far" />
+              </Link>
+            </li>
+            <li>
+              <form className="ml-auto mr-4" action="/uitloggen" method="post">
+                <Button variant="normal" type="submit">
+                  Uitloggen
+                </Button>
+              </form>
+            </li>
+          </>
         ) : (
           <>
             <NavLink to="/inloggen">Inloggen</NavLink>

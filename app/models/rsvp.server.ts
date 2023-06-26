@@ -17,6 +17,14 @@ export function getRSVP(id: Rsvp['id']) {
   });
 }
 
+export function getRSVPByUserId(userId: Rsvp['userId']) {
+  return prisma.rsvp.findFirst({
+    where: {
+      userId,
+    },
+  });
+}
+
 export function createRSVP({
   name,
   attendance,
