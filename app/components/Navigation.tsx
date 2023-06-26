@@ -1,3 +1,4 @@
+import type { SerializeFrom } from '@remix-run/server-runtime';
 import type { LinkProps } from '@remix-run/react';
 import { Link } from '@remix-run/react';
 import type { User } from '@prisma/client';
@@ -9,7 +10,7 @@ type Props = {
   /**
    * The user, if available.
    */
-  user?: User;
+  user?: User | SerializeFrom<User>;
 };
 
 export default function Navigation({ user }: Props) {

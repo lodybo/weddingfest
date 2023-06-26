@@ -9,13 +9,15 @@ import CampingField from '~/components/CampingField';
 import DietField from '~/components/DietField';
 import RemarksField from '~/components/RemarksField';
 import { AuthenticityTokenInput } from 'remix-utils';
+import Button from '~/components/Button';
 
 type Props = {
   rsvp?: RSVP | null;
   response?: FailedAttendanceResponse;
+  mode?: 'create' | 'edit';
 };
 
-export default function RSVPForm({ response, rsvp }: Props) {
+export default function RSVPForm({ response, rsvp, mode = 'create' }: Props) {
   const {
     name: nameMessage,
     attendance: attendanceMessage,
@@ -47,9 +49,20 @@ export default function RSVPForm({ response, rsvp }: Props) {
 
       <RemarksField value={remarks} />
 
-      <button className="bg-cyan-200 px-8 py-4 text-slate-800 transition hover:bg-cyan-400 hover:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2">
-        Verzenden
-      </button>
+      {mode === 'create' ? (
+        <Button type="submit" variant="primary">
+          Verder
+        </Button>
+      ) : (
+        <div className="flex w-full flex-row justify-between gap-5">
+          <Button to="/account" variant="normal">
+            Annuleren
+          </Button>
+          <Button type="submit" variant="primary">
+            Opslaan
+          </Button>
+        </div>
+      )}
     </Form>
   );
 }

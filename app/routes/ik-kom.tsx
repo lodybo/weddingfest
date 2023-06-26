@@ -80,7 +80,6 @@ export async function action({ request }: ActionArgs) {
     };
 
     let headers = {};
-    console.log({ attendee });
     if (attendee && typeof attendee === 'string') {
       await editRSVP(attendee, entry);
     } else {

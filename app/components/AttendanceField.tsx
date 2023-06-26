@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { ATTENDANCE } from '@prisma/client';
 import ToggleInput from '~/components/ToggleInput';
 import type { ToggleOption } from '~/components/ToggleInput';
@@ -11,12 +11,6 @@ type Props = {
 
 export default function AttendanceField({ value, error }: Props) {
   const [selectedOption, setSelectedOption] = useState<string>(value ?? '');
-
-  useEffect(() => {
-    if (value !== undefined) {
-      setSelectedOption(value ? 'true' : 'false');
-    }
-  }, [value]);
 
   const attendanceOptions: ToggleOption[] = [
     { label: 'Ja, de hele dag', value: 'ALL_DAY', color: 'green' },
