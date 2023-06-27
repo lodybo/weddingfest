@@ -12,6 +12,8 @@ export async function loader({ request }: LoaderArgs) {
 export default function AccountRoute() {
   const { user } = useLoaderData<typeof loader>();
 
+  const isUserAdmin = user?.role === 'ADMIN';
+
   return (
     <div className="flex h-full flex-col items-center justify-center">
       <Navigation user={user} />
@@ -26,6 +28,11 @@ export default function AccountRoute() {
             <li className="text-lg">
               <Link to="/account/instellingen">Instellingen</Link>
             </li>
+            {isUserAdmin ? (
+              <li className="text-lg">
+                <Link to="/admin">Administrator</Link>
+              </li>
+            ) : null}
           </ul>
         </div>
 

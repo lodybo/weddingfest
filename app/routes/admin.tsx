@@ -1,46 +1,41 @@
 import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Link, useLoaderData } from '@remix-run/react';
+import { Link, Outlet, useLoaderData } from '@remix-run/react';
 
 import AttendanceList from '~/components/AttendanceList';
 import PageLayout from '~/layouts/Page';
 
-import { getUserId } from '~/session.server';
+import { getUserId, requireAdmin } from '~/session.server';
 import { getRSVPs } from '~/models/rsvp.server';
+import Navigation from '~/components/Navigation';
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request);
-  if (!userId) return redirect('/');
+  const user = await requireAdmin(request);
 
-  const rsvps = await getRSVPs();
-  return json({ rsvps });
+  return json({ user });
 }
 
 export default function AdminPage() {
-  const { rsvps } = useLoaderData<typeof loader>();
+  const { user } = useLoaderData<typeof loader>();
 
   return (
-    <PageLayout>
-      <div className="flex w-full flex-row">
-        <div className="w-1/4 flex-none px-4">
-          <h2 className="mb-2 text-2xl">Menu</h2>
-          <Link
-            className="border-b-2 border-b-cyan-200 pb-0.5 transition-all hover:pb-1.5"
-            to="/join"
-          >
-            Account registreren
-          </Link>
+    <div className="flex h-full flex-col items-center justify-center">
+      <Navigation user={user} />
+      <div className="flex h-full w-full flex-row justify-center gap-12">
+        <div className="h-full w-1/4 bg-rose-200 px-8 pt-12">
+          <h2 className="text-2xl">Menu</h2>
+
+          <ul>
+            <li className="text-lg">
+              <Link to="/account">Account</Link>
+            </li>
+          </ul>
         </div>
 
-        <div className="prose w-3/4 flex-none px-4">
-          <h1 className="mb-5 text-4xl">RSVP lijst</h1>
-          <p>
-            In totaal hebben {rsvps.length} mensen hun aanwezigheid opgegeven.
-          </p>
-
-          <AttendanceList rsvps={rsvps} />
+        <div className="w-3/4 px-8 pt-12">
+          <Outlet />
         </div>
       </div>
-    </PageLayout>
+    </div>
   );
 }
