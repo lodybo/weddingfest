@@ -22,7 +22,7 @@ export default function AdminPage() {
     <div className="flex h-full flex-col items-center justify-center">
       <Navigation user={user} />
       <div className="flex h-full w-full flex-row justify-center gap-12">
-        <div className="h-full w-1/3 bg-rose-200 px-8 pt-12">
+        <div className="h-full w-1/4 bg-rose-200 px-8 pt-12">
           <h2 className="text-2xl">Menu</h2>
 
           <ul>
@@ -32,7 +32,7 @@ export default function AdminPage() {
           </ul>
         </div>
 
-        <div className="w-2/3 px-8 pt-12">
+        <div className="w-3/4 px-8 pt-12">
           <Outlet />
         </div>
       </div>

@@ -5,8 +5,31 @@ import { prisma } from '~/db.server';
 
 export type { Rsvp } from '@prisma/client';
 
+export type RSVPStats = {
+  tickets: number;
+  payments: {
+    paid: number;
+    unpaid: number;
+    amount: number;
+  };
+  attending: {
+    allDay: number;
+    eveningOnly: number;
+    notAttending: number;
+  };
+  camping: number;
+};
+
 export function getRSVPs() {
-  return prisma.rsvp.findMany();
+  return prisma.rsvp.findMany({
+    include: {
+      Payment: {
+        include: {
+          tickets: true,
+        },
+      },
+    },
+  });
 }
 
 export function getRSVP(id: Rsvp['id']) {
