@@ -4,7 +4,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "run-s build:*",
-    "build:remix": "remix build",
+    "build:remix": "remix build --sourcemaps",
     "build:server": "esbuild --platform=node --format=cjs ./server.ts --outdir=build --bundle",
     "dev": "run-p dev:*",
     "dev:server": "cross-env NODE_ENV=development node --inspect --require ./node_modules/dotenv/config --require ./mocks ./build/server.js",
@@ -36,7 +36,10 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio --browser none",
     "stripe:forward-webhook": "stripe listen --forward-to http://localhost:3000/webhook",
-    "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID"
+    "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID",
+    "release": "run-s release:*",
+    "release:db": "npx prisma migrate deploy",
+    "release:sentry": "npx sentry-upload-sourcemaps"
   },
   "prettier": {
     "singleQuote": true
