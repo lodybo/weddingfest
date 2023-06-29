@@ -21,6 +21,7 @@ import {
   AuthenticityTokenProvider,
   createAuthenticityToken,
 } from 'remix-utils';
+import { withSentry } from '@sentry/remix';
 
 export const links: LinksFunction = () => {
   return [
@@ -79,6 +80,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       user: await getUser(request),
       csrf: csrfToken,
       ENV: {
+        ENVIRONMENT: process.env.NODE_ENV,
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
       },
     },
@@ -90,7 +92,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   );
 };
 
-export default function App() {
+function App() {
   const { csrf } = useLoaderData<typeof loader>();
 
   return (
@@ -101,6 +103,8 @@ export default function App() {
     </AuthenticityTokenProvider>
   );
 }
+
+export default withSentry(App);
 
 export function ErrorBoundary() {
   const error = useRouteError();

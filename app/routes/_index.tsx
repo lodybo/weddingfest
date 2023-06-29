@@ -8,7 +8,7 @@ export default function Index() {
     <PageLayout>
       <div className="w-full space-y-10 px-8 sm:w-3/4 xl:space-y-20">
         <Title>Wij gaan trouwen!</Title>
-
+        <button onClick={() => methodDoesNotExist()}>Break the world</button>
         <Subtitle>
           Wij geven elkaar op <strong>19 augustus</strong>{' '}
           <small className="align-middle text-xs xl:text-lg">
