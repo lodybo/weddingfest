@@ -1,5 +1,5 @@
-import { ATTENDANCE, Ticket } from '@prisma/client';
-import type { Rsvp, Payment } from '@prisma/client';
+import { ATTENDANCE } from '@prisma/client';
+import type { Rsvp, Payment, Ticket } from '@prisma/client';
 import Icon from '~/components/Icon';
 import type { SerializeFrom } from '@remix-run/server-runtime';
 import { formatAmountInLocale } from '~/utils/utils';
@@ -17,46 +17,88 @@ type Props = {
 };
 
 export default function RSVPList({ Rsvps }: Props) {
-  const translateAttendance = (attending: ATTENDANCE) => {
-    switch (attending) {
-      case ATTENDANCE.ALL_DAY:
-        return 'Hele dag';
-
-      case ATTENDANCE.EVENING:
-        return 'Avond';
-
-      default:
-        return 'Niet aanwezig';
-    }
-  };
-
   return (
-    <table className="w-full table-fixed">
+    <table className="w-full table-fixed border-2 border-slate-100">
       <thead>
-        <tr>
-          <th className="text-left">Naam/Namen</th>
-          <th className="text-left">Aanwezig</th>
-          <th className="text-left">Kamperen</th>
-          <th className="text-left">Dieet</th>
-          <th className="text-left">Opmerking</th>
-          <th className="text-left">Tickets</th>
-          <th className="text-left">Betaald</th>
-          <th className="text-left">Bedrag</th>
+        <tr className="bg-stone-100">
+          <th className="p-2.5 text-center sm:text-left">
+            <span className="hidden sm:inline">Naam/Namen</span>
+            <span className="inline sm:hidden">
+              <Icon name="user" />
+            </span>
+          </th>
+          <th className="hidden p-2.5 text-left lg:table-cell">Dieet</th>
+          <th className="hidden p-2.5 text-left lg:table-cell">Opmerking</th>
+          <th className="p-2.5 text-center sm:text-left">
+            <span className="hidden sm:inline">Tickets</span>
+            <span className="inline sm:hidden">
+              <Icon name="ticket" />
+            </span>
+          </th>
+          <th className="p-2.5 text-center sm:text-left">
+            <span className="hidden sm:inline">Bedrag</span>
+            <span className="inline sm:hidden">
+              <Icon name="coins" />
+            </span>
+          </th>
         </tr>
       </thead>
 
       <tbody>
         {Rsvps.map((rsvp) => (
-          <tr key={rsvp.id}>
-            <td>{rsvp.name}</td>
-            <td>{translateAttendance(rsvp.attendance)}</td>
-            <td>{rsvp.camping ? 'Ja' : 'Nee'}</td>
-            <td>{rsvp.diet}</td>
-            <td>{rsvp.remarks}</td>
-            <td>{rsvp.Payment?.tickets.length}</td>
-            <td>{rsvp.Payment?.paid ? <Icon name="check" /> : null}</td>
-            <td>
-              {formatAmountInLocale(parseInt(rsvp.Payment?.total ?? '0'))}
+          <tr className="odd:bg-stone-50" key={rsvp.id}>
+            <td className="space-y-2 p-2.5">
+              <p>{rsvp.name}</p>
+              <div className="flex flex-row gap-2">
+                {rsvp.attendance === ATTENDANCE.ALL_DAY ? (
+                  <Icon name="sun" />
+                ) : rsvp.attendance === ATTENDANCE.EVENING ? (
+                  <Icon name="moon" />
+                ) : (
+                  <Icon prefix="far" name="circle-xmark" />
+                )}
+
+                {rsvp.camping ? <Icon name="campground" /> : null}
+              </div>
+            </td>
+            <td className="hidden p-2.5 lg:table-cell">{rsvp.diet}</td>
+            <td className="hidden p-2.5 lg:table-cell">{rsvp.remarks}</td>
+            <td className="p-2.5">
+              <div className="flex flex-row flex-wrap gap-2">
+                {rsvp.Payment?.tickets.map(({ id, slug }) => (
+                  <div key={id}>
+                    <Icon
+                      name={
+                        slug === 'adult'
+                          ? 'person'
+                          : slug === 'child'
+                          ? 'child'
+                          : slug === 'baby'
+                          ? 'baby'
+                          : slug === 'camping'
+                          ? 'campground'
+                          : 'gift'
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            </td>
+            <td className="p-2.5">
+              <div className="flex flex-row flex-wrap gap-2">
+                {rsvp.attendance !== ATTENDANCE.NONE ? (
+                  <>
+                    {formatAmountInLocale(parseInt(rsvp.Payment?.total ?? '0'))}
+                    {rsvp.Payment?.paid ? (
+                      <Icon
+                        className="text-emerald-600"
+                        prefix="far"
+                        name="circle-check"
+                      />
+                    ) : null}
+                  </>
+                ) : null}
+              </div>
             </td>
           </tr>
         ))}

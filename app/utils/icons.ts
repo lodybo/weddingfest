@@ -11,6 +11,22 @@ export {
   faEuroSign,
   faEye,
   faEyeSlash,
+  faCampground,
+  faSun,
+  faMoon,
+  faPerson,
+  faChild,
+  faBaby,
+  faGift,
+  faTicket,
+  faUser,
+  faUsers,
+  faCoins,
+  faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 
-export { faUserCircle } from '@fortawesome/free-regular-svg-icons';
+export {
+  faUserCircle,
+  faCircleXmark,
+  faCircleCheck,
+} from '@fortawesome/free-regular-svg-icons';

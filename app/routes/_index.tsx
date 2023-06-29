@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import PageLayout from '~/layouts/Page';
 import SmallWeddingTimer from '~/components/SmallWeddingTimer';
 import Button from '~/components/Button';
+import { ClientOnly } from 'remix-utils';
 
 export default function Index() {
   return (
@@ -17,7 +18,7 @@ export default function Index() {
           het ja-woord.
         </Subtitle>
 
-        <SmallWeddingTimer />
+        <ClientOnly>{() => <SmallWeddingTimer />}</ClientOnly>
 
         <Paragraph>
           We hebben grootse plannen voor die dag, maar die houden we nog even

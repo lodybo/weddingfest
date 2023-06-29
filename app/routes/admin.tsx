@@ -1,6 +1,6 @@
 import type { LoaderArgs } from '@remix-run/node';
-import { json, redirect } from '@remix-run/node';
-import { Link, NavLink, Outlet, useLoaderData } from '@remix-run/react';
+import { json } from '@remix-run/node';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 
 import { requireAdmin } from '~/session.server';
 import Navigation from '~/components/Navigation';
@@ -15,10 +15,10 @@ export default function AdminPage() {
   const { user } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <Navigation user={user} />
-      <div className="flex h-full w-full flex-row justify-center gap-12">
-        <div className="h-full w-1/6 bg-rose-200 px-8 pt-12">
+      <div className="grid h-full w-full grid-cols-1 grid-rows-[4rem_1fr] gap-4 [grid-template-areas:_'navigation'_'content'] md:grid-cols-[10rem_1fr] md:grid-rows-1 md:gap-12">
+        <div className="flex h-full w-full flex-row items-center gap-6 bg-rose-200 px-8 pt-0 [grid-area:_'navigation'] md:flex-col md:items-start md:pt-12">
           <h2 className="text-2xl">Menu</h2>
 
           <ul>
@@ -26,7 +26,7 @@ export default function AdminPage() {
           </ul>
         </div>
 
-        <div className="w-5/6 px-8 pt-12">
+        <div className="w-full px-8 pt-0 [grid-area:_'content'] md:pt-12">
           <Outlet />
         </div>
       </div>

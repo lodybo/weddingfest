@@ -6,7 +6,15 @@ import { prisma } from '~/db.server';
 export type { Rsvp } from '@prisma/client';
 
 export type RSVPStats = {
-  tickets: number;
+  tickets: {
+    adult: number;
+    child: number;
+    baby: number;
+    persons: number;
+    camping: number;
+    gift: number;
+    total: number;
+  };
   payments: {
     paid: number;
     unpaid: number;
@@ -17,7 +25,6 @@ export type RSVPStats = {
     eveningOnly: number;
     notAttending: number;
   };
-  camping: number;
 };
 
 export function getRSVPs() {

@@ -1,5 +1,8 @@
+import type { ReactNode } from 'react';
 import type { RSVPStats } from '~/models/rsvp.server';
 import { formatAmountInLocale } from '~/utils/utils';
+import type { Props as IconProps } from '~/components/Icon';
+import Icon from '~/components/Icon';
 
 type Props = {
   stats: RSVPStats;
@@ -8,42 +11,81 @@ type Props = {
 export default function Stats({ stats }: Props) {
   return (
     <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Tickets</p>
-          <p>{stats.tickets}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Hele dag aanwezig</p>
-          <p>{stats.attending.allDay}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">'s Avonds aanwezig</p>
-          <p>{stats.attending.eveningOnly}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Niet aanwezig</p>
-          <p>{stats.attending.notAttending}</p>
-        </div>
-      </div>
+      <div className="flex w-full flex-col justify-between gap-2 sm:flex-row sm:gap-12 md:justify-start">
+        <StatColumn title="Tickets">
+          <Statistic name="user" label={stats.tickets.adult} />
+          <Statistic name="child" label={stats.tickets.child} />
+          <Statistic name="baby" label={stats.tickets.baby} />
+          <Statistic name="users" label={stats.tickets.persons} />
+          <Statistic name="campground" label={stats.tickets.camping} />
+          <Statistic name="gift" label={stats.tickets.gift} />
+          <Statistic name="ticket" label={stats.tickets.total} />
+        </StatColumn>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Blijft slapen?</p>
-          <p>{stats.camping}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Betaald</p>
-          <p>{stats.payments.paid}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Niet betaald</p>
-          <p>{stats.payments.unpaid}</p>
-        </div>
-        <div className="flex flex-row gap-2">
-          <p className="w-24">Bedrag</p>
-          <p>{formatAmountInLocale(stats.payments.amount)}</p>
-        </div>
+        <StatColumn title="Aanwezigheid">
+          <Statistic name="sun" label={stats.attending.allDay} />
+          <Statistic name="moon" label={stats.attending.eveningOnly} />
+          <Statistic
+            prefix="far"
+            name="circle-xmark"
+            label={stats.attending.notAttending}
+          />
+        </StatColumn>
+
+        <StatColumn title="Betalingen">
+          <Statistic
+            iconClassName="text-emerald-500"
+            prefix="far"
+            name="circle-check"
+            label={stats.payments.paid}
+          />
+          <Statistic
+            iconClassName="text-rose-500"
+            prefix="far"
+            name="circle-xmark"
+            label={stats.payments.unpaid}
+          />
+          <Statistic
+            name="coins"
+            label={formatAmountInLocale(stats.payments.amount)}
+          />
+        </StatColumn>
+      </div>
+    </div>
+  );
+}
+
+type StatisticProps = Pick<IconProps, 'name' | 'prefix'> & {
+  iconClassName?: string;
+  label: number | string;
+};
+
+function Statistic({
+  label,
+  name,
+  prefix = 'fas',
+  iconClassName = '',
+}: StatisticProps) {
+  return (
+    <li className="grid grid-cols-[1.5rem_1fr]">
+      <Icon className={iconClassName} prefix={prefix} name={name} /> {label}
+    </li>
+  );
+}
+
+type StatColumnProps = {
+  title: string;
+  children: ReactNode;
+};
+
+function StatColumn({ title, children }: StatColumnProps) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="text-center text-xl">{title}</p>
+      <div className="flex flex-row gap-4">
+        <ul className="flex h-10 w-full flex-row flex-wrap justify-between gap-2 sm:h-32 sm:flex-col sm:justify-start">
+          {children}
+        </ul>
       </div>
     </div>
   );

@@ -9,13 +9,20 @@ export async function loader() {
   const rsvps = await getRSVPs();
 
   const stats: RSVPStats = {
-    tickets: 0,
+    tickets: {
+      adult: 0,
+      child: 0,
+      baby: 0,
+      persons: 0,
+      camping: 0,
+      gift: 0,
+      total: 0,
+    },
     payments: {
       paid: 0,
       unpaid: 0,
       amount: 0,
     },
-    camping: 0,
     attending: {
       allDay: 0,
       eveningOnly: 0,
@@ -24,10 +31,35 @@ export async function loader() {
   };
 
   for (const rsvp of rsvps) {
-    stats.tickets += rsvp.Payment?.tickets.length ?? 0;
+    rsvp.Payment?.tickets.forEach((ticket) => {
+      switch (ticket.slug) {
+        case 'adult':
+          stats.tickets.adult++;
+          stats.tickets.persons++;
+          break;
+        case 'child':
+          stats.tickets.child++;
+          stats.tickets.persons++;
+          break;
+        case 'baby':
+          stats.tickets.baby++;
+          stats.tickets.persons++;
+          break;
+        case 'camping':
+          stats.tickets.camping++;
+          break;
+        case 'gift':
+          stats.tickets.gift++;
+          break;
+        default:
+          break;
+      }
+
+      stats.tickets.total++;
+    });
+
     rsvp.Payment?.paid ? stats.payments.paid++ : stats.payments.unpaid++;
     stats.payments.amount += parseInt(rsvp.Payment?.total.toString() ?? '0');
-    stats.camping += rsvp.camping ? 1 : 0;
     stats.attending.allDay += rsvp.attendance === 'ALL_DAY' ? 1 : 0;
     stats.attending.eveningOnly += rsvp.attendance === 'EVENING' ? 1 : 0;
     stats.attending.notAttending += rsvp.attendance === 'NONE' ? 1 : 0;
