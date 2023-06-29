@@ -37,7 +37,8 @@
     "db:studio": "prisma studio --browser none",
     "stripe:forward-webhook": "stripe listen --forward-to http://localhost:3000/webhook",
     "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID",
-    "release": "npx sentry-upload-sourcemaps && npx prisma migrate deploy"
+    "release": "npx prisma migrate deploy",
+    "release-new": "npx sentry-upload-sourcemaps && npx prisma migrate deploy"
   },
   "prettier": {
     "singleQuote": true
