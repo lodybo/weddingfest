@@ -4,6 +4,7 @@ import { json } from '@remix-run/node';
 import { requireUser } from '~/session.server';
 import { useActionData, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
+import sanitizeHtml from 'sanitize-html';
 import { changeUserEmail, changeUserPassword } from '~/models/user.server';
 import { validateChangePasswordForm } from '~/validations/auth';
 
@@ -33,13 +34,30 @@ export async function action({ request }: ActionArgs) {
 
   const successes: ActionData['success'] = {};
 
-  const email = formData.get('email');
-  const currentPassword = formData.get('current-password');
-  const newPassword = formData.get('new-password');
-  const verifiedPassword = formData.get('verify-password');
+  const formDataEmail = formData.get('email');
+  const formDataCurrentPassword = formData.get('current-password');
+  const formDataNewPassword = formData.get('new-password');
+  const formDataVerifiedPassword = formData.get('verify-password');
 
-  invariant(email, 'Email is required');
-  invariant(typeof email === 'string', 'Email must be a string');
+  invariant(formDataEmail, 'Email is required');
+  invariant(typeof formDataEmail === 'string', 'Email must be a string');
+  invariant(
+    typeof formDataCurrentPassword === 'string',
+    'Current password must be a string'
+  );
+  invariant(
+    typeof formDataNewPassword === 'string',
+    'New password must be a string'
+  );
+  invariant(
+    typeof formDataVerifiedPassword === 'string',
+    'Verified password must be a string'
+  );
+
+  const email = sanitizeHtml(formDataEmail);
+  const currentPassword = sanitizeHtml(formDataCurrentPassword);
+  const newPassword = sanitizeHtml(formDataNewPassword);
+  const verifiedPassword = sanitizeHtml(formDataVerifiedPassword);
 
   if (email && email !== user.email) {
     await changeUserEmail(user.id, email);
@@ -62,16 +80,6 @@ export async function action({ request }: ActionArgs) {
         { status: 400 }
       );
     }
-
-    invariant(
-      typeof currentPassword === 'string',
-      'Current password must be a string'
-    );
-    invariant(typeof newPassword === 'string', 'New password must be a string');
-    invariant(
-      typeof verifiedPassword === 'string',
-      'Verified password must be a string'
-    );
 
     invariant(
       newPassword === verifiedPassword,

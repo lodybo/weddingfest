@@ -2,11 +2,11 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Link, useActionData, useLoaderData } from '@remix-run/react';
 import invariant from 'tiny-invariant';
-
+import { verifyAuthenticityToken } from 'remix-utils';
+import * as Sentry from '@sentry/remix';
+import sanitizeHtml from 'sanitize-html';
 import RSVPForm from '~/components/RSVPForm';
-
 import PageLayout from '~/layouts/Page';
-
 import { editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
 import type { AttendanceResponse, RSVP } from '~/types/RSVP';
@@ -21,8 +21,6 @@ import {
 import Anchor from '~/components/Anchor';
 import type { RSVPValidationErrors } from '~/types/RSVP';
 import { getSession, sessionStorage } from '~/session.server';
-import { verifyAuthenticityToken } from 'remix-utils';
-import * as Sentry from '@sentry/remix';
 
 export const loader = async ({ params }: LoaderArgs) => {
   const id = params.rid;
@@ -80,11 +78,11 @@ export async function action({ request }: ActionArgs) {
     invariant(attendeeIDIsValid(attendee), VALIDATIONS.MISSING_ATTENDEE_ID);
 
     const entry: RSVP = {
-      name,
+      name: sanitizeHtml(name),
       attendance,
       camping: camping === 'true',
-      diet,
-      remarks,
+      diet: sanitizeHtml(diet),
+      remarks: sanitizeHtml(remarks),
     };
 
     const rsvpPreEdit = await getRSVP(attendee);

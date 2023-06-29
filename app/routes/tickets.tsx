@@ -21,6 +21,7 @@ import {
 import { useState } from 'react';
 import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
 import Button from '~/components/Button';
+import sanitizeHtml from 'sanitize-html';
 
 export async function loader({ request }: LoaderArgs) {
   const rsvpID = await getRsvpIDFromSession(request);
@@ -67,8 +68,9 @@ export async function action({ request }: ActionArgs) {
     typeof ticketRequestData === 'string',
     'Tickets are of invalid type'
   );
+  const sanitizedTicketRequestData = sanitizeHtml(ticketRequestData);
   const selectedTickets = JSON.parse(
-    ticketRequestData
+    sanitizedTicketRequestData
   ) as SelectedPriceOption[];
 
   const tickets = convertSelectedTicketsToPriceOptions(selectedTickets);

@@ -4,6 +4,7 @@ import { useActionData } from '@remix-run/react';
 import { badRequest } from 'remix-utils';
 import invariant from 'tiny-invariant';
 import * as Sentry from '@sentry/remix';
+import sanitizeHtml from 'sanitize-html';
 import {
   coupleRsvpToUser,
   createUser,
@@ -33,11 +34,24 @@ export interface ActionData {
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();
-  const name = formData.get('name');
-  const email = formData.get('email');
-  const password = formData.get('password');
-  const verifyPassword = formData.get('verifyPassword');
+  const formDataName = formData.get('name');
+  const formDataEmail = formData.get('email');
+  const formDataPassword = formData.get('password');
+  const formDataVerifyPassword = formData.get('verifyPassword');
   const rsvp = formData.get('rsvp');
+
+  invariant(typeof formDataName === 'string', 'Name is required');
+  invariant(typeof formDataEmail === 'string', 'Email is required');
+  invariant(typeof formDataPassword === 'string', 'Password is required');
+  invariant(
+    typeof formDataVerifyPassword === 'string',
+    'Verify password is required'
+  );
+
+  const name = sanitizeHtml(formDataName);
+  const email = sanitizeHtml(formDataEmail);
+  const password = sanitizeHtml(formDataPassword);
+  const verifyPassword = sanitizeHtml(formDataVerifyPassword);
 
   const errors = validateRegistrationForm({
     name,
@@ -47,13 +61,15 @@ export async function action({ request }: ActionArgs) {
   });
 
   if (errors) {
-    Sentry.captureException({ errors, data: { email, password } });
-    return badRequest({ errors, data: { email, password } });
+    Sentry.captureException({
+      errors,
+      data: { email, password },
+    });
+    return badRequest({
+      errors,
+      data: { email, password },
+    });
   }
-
-  invariant(typeof name === 'string', 'Name is required');
-  invariant(typeof email === 'string', 'Email is required');
-  invariant(typeof password === 'string', 'Password is required');
 
   const existingUser = await getUserByEmail(email);
   if (existingUser) {
