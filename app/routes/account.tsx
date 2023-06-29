@@ -17,11 +17,11 @@ export default function AccountRoute() {
   return (
     <div className="flex h-full flex-col items-center justify-center">
       <Navigation user={user} />
-      <div className="flex h-full w-full flex-row justify-center gap-12">
-        <div className="h-full w-1/6 bg-cyan-200 px-8 pt-12">
+      <div className="grid h-full w-full grid-cols-1 grid-rows-[4rem_1fr] gap-4 [grid-template-areas:_'navigation'_'content'] md:grid-cols-[15rem_1fr] md:grid-rows-1 md:gap-12">
+        <div className="flex h-full w-full flex-row items-center gap-6 bg-cyan-200 px-8 pt-0 [grid-area:_'navigation'] md:flex-col md:items-start md:pt-12">
           <h2 className="text-2xl">Menu</h2>
 
-          <ul className="mt-5 space-y-2">
+          <ul className="flex flex-row gap-2 md:flex-col">
             <NavigationItem to="/account">Account</NavigationItem>
             <NavigationItem to="/account/instellingen">
               Instellingen
@@ -32,7 +32,7 @@ export default function AccountRoute() {
           </ul>
         </div>
 
-        <div className="w-5/6 px-8 pt-12">
+        <div className="w-full px-8 pt-0 [grid-area:_'content'] md:pt-12">
           <Outlet />
         </div>
       </div>

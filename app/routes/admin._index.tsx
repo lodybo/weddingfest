@@ -2,7 +2,7 @@ import { json } from '@remix-run/node';
 import type { RSVPStats } from '~/models/rsvp.server';
 import { getRSVPs } from '~/models/rsvp.server';
 import { useLoaderData } from '@remix-run/react';
-import RSVPList from '~/components/RSVPList';
+import RSVPTable from '~/components/RSVPTable';
 import Stats from '~/components/Stats';
 
 export async function loader() {
@@ -78,7 +78,7 @@ export default function AdminIndexRoute() {
       <h1 className="mb-5 text-4xl">RSVP lijst</h1>
 
       <Stats stats={stats} />
-      <RSVPList Rsvps={rsvps} />
+      <RSVPTable Rsvps={rsvps} />
     </div>
   );
 }

@@ -18,7 +18,7 @@ import PageLayout from '~/layouts/Page';
 import { getDomainUrl, getErrorMessage } from '~/utils/utils';
 import CheckoutForm from '~/components/CheckoutForm';
 import { stripe } from '~/stripe.server';
-import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
+import PaymentSummary from '~/components/PaymentSummary';
 
 export interface StripeLoaderData {
   clientSecret: string;

@@ -1,22 +1,15 @@
 import { ATTENDANCE } from '@prisma/client';
-import type { Rsvp, Payment, Ticket } from '@prisma/client';
 import Icon from '~/components/Icon';
 import type { SerializeFrom } from '@remix-run/server-runtime';
 import { formatAmountInLocale } from '~/utils/utils';
-
-type FullRSVP = Rsvp & {
-  Payment:
-    | (Payment & {
-        tickets: Ticket[];
-      })
-    | null;
-};
+import type { FullRSVP } from '~/models/rsvp.server';
+import TicketIcon from '~/components/TicketIcon';
 
 type Props = {
   Rsvps: SerializeFrom<FullRSVP>[];
 };
 
-export default function RSVPList({ Rsvps }: Props) {
+export default function RSVPTable({ Rsvps }: Props) {
   return (
     <table className="w-full table-fixed border-2 border-slate-100">
       <thead>
@@ -67,19 +60,7 @@ export default function RSVPList({ Rsvps }: Props) {
               <div className="flex flex-row flex-wrap gap-2">
                 {rsvp.Payment?.tickets.map(({ id, slug }) => (
                   <div key={id}>
-                    <Icon
-                      name={
-                        slug === 'adult'
-                          ? 'person'
-                          : slug === 'child'
-                          ? 'child'
-                          : slug === 'baby'
-                          ? 'baby'
-                          : slug === 'camping'
-                          ? 'campground'
-                          : 'gift'
-                      }
-                    />
+                    <TicketIcon slug={slug} />
                   </div>
                 ))}
               </div>

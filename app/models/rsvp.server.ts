@@ -1,9 +1,17 @@
-import type { Rsvp } from '@prisma/client';
+import type { Rsvp, Ticket, Payment } from '@prisma/client';
 import type { RSVP as RSVPData } from '~/types/RSVP';
 
 import { prisma } from '~/db.server';
 
 export type { Rsvp } from '@prisma/client';
+
+export type FullRSVP = Rsvp & {
+  Payment:
+    | (Payment & {
+        tickets: Ticket[];
+      })
+    | null;
+};
 
 export type RSVPStats = {
   tickets: {

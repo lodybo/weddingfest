@@ -3,7 +3,7 @@ import { json, redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import invariant from 'tiny-invariant';
-import TicketForm from '~/components/AttendanceList/TicketForm';
+import TicketForm from '~/components/TicketForm';
 import PageLayout from '~/layouts/Page';
 import { getRsvpIDFromSession } from '~/session.server';
 import { getRSVP } from '~/models/rsvp.server';
@@ -19,7 +19,7 @@ import {
   priceOptions,
 } from '~/models/payment.server';
 import { useState } from 'react';
-import PaymentSummary from '~/components/AttendanceList/PaymentSummary';
+import PaymentSummary from '~/components/PaymentSummary';
 import Button from '~/components/Button';
 import sanitizeHtml from 'sanitize-html';
 
