@@ -2,11 +2,7 @@ import type { LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { Link, Outlet, useLoaderData } from '@remix-run/react';
 
-import AttendanceList from '~/components/AttendanceList';
-import PageLayout from '~/layouts/Page';
-
-import { getUserId, requireAdmin } from '~/session.server';
-import { getRSVPs } from '~/models/rsvp.server';
+import { requireAdmin } from '~/session.server';
 import Navigation from '~/components/Navigation';
 
 export async function loader({ request }: LoaderArgs) {

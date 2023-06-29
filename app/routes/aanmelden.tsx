@@ -1,7 +1,9 @@
 import type { ActionArgs, V2_MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useActionData } from '@remix-run/react';
-
+import { badRequest } from 'remix-utils';
+import invariant from 'tiny-invariant';
+import * as Sentry from '@sentry/remix';
 import {
   coupleRsvpToUser,
   createUser,
@@ -10,9 +12,8 @@ import {
 import PageLayout from '~/layouts/Page';
 import { RegisterForm } from '~/components/RegisterForm';
 import { validateRegistrationForm } from '~/validations/auth';
-import { badRequest } from 'remix-utils';
-import invariant from 'tiny-invariant';
 import { createUserSession } from '~/session.server';
+import { User } from '@prisma/client';
 
 export interface ActionData {
   errors?: {
@@ -46,7 +47,7 @@ export async function action({ request }: ActionArgs) {
   });
 
   if (errors) {
-    console.log({ errors, data: { name, email, password, verifyPassword } });
+    Sentry.captureException({ errors, data: { email, password } });
     return badRequest({ errors, data: { email, password } });
   }
 
@@ -65,14 +66,15 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const user = await createUser(name, email, password);
-
-  console.log({ rsvp, user });
-  if (rsvp && typeof rsvp === 'string') {
-    await coupleRsvpToUser(user.id, rsvp);
+  let user: User | undefined;
+  try {
+    user = await createUser(name, email, password);
+  } catch (error) {
+    Sentry.captureException(error);
   }
 
   if (!user) {
+    Sentry.captureMessage('Failed to create user');
     return json<ActionData>(
       {
         errors: {
@@ -82,6 +84,14 @@ export async function action({ request }: ActionArgs) {
       },
       { status: 400 }
     );
+  }
+
+  if (rsvp && typeof rsvp === 'string') {
+    try {
+      await coupleRsvpToUser(user.id, rsvp);
+    } catch (error) {
+      Sentry.captureException(error);
+    }
   }
 
   return createUserSession({

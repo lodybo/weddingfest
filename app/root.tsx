@@ -1,7 +1,6 @@
 import type {
   LinksFunction,
   LoaderArgs,
-  LoaderFunction,
   V2_MetaFunction,
 } from '@remix-run/node';
 import { json } from '@remix-run/node';
@@ -11,6 +10,7 @@ import {
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 
 import tailwindStylesheetUrl from './tailwind.css';
 
@@ -21,6 +21,7 @@ import {
   AuthenticityTokenProvider,
   createAuthenticityToken,
 } from 'remix-utils';
+import { withSentry } from '@sentry/remix';
 
 export const links: LinksFunction = () => {
   return [
@@ -79,6 +80,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       user: await getUser(request),
       csrf: csrfToken,
       ENV: {
+        ENVIRONMENT: process.env.NODE_ENV,
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
       },
     },
@@ -90,7 +92,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   );
 };
 
-export default function App() {
+function App() {
   const { csrf } = useLoaderData<typeof loader>();
 
   return (
@@ -101,6 +103,10 @@ export default function App() {
     </AuthenticityTokenProvider>
   );
 }
+
+export default withSentry(App, {
+  wrapWithErrorBoundary: true,
+});
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -113,6 +119,7 @@ export function ErrorBoundary() {
     title = 'Oh nee!';
     message = error.data.message;
   } else {
+    Sentry.captureException(error);
     message = getErrorMessage(error);
     console.error(message);
     if (error instanceof Error) {
