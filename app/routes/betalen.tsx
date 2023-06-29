@@ -6,6 +6,7 @@ import type { StripeElementsOptions } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import invariant from 'tiny-invariant';
+import * as Sentry from '@sentry/remix';
 import { getRsvpIDFromSession } from '~/session.server';
 import type { SelectedPriceOption } from '~/models/payment.server';
 import {
@@ -68,7 +69,7 @@ export async function loader({ request }: LoaderArgs) {
       returnUrl,
     });
   } catch (error) {
-    console.error('Stripe error', error);
+    Sentry.captureException(error);
     const message = getErrorMessage(error);
 
     return serverError<LoaderData>({ message });

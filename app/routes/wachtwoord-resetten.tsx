@@ -20,6 +20,7 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  // TODO: Add CSRF protection, and integrate Sentry.
   const formData = await request.formData();
   const email = formData.get('email');
   const password = formData.get('password');

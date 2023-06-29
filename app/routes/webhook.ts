@@ -1,9 +1,10 @@
 import type Stripe from 'stripe';
-import { stripe } from '~/stripe.server';
 import type { ActionArgs } from '@remix-run/node';
 import { serverError } from 'remix-utils';
-import { getErrorMessage } from '~/utils/utils';
 import { json } from '@remix-run/node';
+import * as Sentry from '@sentry/remix';
+import { stripe } from '~/stripe.server';
+import { getErrorMessage } from '~/utils/utils';
 import { markPaymentAsComplete } from '~/models/payment.server';
 
 export async function action({ request }: ActionArgs) {
@@ -18,6 +19,7 @@ export async function action({ request }: ActionArgs) {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
+    Sentry.captureException(err);
     const message = getErrorMessage(err);
     console.error('Stripe error', message);
     return serverError({ message });
@@ -30,22 +32,33 @@ export async function action({ request }: ActionArgs) {
       console.log(
         `Payment ${paymentIntent.id} succeeded for rsvp ${paymentIntent.metadata.rsvpId}`
       );
-      await markPaymentAsComplete(
-        paymentIntent.metadata.rsvpId,
-        paymentIntent.id
-      );
+      try {
+        await markPaymentAsComplete(
+          paymentIntent.metadata.rsvpId,
+          paymentIntent.id
+        );
+      } catch (err) {
+        Sentry.captureException(err);
+      }
       break;
 
     case 'payment_intent.payment_failed':
       paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.error(
-        `Payment failed: ${paymentIntent.last_payment_error?.message}`
+      Sentry.captureException(
+        `Payment failed: ${paymentIntent.last_payment_error?.message}`,
+        {
+          extra: { ...paymentIntent.last_payment_error } || undefined,
+        }
       );
+
       throw new Error(
         `Payment failed: ${paymentIntent.last_payment_error?.message}`
       );
 
     default:
+      Sentry.captureException(`Unhandled event type: ${event.type}`, {
+        level: 'warning',
+      });
       console.warn(`Unhandled event type: ${event.type}`);
   }
 

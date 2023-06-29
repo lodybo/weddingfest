@@ -1,6 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useActionData, useLoaderData } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import {
   VALIDATIONS,
   nameIsValid,
@@ -31,7 +32,11 @@ export async function loader({ request }: LoaderArgs) {
 
   let rsvp: Rsvp | null = null;
   if (rsvpID) {
-    rsvp = await getRSVP(rsvpID);
+    try {
+      rsvp = await getRSVP(rsvpID);
+    } catch (error: unknown) {
+      Sentry.captureException(error);
+    }
   }
 
   return json({ rsvp });
@@ -39,7 +44,11 @@ export async function loader({ request }: LoaderArgs) {
 
 export async function action({ request }: ActionArgs) {
   const session = await getSession(request);
-  await verifyAuthenticityToken(request, session);
+  try {
+    await verifyAuthenticityToken(request, session);
+  } catch (error: unknown) {
+    Sentry.captureException(error);
+  }
 
   const body = await request.formData();
 
@@ -80,21 +89,44 @@ export async function action({ request }: ActionArgs) {
     };
 
     let headers = {};
-    if (attendee && typeof attendee === 'string') {
-      await editRSVP(attendee, entry);
-    } else {
-      const { id: rsvpID } = await createRSVP(entry);
-      const session = await getSession(request);
-      session.set('rsvpID', rsvpID);
-      headers = {
-        'Set-Cookie': await sessionStorage.commitSession(session),
-      };
+    try {
+      if (attendee && typeof attendee === 'string') {
+        const rsvp = await editRSVP(attendee, entry);
+        Sentry.setUser({ id: rsvp.id, username: rsvp.name });
+      } else {
+        const { id: rsvpID, name } = await createRSVP(entry);
+        Sentry.setUser({ id: rsvpID, username: name });
+        const session = await getSession(request);
+        session.set('rsvpID', rsvpID);
+        headers = {
+          'Set-Cookie': await sessionStorage.commitSession(session),
+        };
+      }
+    } catch (error: unknown) {
+      Sentry.captureException(error);
     }
 
     return redirect('/tickets', {
       headers,
     });
   } else {
+    Sentry.captureMessage('RSVP form validation failed', {
+      level: 'error',
+      user: {
+        id: (attendee as string) || undefined,
+        username: name as string,
+      },
+      extra: {
+        attendee,
+        name,
+        attendance,
+        camping,
+        diet,
+        remarks,
+        errors: hasErrors,
+      },
+    });
+
     return json<AttendanceResponse>(
       {
         success: false,

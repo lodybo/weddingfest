@@ -16,7 +16,7 @@ import type { ReadStream } from 'fs';
 import * as fs from 'fs';
 import path from 'path';
 import { PassThrough } from 'stream';
-
+import * as Sentry from '@sentry/remix';
 import type { LoaderArgs } from '@remix-run/node';
 import type { FitEnum } from 'sharp';
 import sharp from 'sharp';
@@ -42,6 +42,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     return streamingResize(readStream, width, height, fit);
   } catch (error: unknown) {
     // if the image is not found, or we get any other errors we return different response types
+    Sentry.captureException(error);
     return handleError(error);
   }
 };
@@ -124,6 +125,7 @@ function readFileAsStream(src: string): ReadStream {
   const srcPath = path.join(ASSETS_ROOT, src);
   const fileStat = statSync(srcPath);
   if (!fileStat.isFile()) {
+    Sentry.captureException(new Error(`${srcPath} is not a file`));
     throw new Error(`${srcPath} is not a file`);
   }
 
@@ -154,6 +156,7 @@ function handleError(error: unknown) {
   // error needs to be typed
   const errorT = error as Error & { code: string };
   // if the read stream fails, it will have the error.code ENOENT
+  Sentry.captureException(error);
   console.error(error);
   if (errorT.code === 'ENOENT') {
     return new Response('image not found', {

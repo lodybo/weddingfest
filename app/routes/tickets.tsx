@@ -1,6 +1,7 @@
 import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useFetcher, useLoaderData } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 import invariant from 'tiny-invariant';
 import TicketForm from '~/components/AttendanceList/TicketForm';
 import PageLayout from '~/layouts/Page';
@@ -31,21 +32,26 @@ export async function loader({ request }: LoaderArgs) {
     return redirect('/niet-aanwezig');
   }
 
-  let selectedTickets: SelectedPriceOption[] = [];
-  const payment = await hasPayment(rsvpID);
-  if (payment) {
-    const tickets = await getTicketsForPayment(payment.id);
-    selectedTickets = convertPriceOptionsToSelectedTickets(tickets);
-  }
+  try {
+    let selectedTickets: SelectedPriceOption[] = [];
+    const payment = await hasPayment(rsvpID);
+    if (payment) {
+      const tickets = await getTicketsForPayment(payment.id);
+      selectedTickets = convertPriceOptionsToSelectedTickets(tickets);
+    }
 
-  return json(
-    {
-      name: rsvp.name,
-      options: priceOptions,
-      tickets: selectedTickets,
-    },
-    { status: 200 }
-  );
+    return json(
+      {
+        name: rsvp.name,
+        options: priceOptions,
+        tickets: selectedTickets,
+      },
+      { status: 200 }
+    );
+  } catch (e) {
+    Sentry.captureException(e);
+    throw e;
+  }
 }
 
 export async function action({ request }: ActionArgs) {

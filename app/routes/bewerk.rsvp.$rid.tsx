@@ -22,6 +22,7 @@ import Anchor from '~/components/Anchor';
 import type { RSVPValidationErrors } from '~/types/RSVP';
 import { getSession, sessionStorage } from '~/session.server';
 import { verifyAuthenticityToken } from 'remix-utils';
+import * as Sentry from '@sentry/remix';
 
 export const loader = async ({ params }: LoaderArgs) => {
   const id = params.rid;
@@ -89,20 +90,40 @@ export async function action({ request }: ActionArgs) {
     const rsvpPreEdit = await getRSVP(attendee);
     invariant(rsvpPreEdit !== null, 'No RSVP found to compare with.');
 
-    const rsvp = await editRSVP(attendee, entry);
+    try {
+      const rsvp = await editRSVP(attendee, entry);
 
-    if (!rsvpPreEdit.camping && entry.camping) {
-      const session = await getSession(request);
-      session.set('rsvpID', rsvp.id);
-      return redirect('/tickets', {
-        headers: {
-          'Set-Cookie': await sessionStorage.commitSession(session),
-        },
-      });
+      if (!rsvpPreEdit.camping && entry.camping) {
+        const session = await getSession(request);
+        session.set('rsvpID', rsvp.id);
+        return redirect('/tickets', {
+          headers: {
+            'Set-Cookie': await sessionStorage.commitSession(session),
+          },
+        });
+      }
+    } catch (e) {
+      Sentry.captureException(e);
     }
 
     return redirect('/account');
   } else {
+    Sentry.captureMessage('RSVP form validation failed', {
+      level: 'error',
+      user: {
+        id: attendee as string,
+        username: name as string,
+      },
+      extra: {
+        attendee,
+        name,
+        attendance,
+        camping,
+        diet,
+        remarks,
+        errors: hasErrors,
+      },
+    });
     return json<AttendanceResponse>(
       {
         success: false,

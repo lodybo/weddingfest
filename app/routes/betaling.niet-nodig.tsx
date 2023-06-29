@@ -1,15 +1,20 @@
-import CenteredContentLayout from '~/layouts/CenteredContent';
 import type { LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
+import CenteredContentLayout from '~/layouts/CenteredContent';
 import { getRsvpIDFromSession } from '~/session.server';
 import { markPaymentAsComplete } from '~/models/payment.server';
 import { RegisterForm } from '~/components/RegisterForm';
-import { json } from '@remix-run/node';
-import { useLoaderData } from '@remix-run/react';
 
 export async function loader({ request }: LoaderArgs) {
   const rsvpId = await getRsvpIDFromSession(request);
 
-  await markPaymentAsComplete(rsvpId);
+  try {
+    await markPaymentAsComplete(rsvpId);
+  } catch (e) {
+    Sentry.captureException(e);
+  }
 
   return json({ rsvp: rsvpId });
 }

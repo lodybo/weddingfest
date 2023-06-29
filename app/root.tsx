@@ -1,7 +1,6 @@
 import type {
   LinksFunction,
   LoaderArgs,
-  LoaderFunction,
   V2_MetaFunction,
 } from '@remix-run/node';
 import { json } from '@remix-run/node';
@@ -11,6 +10,7 @@ import {
   useLoaderData,
   useRouteError,
 } from '@remix-run/react';
+import * as Sentry from '@sentry/remix';
 
 import tailwindStylesheetUrl from './tailwind.css';
 
@@ -104,7 +104,9 @@ function App() {
   );
 }
 
-export default withSentry(App);
+export default withSentry(App, {
+  wrapWithErrorBoundary: true,
+});
 
 export function ErrorBoundary() {
   const error = useRouteError();
@@ -117,6 +119,7 @@ export function ErrorBoundary() {
     title = 'Oh nee!';
     message = error.data.message;
   } else {
+    Sentry.captureException(error);
     message = getErrorMessage(error);
     console.error(message);
     if (error instanceof Error) {
