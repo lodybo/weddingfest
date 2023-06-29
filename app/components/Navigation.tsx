@@ -33,8 +33,12 @@ export default function Navigation({ user }: Props) {
             </li>
             <li>
               <form className="ml-auto mr-4" action="/uitloggen" method="post">
-                <Button variant="normal" type="submit">
-                  Uitloggen
+                <Button variant="normal" size="small" type="submit">
+                  <span className="hidden sm:inline">Uitloggen</span>
+                  <Icon
+                    className="block sm:hidden"
+                    name="arrow-right-from-bracket"
+                  />
                 </Button>
               </form>
             </li>

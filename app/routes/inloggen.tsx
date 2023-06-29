@@ -10,6 +10,7 @@ import { LoginForm } from '~/components/LoginForm';
 import { validateLoginForm } from '~/validations/auth';
 import { badRequest } from 'remix-utils';
 import invariant from 'tiny-invariant';
+import sanitizeHtml from 'sanitize-html';
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
@@ -40,7 +41,9 @@ export async function action({ request }: ActionArgs) {
   invariant(typeof email === 'string', 'Email is required');
   invariant(typeof password === 'string', 'Password is required');
 
-  const user = await verifyLogin(email, password);
+  const sanitizedEmail = sanitizeHtml(email);
+  const sanitizedPassword = sanitizeHtml(password);
+  const user = await verifyLogin(sanitizedEmail, sanitizedPassword);
 
   if (!user) {
     return json<ActionData>(

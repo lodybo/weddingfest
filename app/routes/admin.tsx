@@ -1,6 +1,6 @@
 import type { LoaderArgs } from '@remix-run/node';
-import { json, redirect } from '@remix-run/node';
-import { Link, Outlet, useLoaderData } from '@remix-run/react';
+import { json } from '@remix-run/node';
+import { NavLink, Outlet, useLoaderData } from '@remix-run/react';
 
 import { requireAdmin } from '~/session.server';
 import Navigation from '~/components/Navigation';
@@ -15,23 +15,42 @@ export default function AdminPage() {
   const { user } = useLoaderData<typeof loader>();
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <Navigation user={user} />
-      <div className="flex h-full w-full flex-row justify-center gap-12">
-        <div className="h-full w-1/4 bg-rose-200 px-8 pt-12">
+      <div className="grid min-h-screen w-full grid-cols-1 grid-rows-[4rem_1fr] gap-4 [grid-template-areas:_'navigation'_'content'] md:grid-cols-[15rem_1fr] md:grid-rows-1 md:gap-12">
+        <div className="flex h-full w-full flex-row items-center gap-6 bg-rose-200 px-8 pt-0 [grid-area:_'navigation'] md:flex-col md:items-start md:pt-12">
           <h2 className="text-2xl">Menu</h2>
 
-          <ul>
-            <li className="text-lg">
-              <Link to="/account">Account</Link>
-            </li>
+          <ul className="flex flex-row gap-2 md:flex-col">
+            <NavigationItem to="/admin">Administratie</NavigationItem>
+            <NavigationItem to="/admin/rsvps">RSVP's beheren</NavigationItem>
+            <NavigationItem to="/account">Account</NavigationItem>
           </ul>
         </div>
 
-        <div className="w-3/4 px-8 pt-12">
+        <div className="w-full px-8 pt-0 [grid-area:_'content'] md:pt-12">
           <Outlet />
         </div>
       </div>
     </div>
+  );
+}
+
+function NavigationItem({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="text-lg">
+      <NavLink
+        className="cursor-pointer border-b-2 border-b-rose-800 pb-0 transition-all hover:border-b-rose-500 hover:pb-0.5"
+        to={to}
+      >
+        {children}
+      </NavLink>
+    </li>
   );
 }

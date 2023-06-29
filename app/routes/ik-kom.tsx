@@ -2,6 +2,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
 import { useActionData, useLoaderData } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
+import sanitizeHtml from 'sanitize-html';
 import {
   VALIDATIONS,
   nameIsValid,
@@ -81,11 +82,11 @@ export async function action({ request }: ActionArgs) {
     );
 
     const entry: RSVP = {
-      name,
+      name: sanitizeHtml(name),
       attendance,
       camping: camping === 'true',
-      diet,
-      remarks,
+      diet: sanitizeHtml(diet),
+      remarks: sanitizeHtml(remarks),
     };
 
     let headers = {};

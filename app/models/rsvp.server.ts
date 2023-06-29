@@ -1,12 +1,28 @@
-import type { Rsvp } from '@prisma/client';
+import type { Rsvp, Ticket, Payment } from '@prisma/client';
 import type { RSVP as RSVPData } from '~/types/RSVP';
 
 import { prisma } from '~/db.server';
 
 export type { Rsvp } from '@prisma/client';
 
+export type FullRSVP = Rsvp & {
+  Payment:
+    | (Payment & {
+        tickets: Ticket[];
+      })
+    | null;
+};
+
 export type RSVPStats = {
-  tickets: number;
+  tickets: {
+    adult: number;
+    child: number;
+    baby: number;
+    persons: number;
+    camping: number;
+    gift: number;
+    total: number;
+  };
   payments: {
     paid: number;
     unpaid: number;
@@ -17,7 +33,6 @@ export type RSVPStats = {
     eveningOnly: number;
     notAttending: number;
   };
-  camping: number;
 };
 
 export function getRSVPs() {

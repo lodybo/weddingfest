@@ -1,16 +1,17 @@
 import { json, redirect } from '@remix-run/node';
 import { useActionData } from '@remix-run/react';
 import type { ActionFunction, V2_MetaFunction } from '@remix-run/node';
+import sanitizeHtml from 'sanitize-html';
+import { badRequest } from 'remix-utils';
+import invariant from 'tiny-invariant';
 
-import { safeRedirect, validateEmail } from '~/utils/utils';
+import { safeRedirect } from '~/utils/utils';
 
-import { getUserByEmail, changeUserPassword } from '~/models/user.server';
+import { changeUserPassword } from '~/models/user.server';
 import * as React from 'react';
 import PageLayout from '~/layouts/Page';
 import { PasswordResetForm } from '~/components/PasswordResetForm';
 import { validateResetPasswordForm } from '~/validations/auth';
-import { badRequest } from 'remix-utils';
-import invariant from 'tiny-invariant';
 
 interface ActionData {
   errors?: {
@@ -22,19 +23,27 @@ interface ActionData {
 export const action: ActionFunction = async ({ request }) => {
   // TODO: Add CSRF protection, and integrate Sentry.
   const formData = await request.formData();
-  const email = formData.get('email');
-  const password = formData.get('password');
-  const verifyPassword = formData.get('verifyPassword');
+  const formDataEmail = formData.get('email');
+  const formDataPassword = formData.get('password');
+  const formDataVerifyPassword = formData.get('verifyPassword');
   const redirectTo = safeRedirect(formData.get('redirectTo'), '/inloggen');
+
+  invariant(typeof formDataEmail === 'string', 'Email is required');
+  invariant(typeof formDataPassword === 'string', 'Password is required');
+  invariant(
+    typeof formDataVerifyPassword === 'string',
+    'Verify password is required'
+  );
+
+  const email = sanitizeHtml(formDataEmail);
+  const password = sanitizeHtml(formDataPassword);
+  const verifyPassword = sanitizeHtml(formDataVerifyPassword);
 
   const errors = validateResetPasswordForm({ email, password, verifyPassword });
 
   if (errors) {
     return badRequest({ errors });
   }
-
-  invariant(typeof email === 'string', 'Email is required');
-  invariant(typeof password === 'string', 'Password is required');
 
   const user = await changeUserPassword(email, password);
 
