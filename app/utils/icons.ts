@@ -23,6 +23,7 @@ export {
   faUsers,
   faCoins,
   faArrowRightFromBracket,
+  faArrowsRotate,
 } from '@fortawesome/free-solid-svg-icons';
 
 export {
