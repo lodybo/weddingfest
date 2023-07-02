@@ -11,6 +11,7 @@ import { getRsvpIDFromSession } from '~/session.server';
 import type { SelectedPriceOption } from '~/models/payment.server';
 import {
   convertPriceOptionsToSelectedTickets,
+  coupleStripeToPayment,
   getPaymentForRsvp,
   getTotalPriceForRsvp,
 } from '~/models/payment.server';
@@ -62,6 +63,8 @@ export async function loader({ request }: LoaderArgs) {
       paymentIntent.client_secret,
       'Payment intent has no client secret'
     );
+
+    await coupleStripeToPayment(rsvpId, paymentIntent.id);
 
     return json<LoaderData>({
       clientSecret: paymentIntent.client_secret,

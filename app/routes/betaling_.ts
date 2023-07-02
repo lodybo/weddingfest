@@ -16,7 +16,10 @@ export async function loader({ request }: LoaderArgs) {
 
     switch (paymentIntent.status) {
       case 'succeeded':
-        return redirect('/betaling/gelukt');
+        const reqUrl = new URL(request.url);
+        const successUrl = new URL('/betaling/gelukt', reqUrl.origin);
+        successUrl.searchParams.set('rsvpId', paymentIntent.metadata.rsvpId);
+        return redirect(successUrl.href);
       case 'canceled':
         return redirect('/betaling/geannuleerd');
       case 'requires_payment_method':

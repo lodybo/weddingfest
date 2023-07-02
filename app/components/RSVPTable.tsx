@@ -4,6 +4,7 @@ import type { SerializeFrom } from '@remix-run/server-runtime';
 import { formatAmountInLocale } from '~/utils/utils';
 import type { FullRSVP } from '~/models/rsvp.server';
 import TicketIcon from '~/components/TicketIcon';
+import Anchor from '~/components/Anchor';
 
 type Props = {
   Rsvps: SerializeFrom<FullRSVP>[];
@@ -69,7 +70,19 @@ export default function RSVPTable({ Rsvps }: Props) {
               <div className="flex flex-row flex-wrap gap-2">
                 {rsvp.attendance !== ATTENDANCE.NONE ? (
                   <>
-                    {formatAmountInLocale(parseInt(rsvp.Payment?.total ?? '0'))}
+                    {rsvp.Payment?.stripePaymentId ? (
+                      <Anchor
+                        to={`https://dashboard.stripe.com/payments/${rsvp.Payment.stripePaymentId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {formatAmountInLocale(
+                          parseInt(rsvp.Payment?.total ?? '0')
+                        )}
+                      </Anchor>
+                    ) : (
+                      formatAmountInLocale(parseInt(rsvp.Payment?.total ?? '0'))
+                    )}
                     {rsvp.Payment?.paid ? (
                       <Icon
                         className="text-emerald-600"
