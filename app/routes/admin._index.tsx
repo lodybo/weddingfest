@@ -4,6 +4,7 @@ import { getRSVPs } from '~/models/rsvp.server';
 import { useLoaderData } from '@remix-run/react';
 import RSVPTable from '~/components/RSVPTable';
 import Stats from '~/components/Stats';
+import RefreshButton from '~/components/RefreshButton';
 
 export async function loader() {
   const rsvps = await getRSVPs();
@@ -58,7 +59,12 @@ export async function loader() {
       stats.tickets.total++;
     });
 
-    rsvp.Payment?.paid ? stats.payments.paid++ : stats.payments.unpaid++;
+    if (rsvp.Payment?.paid) {
+      stats.payments.paid++;
+    } else if (rsvp.attendance !== 'NONE') {
+      stats.payments.unpaid++;
+    }
+
     stats.payments.amount += parseInt(rsvp.Payment?.total.toString() ?? '0');
     stats.attending.allDay += rsvp.attendance === 'ALL_DAY' ? 1 : 0;
     stats.attending.eveningOnly += rsvp.attendance === 'EVENING' ? 1 : 0;
@@ -75,7 +81,10 @@ export default function AdminIndexRoute() {
 
   return (
     <div className="space-y-6">
-      <h1 className="mb-5 text-4xl">RSVP lijst</h1>
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="mb-5 text-4xl">RSVP lijst</h1>
+        <RefreshButton />
+      </div>
 
       <Stats stats={stats} />
       <RSVPTable Rsvps={rsvps} />

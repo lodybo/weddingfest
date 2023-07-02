@@ -17,13 +17,13 @@ export default function AdminPage() {
   return (
     <div className="flex flex-col items-center justify-center">
       <Navigation user={user} />
-      <div className="grid min-h-screen w-full grid-cols-1 grid-rows-[4rem_1fr] gap-4 [grid-template-areas:_'navigation'_'content'] md:grid-cols-[15rem_1fr] md:grid-rows-1 md:gap-12">
-        <div className="flex h-full w-full flex-row items-center gap-6 bg-rose-200 px-8 pt-0 [grid-area:_'navigation'] md:flex-col md:items-start md:pt-12">
+      <div className="grid min-h-screen w-full grid-cols-1 grid-rows-[6rem_1fr] gap-4 [grid-template-areas:_'navigation'_'content'] md:grid-cols-[15rem_1fr] md:grid-rows-1 md:gap-12">
+        <div className="flex h-full w-full flex-col items-center gap-2 bg-rose-200 px-8 pt-2 [grid-area:_'navigation'] md:items-start md:gap-6 md:pt-12">
           <h2 className="text-2xl">Menu</h2>
 
           <ul className="flex flex-row gap-2 md:flex-col">
             <NavigationItem to="/admin">Administratie</NavigationItem>
-            <NavigationItem to="/admin/rsvps">RSVP's beheren</NavigationItem>
+            <NavigationItem to="/admin/rsvps">RSVP's</NavigationItem>
             <NavigationItem to="/account">Account</NavigationItem>
           </ul>
         </div>

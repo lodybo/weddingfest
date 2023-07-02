@@ -8,9 +8,9 @@ import { markPaymentAsComplete } from '~/models/payment.server';
 import { RegisterForm } from '~/components/RegisterForm';
 
 export async function loader({ request }: LoaderArgs) {
-  const rsvpId = await getRsvpIDFromSession(request);
-
+  let rsvpId: string | undefined = undefined;
   try {
+    rsvpId = await getRsvpIDFromSession(request);
     await markPaymentAsComplete(rsvpId);
   } catch (e) {
     Sentry.captureException(e);
@@ -30,20 +30,25 @@ export default function PaymentNotNeededRoute() {
         Alles staat geregistreerd, we zien je op 19 augustus!
       </p>
 
-      <p>
-        Als je wil, kan je een account aanmaken. Dit geeft een aantal voordelen:
-      </p>
-      <ul className="list-inside list-disc">
-        <li>Je kan je inschrijvingen beheren.</li>
-        <li>Je kan e-mails krijgen met updates over de bruiloft.</li>
-        <li>
-          Op de dag zelf kan je op de bruiloft, via de website, op de hoogte
-          gehouden worden van het programma.
-        </li>
-      </ul>
+      {rsvp ? (
+        <>
+          <p>
+            Als je wil, kan je een account aanmaken. Dit geeft een aantal
+            voordelen:
+          </p>
+          <ul className="list-inside list-disc">
+            <li>Je kan je inschrijvingen beheren.</li>
+            <li>Je kan e-mails krijgen met updates over de bruiloft.</li>
+            <li>
+              Op de dag zelf kan je op de bruiloft, via de website, op de hoogte
+              gehouden worden van het programma.
+            </li>
+          </ul>
 
-      <p>Lijkt je dat wat? Geef je dan hieronder op:</p>
-      <RegisterForm rsvp={rsvp} />
+          <p>Lijkt je dat wat? Geef je dan hieronder op:</p>
+          <RegisterForm rsvp={rsvp} />
+        </>
+      ) : null}
     </CenteredContentLayout>
   );
 }

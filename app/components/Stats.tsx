@@ -12,11 +12,11 @@ export default function Stats({ stats }: Props) {
   return (
     <div className="flex flex-row gap-4">
       <div className="flex w-full flex-col justify-between gap-2 sm:flex-row sm:gap-12 md:justify-start">
-        <StatColumn title="Tickets">
+        <StatColumn title={`Tickets (${stats.tickets.persons})`}>
           <Statistic name="user" label={stats.tickets.adult} />
           <Statistic name="child" label={stats.tickets.child} />
           <Statistic name="baby" label={stats.tickets.baby} />
-          <Statistic name="users" label={stats.tickets.persons} />
+          <li className="h-0 basis-full" />
           <Statistic name="campground" label={stats.tickets.camping} />
           <Statistic name="gift" label={stats.tickets.gift} />
           <Statistic name="ticket" label={stats.tickets.total} />

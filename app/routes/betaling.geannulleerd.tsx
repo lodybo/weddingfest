@@ -4,7 +4,7 @@ import CenteredContentLayout from '~/layouts/CenteredContent';
 export default function PaymentSucceededRoute() {
   return (
     <CenteredContentLayout>
-      <h1 className="font-handwriting text-7xl">Betaling geannulleerd</h1>
+      <h1 className="font-handwriting text-7xl">Betaling geannuleerd</h1>
 
       <p className="text-2xl">
         De betaling is geannuleerd. Je kan{' '}

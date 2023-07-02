@@ -29,14 +29,9 @@ export async function action({ request }: ActionArgs) {
   switch (event.type) {
     case 'payment_intent.succeeded':
       paymentIntent = event.data.object as Stripe.PaymentIntent;
-      console.log(
-        `Payment ${paymentIntent.id} succeeded for rsvp ${paymentIntent.metadata.rsvpId}`
-      );
+
       try {
-        await markPaymentAsComplete(
-          paymentIntent.metadata.rsvpId,
-          paymentIntent.id
-        );
+        await markPaymentAsComplete(paymentIntent.metadata.rsvpId);
       } catch (err) {
         Sentry.captureException(err);
       }
