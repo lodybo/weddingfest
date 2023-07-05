@@ -64,11 +64,11 @@ export async function loader() {
 
     if (rsvp.Payment?.paid) {
       stats.payments.paid++;
+      stats.payments.amount += parseInt(rsvp.Payment.total.toString());
     } else if (rsvp.attendance !== 'NONE') {
       stats.payments.unpaid++;
     }
 
-    stats.payments.amount += parseInt(rsvp.Payment?.total.toString() ?? '0');
     stats.attending.allDay += rsvp.attendance === 'ALL_DAY' ? 1 : 0;
     stats.attending.eveningOnly += rsvp.attendance === 'EVENING' ? 1 : 0;
     stats.attending.notAttending += rsvp.attendance === 'NONE' ? 1 : 0;
