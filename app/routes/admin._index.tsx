@@ -1,10 +1,13 @@
 import { json } from '@remix-run/node';
-import type { RSVPStats } from '~/models/rsvp.server';
+import type { FullRSVP, RSVPStats } from '~/models/rsvp.server';
 import { getRSVPs } from '~/models/rsvp.server';
-import { useLoaderData } from '@remix-run/react';
+import { useFetcher } from '@remix-run/react';
 import RSVPTable from '~/components/RSVPTable';
 import Stats from '~/components/Stats';
 import RefreshButton from '~/components/RefreshButton';
+import Loader from '~/components/Loader';
+import { useEffect } from 'react';
+import type { SerializeFrom } from '@remix-run/server-runtime';
 
 export async function loader() {
   const rsvps = await getRSVPs();
@@ -75,15 +78,39 @@ export async function loader() {
 }
 
 export default function AdminIndexRoute() {
-  const { rsvps, stats } = useLoaderData<typeof loader>();
+  const fetcher = useFetcher();
 
-  if (!rsvps) return null;
+  useEffect(() => {
+    if (fetcher.state === 'idle' && fetcher.data == null) {
+      fetcher.load('/admin?index');
+    }
+  }, [fetcher]);
+
+  let rsvps: SerializeFrom<FullRSVP>[] | undefined;
+  let stats: RSVPStats | undefined;
+
+  if (fetcher.state === 'idle' && fetcher.data) {
+    rsvps = fetcher.data.rsvps;
+    stats = fetcher.data.stats;
+  }
+
+  const isFetching = fetcher.state === 'loading';
+
+  const handleRefresh = () => {
+    fetcher.load('/admin?index');
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      {isFetching ? (
+        <div className="absolute right-0 top-0 flex h-full w-full items-center justify-center bg-white/75">
+          <Loader size="full" />
+        </div>
+      ) : null}
+
       <div className="flex flex-row items-center justify-between">
         <h1 className="mb-5 text-4xl">RSVP lijst</h1>
-        <RefreshButton />
+        <RefreshButton onRefresh={handleRefresh} />
       </div>
 
       <Stats stats={stats} />
