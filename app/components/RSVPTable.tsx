@@ -7,10 +7,12 @@ import TicketIcon from '~/components/TicketIcon';
 import Anchor from '~/components/Anchor';
 
 type Props = {
-  Rsvps: SerializeFrom<FullRSVP>[];
+  Rsvps: SerializeFrom<FullRSVP>[] | undefined;
 };
 
 export default function RSVPTable({ Rsvps }: Props) {
+  if (!Rsvps) return null;
+
   return (
     <table className="w-full table-fixed border-2 border-slate-100">
       <thead>

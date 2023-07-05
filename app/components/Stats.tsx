@@ -5,10 +5,14 @@ import type { Props as IconProps } from '~/components/Icon';
 import Icon from '~/components/Icon';
 
 type Props = {
-  stats: RSVPStats;
+  stats: RSVPStats | undefined;
 };
 
 export default function Stats({ stats }: Props) {
+  if (!stats) {
+    return null;
+  }
+
   return (
     <div className="flex flex-row gap-4">
       <div className="flex w-full flex-col justify-between gap-2 sm:flex-row sm:gap-12 md:justify-start">
