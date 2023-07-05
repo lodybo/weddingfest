@@ -1,4 +1,4 @@
-import { json } from '@remix-run/node';
+import { json, LoaderArgs } from '@remix-run/node';
 import type { FullRSVP, RSVPStats } from '~/models/rsvp.server';
 import { getRSVPs } from '~/models/rsvp.server';
 import { useFetcher } from '@remix-run/react';
@@ -8,8 +8,11 @@ import RefreshButton from '~/components/RefreshButton';
 import Loader from '~/components/Loader';
 import { useEffect } from 'react';
 import type { SerializeFrom } from '@remix-run/server-runtime';
+import { requireAdmin } from '~/session.server';
 
-export async function loader() {
+export async function loader({ request }: LoaderArgs) {
+  await requireAdmin(request);
+
   const rsvps = await getRSVPs();
 
   const stats: RSVPStats = {

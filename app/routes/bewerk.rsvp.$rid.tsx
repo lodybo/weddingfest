@@ -64,7 +64,7 @@ export async function action({ request }: ActionArgs) {
     remarks,
     attendee
   );
-  console.log(hasErrors, Object.fromEntries(body));
+
   if (!hasErrors) {
     invariant(attendee !== undefined, 'Attendee needs to be set');
     invariant(typeof attendee === 'string', 'Attendee is of wrong type');
