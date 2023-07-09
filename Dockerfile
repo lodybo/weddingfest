@@ -47,6 +47,8 @@ COPY --from=build /weddingfest/node_modules/.prisma /weddingfest/node_modules/.p
 
 COPY --from=build /weddingfest/build /weddingfest/build
 COPY --from=build /weddingfest/public /weddingfest/public
+COPY --from=deps /weddingfest/public/tinymce /weddingfest/public/tinymce
+
 ADD . .
 
 CMD ["npm", "start"]

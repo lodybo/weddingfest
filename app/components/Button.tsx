@@ -55,7 +55,7 @@ export default function Button({
   if ('to' in props) {
     const { to = '' } = props;
     return (
-      <Link to={to} className={`block text-center ${classes}`}>
+      <Link to={to} className={`flex items-center justify-center ${classes}`}>
         {children}
       </Link>
     );
