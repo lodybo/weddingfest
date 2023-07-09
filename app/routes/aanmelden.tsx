@@ -5,16 +5,15 @@ import { badRequest } from 'remix-utils';
 import invariant from 'tiny-invariant';
 import * as Sentry from '@sentry/remix';
 import sanitizeHtml from 'sanitize-html';
+import type { User } from '@prisma/client';
 import {
   coupleRsvpToUser,
   createUser,
   getUserByEmail,
 } from '~/models/user.server';
-import PageLayout from '~/layouts/Page';
 import { RegisterForm } from '~/components/RegisterForm';
 import { validateRegistrationForm } from '~/validations/auth';
 import { createUserSession } from '~/session.server';
-import { User } from '@prisma/client';
 
 export interface ActionData {
   errors?: {
@@ -128,12 +127,12 @@ export default function Aanmelden() {
   const actionData = useActionData() as ActionData;
 
   return (
-    <PageLayout>
+    <>
       <RegisterForm
         errors={actionData?.errors}
         success={actionData?.success}
         data={actionData?.data}
       />
-    </PageLayout>
+    </>
   );
 }

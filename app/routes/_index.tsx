@@ -1,12 +1,11 @@
 import type { ReactNode } from 'react';
-import PageLayout from '~/layouts/Page';
 import SmallWeddingTimer from '~/components/SmallWeddingTimer';
 import Button from '~/components/Button';
 import { ClientOnly } from 'remix-utils';
 
 export default function Index() {
   return (
-    <PageLayout>
+    <>
       <div className="w-full space-y-10 px-8 sm:w-3/4 xl:space-y-20">
         <Title>Wij gaan trouwen!</Title>
 
@@ -35,7 +34,7 @@ export default function Index() {
           Ik kom!
         </Button>
       </div>
-    </PageLayout>
+    </>
   );
 }
 

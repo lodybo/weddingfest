@@ -14,8 +14,6 @@ import invariant from 'tiny-invariant';
 
 import RSVPForm from '~/components/RSVPForm';
 
-import PageLayout from '~/layouts/Page';
-
 import { createRSVP, editRSVP, getRSVP } from '~/models/rsvp.server';
 
 import type {
@@ -143,7 +141,7 @@ export default function AttendancePage() {
   let data = useActionData<FailedAttendanceResponse>();
 
   return (
-    <PageLayout>
+    <>
       <div className="w-full px-8">
         <p className="prose mx-auto md:prose-lg">
           Wij gaan trouwen en zouden het leuk vinden als je er bij bent! We
@@ -153,6 +151,6 @@ export default function AttendancePage() {
 
         <RSVPForm rsvp={rsvp} response={data} />
       </div>
-    </PageLayout>
+    </>
   );
 }

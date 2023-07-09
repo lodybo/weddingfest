@@ -5,7 +5,6 @@ import { useActionData } from '@remix-run/react';
 import { createUserSession, getUserId } from '~/session.server';
 import { verifyLogin } from '~/models/user.server';
 import { safeRedirect } from '~/utils/utils';
-import PageLayout from '~/layouts/Page';
 import { LoginForm } from '~/components/LoginForm';
 import { validateLoginForm } from '~/validations/auth';
 import { badRequest } from 'remix-utils';
@@ -79,8 +78,8 @@ export default function LoginPage() {
   const actionData = useActionData() as ActionData;
 
   return (
-    <PageLayout>
+    <>
       <LoginForm errors={actionData?.errors} />
-    </PageLayout>
+    </>
   );
 }

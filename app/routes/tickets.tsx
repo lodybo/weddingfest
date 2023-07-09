@@ -4,7 +4,6 @@ import { useFetcher, useLoaderData } from '@remix-run/react';
 import * as Sentry from '@sentry/remix';
 import invariant from 'tiny-invariant';
 import TicketForm from '~/components/TicketForm';
-import PageLayout from '~/layouts/Page';
 import { getRsvpIDFromSession } from '~/session.server';
 import { getRSVP } from '~/models/rsvp.server';
 import type { SelectedPriceOption } from '~/models/payment.server';
@@ -107,7 +106,7 @@ export default function TicketRoute() {
   };
 
   return (
-    <PageLayout>
+    <>
       <div className="prose mx-auto max-w-full px-8 md:prose-lg">
         <h1 className="font-handwriting">Tickets ({name})</h1>
         <p>
@@ -146,6 +145,6 @@ export default function TicketRoute() {
           </div>
         </div>
       </div>
-    </PageLayout>
+    </>
   );
 }
