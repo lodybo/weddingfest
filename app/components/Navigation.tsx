@@ -1,10 +1,8 @@
 import type { SerializeFrom } from '@remix-run/server-runtime';
-import type { LinkProps } from '@remix-run/react';
 import { Link } from '@remix-run/react';
 import type { User } from '@prisma/client';
 
 import Button from '~/components/Button';
-import Anchor from '~/components/Anchor';
 import Icon from '~/components/Icon';
 import NavigationLink from '~/components/NavigationLink';
 

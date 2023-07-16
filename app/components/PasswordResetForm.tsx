@@ -1,6 +1,5 @@
 import { Form } from '@remix-run/react';
 import Button from '~/components/Button';
-import type { ActionData } from '~/routes/aanmelden';
 import EmailField from '~/components/EmailField';
 import PasswordField from '~/components/PasswordField';
 import type { AuthErrors } from '~/validations/auth';

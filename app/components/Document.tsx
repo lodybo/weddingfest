@@ -9,7 +9,8 @@ import {
 } from '@remix-run/react';
 import { useMatchesData, useOptionalUser } from '~/utils/utils';
 import type { LoaderData } from '~/root';
-import Navigation, { MenuItem } from '~/components/Navigation';
+import type { MenuItem } from '~/components/Navigation';
+import Navigation from '~/components/Navigation';
 import Hero from '~/components/Hero';
 import Spacer from '~/components/Spacer';
 import Footer from '~/components/Footer';

@@ -22,7 +22,7 @@ import {
   createAuthenticityToken,
 } from 'remix-utils';
 import { withSentry } from '@sentry/remix';
-import { MenuItem } from '~/components/Navigation';
+import type { MenuItem } from '~/components/Navigation';
 import { getAllPages } from '~/models/pages.server';
 
 export const links: LinksFunction = () => {

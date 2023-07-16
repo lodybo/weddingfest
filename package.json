@@ -47,7 +47,8 @@
   "eslintIgnore": [
     "/node_modules",
     "/build",
-    "/public/build"
+    "/public/build",
+    "public/tinymce"
   ],
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",

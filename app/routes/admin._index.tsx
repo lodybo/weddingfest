@@ -1,4 +1,5 @@
-import { json, LoaderArgs } from '@remix-run/node';
+import type { LoaderArgs } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import type { FullRSVP, RSVPStats } from '~/models/rsvp.server';
 import { getRSVPs } from '~/models/rsvp.server';
 import { useFetcher } from '@remix-run/react';
