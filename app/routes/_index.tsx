@@ -31,7 +31,7 @@ export default function Index() {
           size="large"
           to="/ik-kom"
         >
-          Ik kom!
+          Ik wil mijn aan-/afwezigheid opgeven
         </Button>
       </div>
     </>
