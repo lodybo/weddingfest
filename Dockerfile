@@ -12,7 +12,7 @@ FROM base as deps
 
 WORKDIR /weddingfest
 
-ADD package.json package-lock.json ./
+ADD package.json package-lock.json postinstall.js ./
 RUN npm install --production=false
 
 # Setup production node_modules
@@ -21,7 +21,7 @@ FROM base as production-deps
 WORKDIR /weddingfest
 
 COPY --from=deps /weddingfest/node_modules /weddingfest/node_modules
-ADD package.json package-lock.json postinstall.js ./
+ADD package.json package-lock.json ./
 RUN npm prune --production
 
 # Build the app
