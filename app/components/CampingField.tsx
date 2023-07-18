@@ -15,7 +15,7 @@ export default function CampingField({ value, error }: Props) {
 
   const options: ToggleOption[] = [
     { label: 'Ja', value: 'true', color: 'blue' },
-    { label: 'Nee', value: 'false', color: 'blue' },
+    { label: 'Nee', value: 'false' },
   ];
 
   const handleSelect = (option: string) => {
