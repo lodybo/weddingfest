@@ -26,7 +26,7 @@ type Props = ButtonProps | ButtonLinkProps;
 const variantStyles = new Map();
 variantStyles.set(
   'normal',
-  'bg-zinc-200 hover:bg-zinc-300 hover:text-slate-900'
+  'bg-zinc-200 hover:bg-zinc-700 hover:text-slate-50'
 );
 variantStyles.set(
   'primary',
