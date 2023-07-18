@@ -34,14 +34,14 @@ export default function ToggleInput({ options, name, onSelect, value }: Props) {
               ? 'bg-cyan-300'
               : 'bg-zinc-200'
             : value === selectedOption
-            ? 'bg-zinc-300'
+            ? 'bg-zinc-700 text-slate-50'
             : 'bg-zinc-200'
         } ${
           color === 'green'
             ? 'hover:bg-emerald-300'
             : color === 'blue'
             ? 'hover:bg-cyan-300'
-            : 'hover:bg-zinc-300'
+            : 'hover:bg-zinc-700 hover:text-slate-50'
         }`;
 
         return (
