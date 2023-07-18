@@ -51,11 +51,11 @@ export default function Button({
 }: Props) {
   const classes = `${className} ${variantStyles.get(variant)} ${sizes.get(
     size
-  )} text-slate-800 transition focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2`;
+  )} rounded text-slate-800 transition focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2`;
   if ('to' in props) {
     const { to = '' } = props;
     return (
-      <Link to={to} className={`block text-center ${classes}`}>
+      <Link to={to} className={`flex items-center justify-center ${classes}`}>
         {children}
       </Link>
     );
@@ -63,7 +63,7 @@ export default function Button({
 
   return (
     <button
-      className={`${classes} disabled:pointer-events-none disabled:cursor-default disabled:bg-gray-200 disabled:text-gray-300`}
+      className={`${classes} rounded disabled:pointer-events-none disabled:cursor-default disabled:bg-gray-200 disabled:text-gray-300`}
       disabled={props.disabled}
       onClick={props.onClick}
     >

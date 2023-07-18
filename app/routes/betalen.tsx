@@ -15,7 +15,6 @@ import {
   getPaymentForRsvp,
   getTotalPriceForRsvp,
 } from '~/models/payment.server';
-import PageLayout from '~/layouts/Page';
 import { getDomainUrl, getErrorMessage } from '~/utils/utils';
 import CheckoutForm from '~/components/CheckoutForm';
 import { stripe } from '~/stripe.server';
@@ -92,7 +91,7 @@ export default function PayRoute() {
   };
 
   return (
-    <PageLayout>
+    <>
       <div className="w-full max-w-screen-lg space-y-6 px-8">
         <h1 className="font-handwriting text-7xl">Betalen</h1>
 
@@ -122,6 +121,6 @@ export default function PayRoute() {
           </div>
         </div>
       </div>
-    </PageLayout>
+    </>
   );
 }

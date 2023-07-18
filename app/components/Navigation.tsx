@@ -1,20 +1,29 @@
 import type { SerializeFrom } from '@remix-run/server-runtime';
-import type { LinkProps } from '@remix-run/react';
 import { Link } from '@remix-run/react';
 import type { User } from '@prisma/client';
 
 import Button from '~/components/Button';
-import Anchor from '~/components/Anchor';
 import Icon from '~/components/Icon';
+import NavigationLink from '~/components/NavigationLink';
+
+export type MenuItem = {
+  to: string;
+  title: string;
+};
 
 type Props = {
   /**
    * The user, if available.
    */
   user?: User | SerializeFrom<User>;
+
+  /**
+   * A collection of menu items
+   */
+  menuItems?: MenuItem[];
 };
 
-export default function Navigation({ user }: Props) {
+export default function Navigation({ user, menuItems = [] }: Props) {
   return (
     <div className="sticky top-0 flex h-20 w-full items-center justify-between bg-white px-8 shadow-md">
       <Link to="/">
@@ -24,6 +33,9 @@ export default function Navigation({ user }: Props) {
       </Link>
 
       <ul className="flex flex-row items-center gap-4">
+        {menuItems.map(({ to, title }) => (
+          <NavigationLink key={to} to={to} title={title} />
+        ))}
         {user ? (
           <>
             <li>
@@ -45,20 +57,10 @@ export default function Navigation({ user }: Props) {
           </>
         ) : (
           <>
-            <NavLink to="/inloggen">Inloggen</NavLink>
+            <NavigationLink to="/inloggen" title="Inloggen" />
           </>
         )}
       </ul>
     </div>
-  );
-}
-
-type NavLinkProps = LinkProps;
-
-function NavLink({ children, ...props }: NavLinkProps) {
-  return (
-    <li className="text-xl">
-      <Anchor {...props}>{children}</Anchor>
-    </li>
   );
 }

@@ -1,8 +1,7 @@
-import { RegisterForm } from '~/components/RegisterForm';
-import PageLayout from '~/layouts/Page';
 import type { LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { RegisterForm } from '~/components/RegisterForm';
 
 export async function loader({ request }: LoaderArgs) {
   const url = new URL(request.url);
@@ -15,7 +14,7 @@ export default function PaymentSucceededRoute() {
   const { rsvp } = useLoaderData<typeof loader>();
 
   return (
-    <PageLayout>
+    <>
       <div className="space-y-12">
         <h1 className="font-handwriting text-7xl">Betaling gelukt!</h1>
 
@@ -43,6 +42,6 @@ export default function PaymentSucceededRoute() {
           </>
         ) : null}
       </div>
-    </PageLayout>
+    </>
   );
 }

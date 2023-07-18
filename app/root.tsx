@@ -22,6 +22,8 @@ import {
   createAuthenticityToken,
 } from 'remix-utils';
 import { withSentry } from '@sentry/remix';
+import type { MenuItem } from '~/components/Navigation';
+import { getAllPages } from '~/models/pages.server';
 
 export const links: LinksFunction = () => {
   return [
@@ -68,11 +70,18 @@ export type LoaderData = {
   user: Awaited<ReturnType<typeof getUser>>;
   csrf: string;
   ENV: Window['ENV'];
+  menuItems: MenuItem[];
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
   const session = await getSession(request);
   const csrfToken = createAuthenticityToken(session);
+
+  const pages = await getAllPages();
+  const menuItems: MenuItem[] = pages.map((page) => ({
+    title: page.title,
+    to: page.slug,
+  }));
 
   return json<LoaderData>(
     {
@@ -82,6 +91,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         ENVIRONMENT: process.env.NODE_ENV,
         STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
       },
+      menuItems,
     },
     {
       headers: {

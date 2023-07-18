@@ -1,4 +1,5 @@
-import { json, redirect } from '@remix-run/node';
+import * as React from 'react';
+import { redirect } from '@remix-run/node';
 import { useActionData } from '@remix-run/react';
 import type { ActionFunction, V2_MetaFunction } from '@remix-run/node';
 import sanitizeHtml from 'sanitize-html';
@@ -8,8 +9,6 @@ import invariant from 'tiny-invariant';
 import { safeRedirect } from '~/utils/utils';
 
 import { changeUserPassword } from '~/models/user.server';
-import * as React from 'react';
-import PageLayout from '~/layouts/Page';
 import { PasswordResetForm } from '~/components/PasswordResetForm';
 import { validateResetPasswordForm } from '~/validations/auth';
 
@@ -64,8 +63,8 @@ export default function ResetPasswordPage() {
   const actionData = useActionData<ActionData>();
 
   return (
-    <PageLayout>
+    <>
       <PasswordResetForm errors={actionData?.errors} />
-    </PageLayout>
+    </>
   );
 }

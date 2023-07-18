@@ -6,7 +6,6 @@ import { verifyAuthenticityToken } from 'remix-utils';
 import * as Sentry from '@sentry/remix';
 import sanitizeHtml from 'sanitize-html';
 import RSVPForm from '~/components/RSVPForm';
-import PageLayout from '~/layouts/Page';
 import { editRSVP, getRSVP } from '~/models/rsvp.server';
 import Button from '~/components/Button';
 import type { AttendanceResponse, RSVP } from '~/types/RSVP';
@@ -64,7 +63,7 @@ export async function action({ request }: ActionArgs) {
     remarks,
     attendee
   );
-  console.log(hasErrors, Object.fromEntries(body));
+
   if (!hasErrors) {
     invariant(attendee !== undefined, 'Attendee needs to be set');
     invariant(typeof attendee === 'string', 'Attendee is of wrong type');
@@ -137,7 +136,7 @@ export default function EditRSVP() {
   let data = useActionData<typeof action>();
 
   return (
-    <PageLayout>
+    <>
       <div className="w-full px-8">
         {data?.success ? (
           <div className="flex flex-col items-center justify-center gap-5">
@@ -156,6 +155,6 @@ export default function EditRSVP() {
           </>
         )}
       </div>
-    </PageLayout>
+    </>
   );
 }
