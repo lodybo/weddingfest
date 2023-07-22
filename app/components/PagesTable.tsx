@@ -28,7 +28,12 @@ export default function PagesTable({ pages }: Props) {
         ) : (
           pages.map((page) => (
             <tr className="odd:bg-stone-50" key={page.id}>
-              <td className="space-y-2 p-2.5">{page.title}</td>
+              <td className="space-y-2 p-2.5">
+                {page.title}
+                {page.published ? null : (
+                  <span className="text-xs text-gray-500"> (concept)</span>
+                )}
+              </td>
               <td className="flex flex-row gap-2 p-2.5">
                 <Button size="small" to={`/admin/pages/edit/${page.slug}`}>
                   <Icon name="pen-to-square" />

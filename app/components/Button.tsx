@@ -66,6 +66,8 @@ export default function Button({
       className={`${classes} rounded disabled:pointer-events-none disabled:cursor-default disabled:bg-gray-200 disabled:text-gray-300`}
       disabled={props.disabled}
       onClick={props.onClick}
+      name={props.name}
+      value={props.value}
     >
       {children}
     </button>
