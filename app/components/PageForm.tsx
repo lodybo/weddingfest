@@ -7,6 +7,7 @@ import Editor from '~/components/Editor';
 import Button from '~/components/Button';
 import { slugify } from '~/utils/utils';
 import type { ContentPageErrors } from '~/validations/content';
+import Anchor from '~/components/Anchor';
 
 type Props = {
   errors?: ContentPageErrors & { form?: string };
@@ -15,9 +16,10 @@ type Props = {
     slug: string;
     content: string;
   };
+  allowSave?: boolean;
 };
 
-export default function PageForm({ errors, data }: Props) {
+export default function PageForm({ errors, data, allowSave = true }: Props) {
   const [slug, setSlug] = useState(data?.slug ?? '');
   const handleTitleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (slug === '') {
@@ -56,9 +58,22 @@ export default function PageForm({ errors, data }: Props) {
         {errors?.content ? <ErrorMessage message={errors.content} /> : null}
       </div>
 
-      <Button variant="primary" type="submit">
-        Opslaan
-      </Button>
+      <div className="flex flex-row justify-between gap-2">
+        <div className="self-center">
+          <Anchor to="/admin/pages">Terug</Anchor>
+        </div>
+
+        <div className="flex flex-row gap-2">
+          {allowSave ? (
+            <Button name="mode" value="save">
+              Opslaan
+            </Button>
+          ) : null}
+          <Button name="mode" value="publish" variant="primary" type="submit">
+            Publiceren
+          </Button>
+        </div>
+      </div>
     </Form>
   );
 }

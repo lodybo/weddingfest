@@ -55,7 +55,7 @@ export async function action({ request }: ActionArgs) {
     );
 
     try {
-      await updatePage({ title, slug, content });
+      await updatePage({ title, slug, content, mode: 'published' });
       return json({
         errors: {},
         data: {
@@ -95,7 +95,11 @@ export default function AdminContentPagesEditRoute() {
       {actionData?.saved ? (
         <SuccessMessage message="De pagina is opgeslagen" />
       ) : null}
-      <PageForm data={actionData?.data || page} errors={actionData?.errors} />
+      <PageForm
+        data={actionData?.data || page}
+        errors={actionData?.errors}
+        allowSave={false}
+      />
     </div>
   );
 }

@@ -20,6 +20,7 @@ export async function action({ request }: ActionArgs) {
   const title = formData.get('title');
   const slug = formData.get('slug');
   const content = formData.get('content');
+  const mode = formData.get('mode');
 
   const hasErrors = validatePage(title, slug, content);
 
@@ -42,9 +43,11 @@ export async function action({ request }: ActionArgs) {
       content && typeof content === 'string',
       'De inhoud is niet ingevuld'
     );
+    invariant(mode && typeof mode === 'string', 'De modus is niet ingevuld');
+    invariant(mode === 'published' || mode === 'draft', 'De modus is ongeldig');
 
     try {
-      await createPage({ title, slug, content });
+      await createPage({ title, slug, content, mode });
       return redirect('/admin/pages');
     } catch (error: unknown) {
       Sentry.captureException(error);

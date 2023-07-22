@@ -23,7 +23,7 @@ import {
 } from 'remix-utils';
 import { withSentry } from '@sentry/remix';
 import type { MenuItem } from '~/components/Navigation';
-import { getAllPages } from '~/models/pages.server';
+import { getPublishedPages } from '~/models/pages.server';
 
 export const links: LinksFunction = () => {
   return [
@@ -77,7 +77,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const session = await getSession(request);
   const csrfToken = createAuthenticityToken(session);
 
-  const pages = await getAllPages();
+  const pages = await getPublishedPages();
   const menuItems: MenuItem[] = pages.map((page) => ({
     title: page.title,
     to: page.slug,
