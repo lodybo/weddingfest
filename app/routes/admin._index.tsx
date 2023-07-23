@@ -10,6 +10,9 @@ import Loader from '~/components/Loader';
 import { useEffect } from 'react';
 import type { SerializeFrom } from '@remix-run/server-runtime';
 import { requireAdmin } from '~/session.server';
+import { sleep } from '~/utils/utils';
+import Button from '~/components/Button';
+import Icon from '~/components/Icon';
 
 export async function loader({ request }: LoaderArgs) {
   await requireAdmin(request);
@@ -118,6 +121,17 @@ export default function AdminIndexRoute() {
       </div>
 
       <Stats stats={stats} />
+
+      <div className="flex flex-row justify-end">
+        <Button
+          to="/admin/rsvp/add"
+          className="flex flex-row gap-2.5"
+          size="small"
+        >
+          <Icon name="plus" />
+          RSVP toevoegen
+        </Button>
+      </div>
       <RSVPTable Rsvps={rsvps} />
     </div>
   );

@@ -141,3 +141,5 @@ export function getDomainUrl(request: Request) {
   const protocol = host.includes('localhost') ? 'http' : 'https';
   return `${protocol}://${host}`;
 }
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
