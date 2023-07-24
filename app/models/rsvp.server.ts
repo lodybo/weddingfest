@@ -108,3 +108,25 @@ export function deleteRSVP(id: Rsvp['id']) {
     },
   });
 }
+
+export function findInRsVPs(query: string) {
+  return prisma.rsvp.findMany({
+    where: {
+      OR: [
+        {
+          name: {
+            contains: query,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    },
+    include: {
+      Payment: {
+        include: {
+          tickets: true,
+        },
+      },
+    },
+  });
+}
