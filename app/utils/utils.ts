@@ -3,6 +3,8 @@ import { useMemo } from 'react';
 
 import type { User } from '~/models/user.server';
 import type { PriceOption, SelectedPriceOption } from '~/models/payment.server';
+import { Prisma } from '.prisma/client';
+import { RSVPStats } from '~/models/rsvp.server';
 
 const DEFAULT_REDIRECT = '/';
 
@@ -140,4 +142,77 @@ export function getDomainUrl(request: Request) {
   }
   const protocol = host.includes('localhost') ? 'http' : 'https';
   return `${protocol}://${host}`;
+}
+
+export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+export function generateStatsFromRsvps(
+  rsvps: Array<
+    Prisma.RsvpGetPayload<{
+      include: { Payment: { include: { tickets: boolean } } };
+    }>
+  >
+) {
+  const stats: RSVPStats = {
+    tickets: {
+      adult: 0,
+      child: 0,
+      baby: 0,
+      persons: 0,
+      camping: 0,
+      gift: 0,
+      total: 0,
+    },
+    payments: {
+      paid: 0,
+      unpaid: 0,
+      amount: 0,
+    },
+    attending: {
+      allDay: 0,
+      eveningOnly: 0,
+      notAttending: 0,
+    },
+  };
+
+  for (const rsvp of rsvps) {
+    rsvp.Payment?.tickets.forEach((ticket) => {
+      switch (ticket.slug) {
+        case 'adult':
+          stats.tickets.adult++;
+          stats.tickets.persons++;
+          break;
+        case 'child':
+          stats.tickets.child++;
+          stats.tickets.persons++;
+          break;
+        case 'baby':
+          stats.tickets.baby++;
+          stats.tickets.persons++;
+          break;
+        case 'camping':
+          stats.tickets.camping++;
+          break;
+        case 'gift':
+          stats.tickets.gift++;
+          break;
+        default:
+          break;
+      }
+
+      stats.tickets.total++;
+    });
+
+    if (rsvp.Payment?.paid) {
+      stats.payments.paid++;
+      stats.payments.amount += parseInt(rsvp.Payment.total.toString());
+    } else if (rsvp.attendance !== 'NONE') {
+      stats.payments.unpaid++;
+    }
+
+    stats.attending.allDay += rsvp.attendance === 'ALL_DAY' ? 1 : 0;
+    stats.attending.eveningOnly += rsvp.attendance === 'EVENING' ? 1 : 0;
+    stats.attending.notAttending += rsvp.attendance === 'NONE' ? 1 : 0;
+  }
+  return stats;
 }

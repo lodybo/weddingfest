@@ -18,7 +18,6 @@ export default function AdminPage() {
         <ul className="flex flex-row gap-2 md:flex-col">
           <NavigationItem to="/admin">Administratie</NavigationItem>
           <NavigationItem to="/admin/pages">Pagina's</NavigationItem>
-          <NavigationItem to="/admin/rsvps">RSVP's</NavigationItem>
           <NavigationItem to="/account">Account</NavigationItem>
         </ul>
       </div>

@@ -87,7 +87,7 @@ function StatColumn({ title, children }: StatColumnProps) {
     <div className="flex flex-col gap-2">
       <p className="text-center text-xl">{title}</p>
       <div className="flex flex-row gap-4">
-        <ul className="flex h-10 w-full flex-row flex-wrap justify-between gap-2 sm:h-32 sm:flex-col sm:justify-start">
+        <ul className="min-h-10 flex w-full flex-row flex-wrap justify-between gap-2 sm:h-32 sm:flex-col sm:justify-start">
           {children}
         </ul>
       </div>

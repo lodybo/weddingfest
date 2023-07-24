@@ -25,6 +25,7 @@ export {
   faArrowRightFromBracket,
   faArrowsRotate,
   faPlus,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
 export {

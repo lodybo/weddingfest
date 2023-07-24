@@ -5,6 +5,7 @@ import { formatAmountInLocale } from '~/utils/utils';
 import type { FullRSVP } from '~/models/rsvp.server';
 import TicketIcon from '~/components/TicketIcon';
 import Anchor from '~/components/Anchor';
+import { Link } from '@remix-run/react';
 
 type Props = {
   Rsvps: SerializeFrom<FullRSVP>[] | undefined;
@@ -14,7 +15,7 @@ export default function RSVPTable({ Rsvps }: Props) {
   if (!Rsvps) return null;
 
   return (
-    <table className="w-full table-fixed border-2 border-slate-100">
+    <table className="w-full  border-2 border-slate-100">
       <thead>
         <tr className="bg-stone-100">
           <th className="p-2.5 text-center sm:text-left">
@@ -23,20 +24,16 @@ export default function RSVPTable({ Rsvps }: Props) {
               <Icon name="user" />
             </span>
           </th>
+          <th className="hidden p-2.5 text-left lg:table-cell">Tickets</th>
           <th className="hidden p-2.5 text-left lg:table-cell">Dieet</th>
           <th className="hidden p-2.5 text-left lg:table-cell">Opmerking</th>
-          <th className="p-2.5 text-center sm:text-left">
-            <span className="hidden sm:inline">Tickets</span>
-            <span className="inline sm:hidden">
-              <Icon name="ticket" />
-            </span>
-          </th>
           <th className="p-2.5 text-center sm:text-left">
             <span className="hidden sm:inline">Bedrag</span>
             <span className="inline sm:hidden">
               <Icon name="coins" />
             </span>
           </th>
+          <th className="p-2.5"></th>
         </tr>
       </thead>
 
@@ -55,19 +52,16 @@ export default function RSVPTable({ Rsvps }: Props) {
                 )}
 
                 {rsvp.camping ? <Icon name="campground" /> : null}
+                <div className="table-cell lg:hidden">
+                  <RSVPOverview Payment={rsvp.Payment} />
+                </div>
               </div>
+            </td>
+            <td className="hidden p-2.5 lg:table-cell">
+              <RSVPOverview Payment={rsvp.Payment} />
             </td>
             <td className="hidden p-2.5 lg:table-cell">{rsvp.diet}</td>
             <td className="hidden p-2.5 lg:table-cell">{rsvp.remarks}</td>
-            <td className="p-2.5">
-              <div className="flex flex-row flex-wrap gap-2">
-                {rsvp.Payment?.tickets.map(({ id, slug }) => (
-                  <div key={id}>
-                    <TicketIcon slug={slug} />
-                  </div>
-                ))}
-              </div>
-            </td>
             <td className="p-2.5">
               <div className="flex flex-row flex-wrap gap-2">
                 {rsvp.attendance !== ATTENDANCE.NONE ? (
@@ -96,9 +90,32 @@ export default function RSVPTable({ Rsvps }: Props) {
                 ) : null}
               </div>
             </td>
+            <td className="p-5">
+              <Link to={`/verwijderen/${rsvp.id}`}>
+                <Icon name="trash" />
+              </Link>
+            </td>
           </tr>
         ))}
       </tbody>
     </table>
+  );
+}
+
+type RSVPOverviewProps = {
+  Payment: SerializeFrom<FullRSVP['Payment']>;
+};
+
+function RSVPOverview({ Payment }: RSVPOverviewProps) {
+  if (!Payment) return null;
+
+  return (
+    <ul className="flex flex-row flex-wrap gap-2">
+      {Payment.tickets.map(({ id, slug }) => (
+        <div key={id}>
+          <TicketIcon slug={slug} />
+        </div>
+      ))}
+    </ul>
   );
 }

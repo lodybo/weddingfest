@@ -1,7 +1,7 @@
-import type { LoaderArgs } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import type { FullRSVP, RSVPStats } from '~/models/rsvp.server';
-import { getRSVPs } from '~/models/rsvp.server';
+import { findInRsVPs, getRSVPs } from '~/models/rsvp.server';
 import { useFetcher } from '@remix-run/react';
 import RSVPTable from '~/components/RSVPTable';
 import Stats from '~/components/Stats';
@@ -10,75 +10,35 @@ import Loader from '~/components/Loader';
 import { useEffect } from 'react';
 import type { SerializeFrom } from '@remix-run/server-runtime';
 import { requireAdmin } from '~/session.server';
+import Button from '~/components/Button';
+import Icon from '~/components/Icon';
+import RSVPTableSearch from '~/components/RSVPTableSearch';
+import { generateStatsFromRsvps } from '~/utils/utils';
 
 export async function loader({ request }: LoaderArgs) {
   await requireAdmin(request);
 
   const rsvps = await getRSVPs();
 
-  const stats: RSVPStats = {
-    tickets: {
-      adult: 0,
-      child: 0,
-      baby: 0,
-      persons: 0,
-      camping: 0,
-      gift: 0,
-      total: 0,
-    },
-    payments: {
-      paid: 0,
-      unpaid: 0,
-      amount: 0,
-    },
-    attending: {
-      allDay: 0,
-      eveningOnly: 0,
-      notAttending: 0,
-    },
-  };
-
-  for (const rsvp of rsvps) {
-    rsvp.Payment?.tickets.forEach((ticket) => {
-      switch (ticket.slug) {
-        case 'adult':
-          stats.tickets.adult++;
-          stats.tickets.persons++;
-          break;
-        case 'child':
-          stats.tickets.child++;
-          stats.tickets.persons++;
-          break;
-        case 'baby':
-          stats.tickets.baby++;
-          stats.tickets.persons++;
-          break;
-        case 'camping':
-          stats.tickets.camping++;
-          break;
-        case 'gift':
-          stats.tickets.gift++;
-          break;
-        default:
-          break;
-      }
-
-      stats.tickets.total++;
-    });
-
-    if (rsvp.Payment?.paid) {
-      stats.payments.paid++;
-      stats.payments.amount += parseInt(rsvp.Payment.total.toString());
-    } else if (rsvp.attendance !== 'NONE') {
-      stats.payments.unpaid++;
-    }
-
-    stats.attending.allDay += rsvp.attendance === 'ALL_DAY' ? 1 : 0;
-    stats.attending.eveningOnly += rsvp.attendance === 'EVENING' ? 1 : 0;
-    stats.attending.notAttending += rsvp.attendance === 'NONE' ? 1 : 0;
-  }
+  const stats = generateStatsFromRsvps(rsvps);
 
   return json({ rsvps, stats });
+}
+
+export async function action({ request, params }: ActionArgs) {
+  await requireAdmin(request);
+
+  const url = new URL(request.url);
+
+  const query = url.searchParams.get('query');
+
+  if (!query) {
+    return null;
+  }
+
+  const results = await findInRsVPs(query);
+
+  return json({ rsvps: results });
 }
 
 export default function AdminIndexRoute() {
@@ -95,13 +55,25 @@ export default function AdminIndexRoute() {
 
   if (fetcher.state === 'idle' && fetcher.data) {
     rsvps = fetcher.data.rsvps;
-    stats = fetcher.data.stats;
+    if (fetcher.data.stats) {
+      stats = fetcher.data.stats;
+    }
   }
 
   const isFetching = fetcher.state === 'loading';
 
   const handleRefresh = () => {
     fetcher.load('/admin?index');
+  };
+
+  const handleSearch = (searchTerm: string) => {
+    fetcher.submit(
+      {},
+      {
+        method: 'POST',
+        action: `/admin?index&query=${searchTerm}`,
+      }
+    );
   };
 
   return (
@@ -118,6 +90,23 @@ export default function AdminIndexRoute() {
       </div>
 
       <Stats stats={stats} />
+
+      <div className="mt-12 flex flex-col justify-between gap-3 sm:flex-row sm:gap-5">
+        <div className="w-full flex-1">
+          <RSVPTableSearch onSearch={handleSearch} />
+        </div>
+        <div className="flex w-auto flex-none items-end">
+          <Button
+            to="/admin/rsvp/add"
+            className="flex flex-row gap-2.5"
+            size="small"
+          >
+            <Icon name="plus" />
+            RSVP toevoegen
+          </Button>
+        </div>
+      </div>
+
       <RSVPTable Rsvps={rsvps} />
     </div>
   );
