@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { ATTENDANCE } from '@prisma/client';
 import ToggleInput from '~/components/ToggleInput';
 import type { ToggleOption } from '~/components/ToggleInput';
@@ -7,9 +7,10 @@ import ErrorMessage from '~/components/ErrorMessage';
 type Props = {
   value?: ATTENDANCE;
   error?: string;
+  onChange?: (value: ATTENDANCE) => void;
 };
 
-export default function AttendanceField({ value, error }: Props) {
+export default function AttendanceField({ value, error, onChange }: Props) {
   const [selectedOption, setSelectedOption] = useState<string>(value ?? '');
 
   const attendanceOptions: ToggleOption[] = [
@@ -20,6 +21,9 @@ export default function AttendanceField({ value, error }: Props) {
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
+    if (onChange) {
+      onChange(option as ATTENDANCE);
+    }
   };
 
   return (

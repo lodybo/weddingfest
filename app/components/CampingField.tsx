@@ -6,9 +6,10 @@ import ErrorMessage from '~/components/ErrorMessage';
 type Props = {
   value?: boolean;
   error?: string;
+  onChange?: (value: boolean) => void;
 };
 
-export default function CampingField({ value, error }: Props) {
+export default function CampingField({ value, error, onChange }: Props) {
   const [selectedOption, setSelectedOption] = useState(
     JSON.stringify(value) || ''
   );
@@ -20,6 +21,9 @@ export default function CampingField({ value, error }: Props) {
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
+    if (onChange) {
+      onChange(option === 'true');
+    }
   };
 
   return (

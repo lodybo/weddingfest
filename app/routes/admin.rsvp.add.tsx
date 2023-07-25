@@ -43,7 +43,7 @@ export async function action({ request }: ActionArgs) {
     remarks,
     tickets: stringifiedTickets,
   } = Object.fromEntries(formData);
-  console.log('stringifiedTickets', stringifiedTickets);
+  console.log(Object.fromEntries(formData));
   invariant(typeof name === 'string', 'Name is required');
   invariant(attendanceIsValid(attendance), 'Attendance is required');
   invariant(typeof camping === 'string', 'Camping is required');
@@ -94,6 +94,7 @@ export default function AddRSVPPage() {
   }, [fetcher]);
 
   const handleFormChange = (formData: FormData) => {
+    console.log(Object.fromEntries(formData));
     setRsvpFormData(formData);
   };
 
