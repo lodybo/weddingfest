@@ -10,6 +10,8 @@ import DietField from '~/components/DietField';
 import RemarksField from '~/components/RemarksField';
 import { AuthenticityTokenInput } from 'remix-utils';
 import Button from '~/components/Button';
+import { useRef } from 'react';
+import { ATTENDANCE } from '@prisma/client';
 
 type Props = {
   rsvp?: RSVP | null;
@@ -24,6 +26,7 @@ export default function RSVPForm({
   mode = 'create',
   onChange,
 }: Props) {
+  const ref = useRef<HTMLFormElement>(null);
   const {
     name: nameMessage,
     attendance: attendanceMessage,
@@ -37,8 +40,25 @@ export default function RSVPForm({
     }
   };
 
+  const handleAttendanceFieldChange = (value: ATTENDANCE) => {
+    if (ref.current && onChange) {
+      const formData = new FormData(ref.current);
+      formData.set('attendance', value);
+      onChange(formData);
+    }
+  };
+
+  const handleCampingFieldChange = (value: boolean) => {
+    if (ref.current && onChange) {
+      const formData = new FormData(ref.current);
+      formData.set('camping', value.toString());
+      onChange(formData);
+    }
+  };
+
   return (
     <Form
+      ref={ref}
       method="post"
       className="mx-auto my-10 flex w-full max-w-md flex-1 flex-col items-center justify-center gap-5 xl:max-w-2xl"
       onChange={handleFormChange}
@@ -54,9 +74,17 @@ export default function RSVPForm({
         error={nameMessage}
       />
 
-      <AttendanceField value={attendance} error={attendanceMessage} />
+      <AttendanceField
+        value={attendance}
+        error={attendanceMessage}
+        onChange={handleAttendanceFieldChange}
+      />
 
-      <CampingField value={camping} error={campingMessage} />
+      <CampingField
+        value={camping}
+        error={campingMessage}
+        onChange={handleCampingFieldChange}
+      />
 
       <DietField value={diet} />
 
