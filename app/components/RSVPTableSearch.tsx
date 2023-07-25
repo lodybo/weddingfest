@@ -12,6 +12,12 @@ type Props = {
 export default function RSVPTableSearch({ value, onSearch }: Props) {
   const [searchTerm, setSearchTerm] = useState(value ?? '');
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      onSearch(searchTerm);
+    }
+  };
+
   return (
     <Label label="Zoek op naam">
       <div className="flex flex-row gap-1">
@@ -19,6 +25,7 @@ export default function RSVPTableSearch({ value, onSearch }: Props) {
           type="search"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          onKeyPress={handleKeyPress}
         />
         <Button size="small" onClick={() => onSearch(searchTerm)}>
           <Icon sizes="s" name="search" />
