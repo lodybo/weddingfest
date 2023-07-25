@@ -30,6 +30,7 @@ export async function action({ request }: ActionArgs) {
   const title = formData.get('title');
   const slug = formData.get('slug');
   const content = formData.get('content');
+  const mode = formData.get('mode');
 
   const hasErrors = validatePage(title, slug, content);
 
@@ -53,9 +54,10 @@ export async function action({ request }: ActionArgs) {
       content && typeof content === 'string',
       'De inhoud is niet ingevuld'
     );
+    invariant(mode === 'publish' || mode === 'draft', 'De modus is ongeldig');
 
     try {
-      await updatePage({ title, slug, content, mode: 'published' });
+      await updatePage({ title, slug, content, mode });
       return json({
         errors: {},
         data: {
@@ -98,7 +100,7 @@ export default function AdminContentPagesEditRoute() {
       <PageForm
         data={actionData?.data || page}
         errors={actionData?.errors}
-        allowSave={false}
+        allowSave={!page.published}
       />
     </div>
   );
