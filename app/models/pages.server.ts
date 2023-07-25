@@ -2,7 +2,7 @@ import { prisma } from '~/db.server';
 import type { Page } from '@prisma/client';
 
 type EditablePageProperties = Pick<Page, 'title' | 'slug' | 'content'> & {
-  mode: 'published' | 'draft';
+  mode: 'publish' | 'draft';
 };
 
 export function getAllPages() {
@@ -32,17 +32,23 @@ export function createPage({
       title,
       slug,
       content,
-      published: mode === 'published',
+      published: mode === 'publish',
     },
   });
 }
 
-export function updatePage({ title, slug, content }: EditablePageProperties) {
+export function updatePage({
+  title,
+  slug,
+  content,
+  mode,
+}: EditablePageProperties) {
   return prisma.page.update({
     where: { slug },
     data: {
       title,
       content,
+      published: mode === 'publish',
     },
   });
 }

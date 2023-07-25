@@ -65,7 +65,7 @@ export default function PageForm({ errors, data, allowSave = true }: Props) {
 
         <div className="flex flex-row gap-2">
           {allowSave ? (
-            <Button name="mode" value="save">
+            <Button name="mode" value="draft">
               Opslaan
             </Button>
           ) : null}
