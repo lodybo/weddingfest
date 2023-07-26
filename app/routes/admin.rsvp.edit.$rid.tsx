@@ -88,9 +88,9 @@ export async function action({ request }: ActionArgs) {
     const payment = await hasPayment(attendee);
     if (payment) {
       await deletePayment(payment.id);
-      await createPayment(tickets, attendee);
-      await markPaymentAsComplete(attendee);
     }
+    await createPayment(tickets, attendee);
+    await markPaymentAsComplete(attendee);
 
     return json({ success: true }, { status: 200 });
   } catch (error: unknown) {
@@ -121,7 +121,6 @@ export default function AdminEditRSVP() {
   }, [fetcher]);
 
   const handleFormChange = (formData: FormData) => {
-    console.log(Object.fromEntries(formData));
     setRsvpFormData(formData);
   };
 
@@ -137,7 +136,9 @@ export default function AdminEditRSVP() {
         formData.append(key, value);
       }
     } else {
+      console.log('No RSVP form data found, using default values', rsvp);
       for (const [key, value] of Object.entries(rsvp)) {
+        if (key === 'id') formData.append('attendee', value as string);
         if (typeof value === 'boolean')
           formData.append(key, value ? 'true' : 'false');
         if (typeof value === 'string') formData.append(key, value);
