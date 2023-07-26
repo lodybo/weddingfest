@@ -61,4 +61,3 @@ kill_timeout = "5s"
 
   [[services.ports]]
     port = "3022"
-    handlers = ["tls", "ssh"]
