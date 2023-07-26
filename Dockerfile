@@ -5,7 +5,7 @@ FROM node:16-bullseye-slim as base
 ENV NODE_ENV production
 
 # Install openssl for Prisma
-RUN apt-get update && apt-get install -y openssl
+RUN apt-get update && apt-get install -y openssl openssh-server openssh-client
 
 # Install all node_modules, including dev dependencies
 FROM base as deps
@@ -50,5 +50,17 @@ COPY --from=build /weddingfest/public /weddingfest/public
 COPY --from=deps /weddingfest/public/tinymce /weddingfest/public/tinymce
 
 ADD . .
+
+# Set environment variables for the username and password
+# These values will be replaced with the actual values provided at runtime
+ENV REPLICATOR_SSH_USER=weddingfest-replicator
+
+# Add a new user based on the provided username
+RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER
+
+# Set the password for the new user based on the provided password
+RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/secrets/ssh_password)" | chpasswd
+
+COPY ./deploy/ssh_config/password_auth.conf /etc/ssh/sshd_config.d/password_auth.conf
 
 CMD ["npm", "start"]
