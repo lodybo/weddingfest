@@ -84,11 +84,8 @@ export async function action({ request }: ActionArgs) {
   };
 
   try {
-    console.log('editing rsvp');
     await editRSVP(attendee, entry);
-    console.log('edited rsvp');
     const payment = await hasPayment(attendee);
-    console.log(payment);
     if (payment) {
       await deletePayment(payment.id);
       await createPayment(tickets, attendee);
