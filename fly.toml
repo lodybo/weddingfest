@@ -56,8 +56,9 @@ kill_timeout = "5s"
     protocol = "http"
 
 [[services]]
-  protocol = ["tls", "ssh"]
+  protocol = "tcp"
   internal_port = 22
 
   [[services.ports]]
     port = "3022"
+    handlers = ["tls", "ssh"]
