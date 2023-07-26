@@ -90,7 +90,10 @@ export default function RSVPTable({ Rsvps }: Props) {
                 ) : null}
               </div>
             </td>
-            <td className="p-5">
+            <td className="flex gap-5 p-5">
+              <Link to={`/admin/rsvp/edit/${rsvp.id}`}>
+                <Icon name="pencil" />
+              </Link>
               <Link to={`/verwijderen/${rsvp.id}`}>
                 <Icon name="trash" />
               </Link>

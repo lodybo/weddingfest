@@ -1,33 +1,52 @@
-import { useEffect, useState } from 'react';
-import type { ActionArgs, LoaderArgs } from '@remix-run/node';
-import { json } from '@remix-run/node';
-import { useFetcher, useLoaderData } from '@remix-run/react';
+import type { LoaderArgs, ActionArgs } from '@remix-run/node';
 import invariant from 'tiny-invariant';
-import sanitizeHtml from 'sanitize-html';
-import * as Sentry from '@sentry/remix';
-import { requireAdmin } from '~/session.server';
-import RSVPForm from '~/components/RSVPForm';
-import TicketForm from '~/components/TicketForm';
+import { json } from '@remix-run/node';
+import { editRSVP, getRSVP } from '~/models/rsvp.server';
 import type { SelectedPriceOption } from '~/models/payment.server';
 import {
+  convertPriceOptionsToSelectedTickets,
   convertSelectedTicketsToPriceOptions,
   createPayment,
+  deletePayment,
+  getTicketsForPayment,
+  hasPayment,
   markPaymentAsComplete,
   priceOptions,
 } from '~/models/payment.server';
-import Button from '~/components/Button';
-import { createRSVP } from '~/models/rsvp.server';
-import type { RSVP } from '~/types/RSVP';
+import { requireAdmin } from '~/session.server';
 import { attendanceIsValid } from '~/validations/validations';
+import type { RSVP } from '~/types/RSVP';
+import sanitizeHtml from 'sanitize-html';
 import { getErrorMessage } from '~/utils/utils';
-import ErrorMessage from '~/components/ErrorMessage';
+import * as Sentry from '@sentry/remix';
+import { useFetcher, useLoaderData } from '@remix-run/react';
+import { useEffect, useState } from 'react';
 import SuccessMessage from '~/components/SuccessMessage';
+import ErrorMessage from '~/components/ErrorMessage';
+import RSVPForm from '~/components/RSVPForm';
+import TicketForm from '~/components/TicketForm';
+import Button from '~/components/Button';
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request, params }: LoaderArgs) {
   await requireAdmin(request);
 
+  const { rid } = params;
+  invariant(rid !== undefined, 'RSVP ID is required');
+
+  const rsvp = await getRSVP(rid);
+  invariant(rsvp !== null, 'No RSVP found.');
+
+  const payment = await hasPayment(rid);
+  let selectedTickets: SelectedPriceOption[] = [];
+  if (payment) {
+    const tickets = await getTicketsForPayment(payment.id);
+    selectedTickets = convertPriceOptionsToSelectedTickets(tickets);
+  }
+
   return json({
+    rsvp,
     options: priceOptions.filter((option) => option.slug !== 'gift'),
+    selectedTickets,
   });
 }
 
@@ -36,6 +55,7 @@ export async function action({ request }: ActionArgs) {
 
   const formData = await request.formData();
   const {
+    attendee,
     name,
     attendance,
     camping,
@@ -43,6 +63,7 @@ export async function action({ request }: ActionArgs) {
     remarks,
     tickets: stringifiedTickets,
   } = Object.fromEntries(formData);
+  invariant(typeof attendee === 'string', 'ID is required');
   invariant(typeof name === 'string', 'Name is required');
   invariant(attendanceIsValid(attendance), 'Attendance is required');
   invariant(typeof camping === 'string', 'Camping is required');
@@ -63,9 +84,16 @@ export async function action({ request }: ActionArgs) {
   };
 
   try {
-    const { id } = await createRSVP(entry);
-    await createPayment(tickets, id);
-    await markPaymentAsComplete(id);
+    console.log('editing rsvp');
+    await editRSVP(attendee, entry);
+    console.log('edited rsvp');
+    const payment = await hasPayment(attendee);
+    console.log(payment);
+    if (payment) {
+      await deletePayment(payment.id);
+      await createPayment(tickets, attendee);
+      await markPaymentAsComplete(attendee);
+    }
 
     return json({ success: true }, { status: 200 });
   } catch (error: unknown) {
@@ -76,12 +104,15 @@ export async function action({ request }: ActionArgs) {
   }
 }
 
-export default function AddRSVPPage() {
+export default function AdminEditRSVP() {
   const fetcher = useFetcher();
-  const { options } = useLoaderData<typeof loader>();
-  const [selectedTickets, setSelectedTickets] = useState<SelectedPriceOption[]>(
-    []
-  );
+  const {
+    rsvp,
+    options,
+    selectedTickets: rsvpTickets,
+  } = useLoaderData<typeof loader>();
+  const [selectedTickets, setSelectedTickets] =
+    useState<SelectedPriceOption[]>(rsvpTickets);
   const [rsvpFormData, setRsvpFormData] = useState<FormData | undefined>(
     undefined
   );
@@ -102,12 +133,20 @@ export default function AddRSVPPage() {
   };
 
   const submitForm = () => {
-    if (!rsvpFormData || !selectedTickets) return;
-
     const formData = new FormData();
-    for (const [key, value] of rsvpFormData.entries()) {
-      formData.append(key, value);
+
+    if (rsvpFormData) {
+      for (const [key, value] of rsvpFormData.entries()) {
+        formData.append(key, value);
+      }
+    } else {
+      for (const [key, value] of Object.entries(rsvp)) {
+        if (typeof value === 'boolean')
+          formData.append(key, value ? 'true' : 'false');
+        if (typeof value === 'string') formData.append(key, value);
+      }
     }
+
     formData.append('tickets', JSON.stringify(selectedTickets));
 
     fetcher.submit(formData, { method: 'POST' });
@@ -121,7 +160,7 @@ export default function AddRSVPPage() {
       {fetcher.data && !fetcher.data.success ? (
         <ErrorMessage message={fetcher.data.error} />
       ) : null}
-      <RSVPForm onChange={handleFormChange} />
+      <RSVPForm rsvp={rsvp} onChange={handleFormChange} />
 
       <TicketForm
         options={options}
