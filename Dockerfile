@@ -54,12 +54,11 @@ ADD . .
 # Set environment variables for the username and password
 # These values will be replaced with the actual values provided at runtime
 ENV REPLICATOR_SSH_USER=weddingfest-replicator
-RUN --mount=type=secret,id=ssh_password export REPLICATOR_SSH_PASSWORD=$(cat /run/secrets/ssh_password)
 
 # Add a new user based on the provided username
 RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER
 
 # Set the password for the new user based on the provided password
-RUN echo "$REPLICATOR_SSH_USER:$REPLICATOR_SSH_PASSWORD" | chpasswd
+RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/secrets/ssh_password)" | chpasswd
 
 CMD ["npm", "start"]
