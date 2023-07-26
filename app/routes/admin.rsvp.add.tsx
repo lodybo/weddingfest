@@ -93,7 +93,6 @@ export default function AddRSVPPage() {
   }, [fetcher]);
 
   const handleFormChange = (formData: FormData) => {
-    console.log(Object.fromEntries(formData));
     setRsvpFormData(formData);
   };
 
