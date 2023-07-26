@@ -54,10 +54,3 @@ kill_timeout = "5s"
     method = "get"
     path = "/healthcheck"
     protocol = "http"
-
-[[services]]
-  protocol = "tcp"
-  internal_port = 22
-
-  [[services.ports]]
-    port = "3022"

@@ -5,7 +5,7 @@ FROM node:16-bullseye-slim as base
 ENV NODE_ENV production
 
 # Install openssl for Prisma
-RUN apt-get update && apt-get install -y openssl
+RUN apt-get update && apt-get install -y openssl openssh
 
 # Install all node_modules, including dev dependencies
 FROM base as deps
@@ -60,5 +60,7 @@ RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER
 
 # Set the password for the new user based on the provided password
 RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/secrets/ssh_password)" | chpasswd
+
+COPY ./deploy/ssh_config/password_auth.conf /etc/ssh/ssh_config.d/password_auth.conf
 
 CMD ["npm", "start"]
