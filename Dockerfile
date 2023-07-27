@@ -54,7 +54,6 @@ ADD . .
 # Set environment variables for the username and password
 # These values will be replaced with the actual values provided at runtime
 ENV REPLICATOR_SSH_USER=weddingfest-replicator
-ENV SSH_PORT=3022
 
 # Add a new user based on the provided username
 RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER

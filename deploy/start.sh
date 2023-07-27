@@ -1,2 +1,2 @@
-/usr/sbin/sshd -p $SSH_PORT
+/usr/sbin/sshd -p 3022
 npm start
