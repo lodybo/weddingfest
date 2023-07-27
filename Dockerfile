@@ -65,8 +65,7 @@ RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/se
 COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/password_auth.conf
 COPY deploy/ssh_config/client_password_auth.conf /etc/ssh/ssh_config.d/password_auth.conf
 
-# Run the ssh daemon on port 3022
-RUN mkdir /var/run/sshd
-RUN /usr/sbin/sshd -p $SSH_PORT
+# Add the start script
+COPY deploy/start.sh /start.sh
 
-CMD ["npm", "start"]
+CMD ["/start.sh"]
