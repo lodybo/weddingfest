@@ -54,6 +54,7 @@ ADD . .
 # Set environment variables for the username and password
 # These values will be replaced with the actual values provided at runtime
 ENV REPLICATOR_SSH_USER=weddingfest-replicator
+ENV SSH_PORT=3022
 
 # Add a new user based on the provided username
 RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER
@@ -63,5 +64,9 @@ RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/se
 
 COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/password_auth.conf
 COPY deploy/ssh_config/client_password_auth.conf /etc/ssh/ssh_config.d/password_auth.conf
+
+# Run the ssh daemon on port 3022
+RUN mkdir /var/run/sshd
+RUN /usr/sbin/sshd -p $SSH_PORT
 
 CMD ["npm", "start"]
