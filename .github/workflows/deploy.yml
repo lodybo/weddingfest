@@ -169,7 +169,8 @@ jobs:
           build-args: |
             COMMIT_SHA=${{ github.sha }}
           secrets: |
-            "ssh_password=${{ secrets.REPLICATOR_SSH_PASSWORD }}"
+            "replicator_private_ssh_key=${{ secrets.REPLICATOR_PRIVATE_SSH_KEY }}"
+            "replicator_public_ssh_key=${{ secrets.REPLICATOR_PUBLIC_SSH_KEY }}"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,mode=max,dest=/tmp/.buildx-cache-new
 
