@@ -62,10 +62,10 @@ RUN --mount=type=secret,id=replicator_public_ssh_key \
 
 # Set the permissions for the ssh keys
 RUN chmod 700 /root/.ssh
-RUN chmod 600 /root/.ssh/id_25519
+RUN chmod 600 /root/.ssh/id_ed25519
 
 # Add the public key to the authorized keys
-RUN cat /root/.ssh/id_25519.pub >> /root/.ssh/authorized_keys
+RUN cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
 
 # Set the permissions for the authorized keys
 RUN chmod 600 /root/.ssh/authorized_keys
