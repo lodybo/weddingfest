@@ -60,6 +60,9 @@ RUN --mount=type=secret,id=replicator_private_ssh_key \
 RUN --mount=type=secret,id=replicator_public_ssh_key \
   cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_rsa.pub
 
+# Add newline to the end of the private key
+RUN echo "" >> /root/.ssh/id_rsa
+
 # Set the permissions for the ssh keys
 RUN chmod 700 /root/.ssh
 RUN chmod 600 /root/.ssh/id_rsa
