@@ -56,9 +56,9 @@ RUN mkdir /root/.ssh
 
 # Save the public and private ssh key for the server
 RUN --mount=type=secret,id=replicator_private_ssh_key \
-  cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_25519
+  cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_ed25519
 RUN --mount=type=secret,id=replicator_public_ssh_key \
-  cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_25519.pub
+  cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_ed25519.pub
 
 # Set the permissions for the ssh keys
 RUN chmod 700 /root/.ssh
@@ -66,5 +66,11 @@ RUN chmod 600 /root/.ssh/id_25519
 
 # Add the public key to the authorized keys
 RUN cat /root/.ssh/id_25519.pub >> /root/.ssh/authorized_keys
+
+# Set the permissions for the authorized keys
+RUN chmod 600 /root/.ssh/authorized_keys
+
+# Copy the sshd config file
+COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/server_password_auth.conf
 
 CMD ["npm", "start"]
