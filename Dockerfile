@@ -76,4 +76,7 @@ RUN chmod 600 /root/.ssh/authorized_keys
 # Copy the sshd config file
 COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/server_password_auth.conf
 
-CMD ["npm", "start"]
+# Copy the start script
+COPY deploy/start.sh ./start.sh
+
+CMD ["start.sh"]

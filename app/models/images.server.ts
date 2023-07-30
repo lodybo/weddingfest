@@ -26,6 +26,7 @@ export async function replicateImageAcrossApps(image: string) {
       try {
         await sftp.connect({
           host: ip,
+          port: 3022,
           username: process.env.REPLICATOR_SSH_USER,
         });
 
