@@ -56,16 +56,16 @@ RUN mkdir /root/.ssh
 
 # Save the public and private ssh key for the server
 RUN --mount=type=secret,id=replicator_private_ssh_key \
-  cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_ed25519
+  cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_rsa
 RUN --mount=type=secret,id=replicator_public_ssh_key \
-  cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_ed25519.pub
+  cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_rsa.pub
 
 # Set the permissions for the ssh keys
 RUN chmod 700 /root/.ssh
-RUN chmod 600 /root/.ssh/id_ed25519
+RUN chmod 600 /root/.ssh/id_rsa
 
 # Add the public key to the authorized keys
-RUN cat /root/.ssh/id_ed25519.pub >> /root/.ssh/authorized_keys
+RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 
 # Set the permissions for the authorized keys
 RUN chmod 600 /root/.ssh/authorized_keys
