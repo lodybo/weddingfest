@@ -54,6 +54,9 @@ ADD . .
 # Create the ssh directory
 RUN mkdir /root/.ssh
 
+# Set SSH user
+ENV REPLICATOR_SSH_USER root
+
 # Save the public and private ssh key for the server
 RUN --mount=type=secret,id=replicator_private_ssh_key \
   cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_rsa
