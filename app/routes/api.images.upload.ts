@@ -7,6 +7,7 @@ import {
   uploadHandler,
 } from '~/models/images.server';
 import type { APIResponse, ImageUploadResponse } from '~/types/Responses';
+import { serverError } from 'remix-utils';
 
 export async function action({ request }: ActionArgs) {
   await requireAdmin(request);
@@ -32,7 +33,9 @@ export async function action({ request }: ActionArgs) {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    await replicateImageAcrossApps(image.name);
+    await replicateImageAcrossApps(image.name).catch((e) => {
+      return serverError(e);
+    });
   }
 
   return json<ImageUploadResponse>({ location: `/image/${image.name}` });
