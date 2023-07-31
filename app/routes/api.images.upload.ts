@@ -9,8 +9,24 @@ import {
 import type { APIResponse, ImageUploadResponse } from '~/types/Responses';
 import { serverError } from 'remix-utils';
 
+const ALLOWED_ORIGINS = [
+  'https://weddingfest.nl',
+  'https://www.weddingfest.nl',
+  'https://staging.weddingfest.nl',
+  'http://localhost:3000',
+];
+
 export async function action({ request }: ActionArgs) {
   await requireAdmin(request);
+
+  const origin = request.headers.get('origin');
+  console.log({ origin });
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return json<APIResponse>({
+      ok: false,
+      message: 'Deze actie is niet toegestaan',
+    });
+  }
 
   let image: NodeOnDiskFile | null = null;
   try {
@@ -38,5 +54,8 @@ export async function action({ request }: ActionArgs) {
     });
   }
 
-  return json<ImageUploadResponse>({ location: `/image/${image.name}` });
+  // Construct the base url
+  return json<ImageUploadResponse>({
+    location: `${origin}/image/${image.name}`,
+  });
 }
