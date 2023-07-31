@@ -79,4 +79,4 @@ COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/server_p
 # Copy the start script
 COPY deploy/start.sh ./start.sh
 
-CMD ["start.sh"]
+CMD ["./start.sh"]
