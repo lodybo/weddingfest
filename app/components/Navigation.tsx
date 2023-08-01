@@ -5,6 +5,7 @@ import type { User } from '@prisma/client';
 import Button from '~/components/Button';
 import Icon from '~/components/Icon';
 import NavigationLink from '~/components/NavigationLink';
+import { useState } from 'react';
 
 export type MenuItem = {
   to: string;
@@ -24,6 +25,12 @@ type Props = {
 };
 
 export default function Navigation({ user, menuItems = [] }: Props) {
+  const [menuIsCollapsed, setMenuIsCollapsed] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuIsCollapsed(!menuIsCollapsed);
+  };
+
   return (
     <div className="sticky top-0 z-10 flex h-20 w-full items-center justify-between bg-white px-8 shadow-md">
       <Link to="/">
@@ -32,35 +39,59 @@ export default function Navigation({ user, menuItems = [] }: Props) {
         </h1>
       </Link>
 
-      <ul className="flex flex-row items-center gap-4">
-        {menuItems.map(({ to, title }) => (
-          <NavigationLink key={to} to={to} title={title} />
-        ))}
-        {user ? (
-          <>
-            <li>
-              <Link className="text-2xl" to="/account">
-                <Icon name="user-circle" prefix="far" />
-              </Link>
-            </li>
-            <li>
-              <form className="ml-auto mr-4" action="/uitloggen" method="post">
-                <Button variant="normal" size="small" type="submit">
-                  <span className="hidden sm:inline">Uitloggen</span>
-                  <Icon
-                    className="block sm:hidden"
-                    name="arrow-right-from-bracket"
-                  />
-                </Button>
-              </form>
-            </li>
-          </>
-        ) : (
-          <>
-            <NavigationLink to="/inloggen" title="Inloggen" />
-          </>
-        )}
-      </ul>
+      <div
+        className={`fixed left-0 top-20 z-10 h-full w-full bg-white px-8 ${
+          menuIsCollapsed ? 'block sm:hidden' : 'hidden'
+        }`}
+      >
+        <NavigationMenu menuItems={menuItems} user={user} />
+      </div>
+
+      <div className="flex w-full justify-end sm:hidden">
+        <button className="text-2xl" onClick={toggleMenu}>
+          <Icon name={`${menuIsCollapsed ? 'times' : 'bars'}`} />
+        </button>
+      </div>
+
+      <div className="hidden sm:block">
+        <NavigationMenu menuItems={menuItems} user={user} />
+      </div>
     </div>
+  );
+}
+
+function NavigationMenu({
+  menuItems,
+  user,
+}: {
+  menuItems: MenuItem[];
+  user?: User | SerializeFrom<User>;
+}) {
+  return (
+    <ul className="flex flex-col items-center gap-10 sm:flex-row sm:gap-4">
+      {menuItems.map(({ to, title }) => (
+        <NavigationLink key={to} to={to} title={title} />
+      ))}
+      {user ? (
+        <>
+          <li>
+            <Link className="text-2xl" to="/account">
+              <Icon name="user-circle" prefix="far" />
+            </Link>
+          </li>
+          <li>
+            <form className="ml-auto" action="/uitloggen" method="post">
+              <Button variant="normal" size="small" type="submit">
+                <span className="">Uitloggen</span>
+              </Button>
+            </form>
+          </li>
+        </>
+      ) : (
+        <>
+          <NavigationLink to="/inloggen" title="Inloggen" />
+        </>
+      )}
+    </ul>
   );
 }

@@ -12,8 +12,9 @@ export default function NavigationLink({ to, title }: Props) {
         className={({ isActive }) => `
           rounded
           px-2.5 py-1
-          text-xl
+          text-2xl
           transition-all
+          sm:text-xl
           ${isActive ? 'bg-cyan-200' : 'bg-transparent hover:bg-cyan-100'}
         `}
         to={to}
