@@ -2,7 +2,7 @@ import type { ActionArgs, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import type { FullRSVP, RSVPStats } from '~/models/rsvp.server';
 import { findInRsVPs, getRSVPs } from '~/models/rsvp.server';
-import { useFetcher } from '@remix-run/react';
+import { Link, useFetcher } from '@remix-run/react';
 import RSVPTable from '~/components/RSVPTable';
 import Stats from '~/components/Stats';
 import RefreshButton from '~/components/RefreshButton';
@@ -25,7 +25,7 @@ export async function loader({ request }: LoaderArgs) {
   return json({ rsvps, stats });
 }
 
-export async function action({ request, params }: ActionArgs) {
+export async function action({ request }: ActionArgs) {
   await requireAdmin(request);
 
   const url = new URL(request.url);
@@ -107,7 +107,19 @@ export default function AdminIndexRoute() {
         </div>
       </div>
 
-      <RSVPTable Rsvps={rsvps} />
+      <RSVPTable
+        Rsvps={rsvps}
+        actions={(rsvp) => (
+          <>
+            <Link to={`/admin/rsvp/edit/${rsvp.id}`}>
+              <Icon name="pencil" />
+            </Link>
+            <Link to={`/verwijderen/${rsvp.id}`}>
+              <Icon name="trash" />
+            </Link>
+          </>
+        )}
+      />
     </div>
   );
 }

@@ -29,6 +29,9 @@ export {
   faPencil,
   faBars,
   faTimes,
+  faLink,
+  faUnlink,
+  faEnvelope,
 } from '@fortawesome/free-solid-svg-icons';
 
 export {

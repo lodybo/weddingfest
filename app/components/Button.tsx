@@ -7,7 +7,7 @@ type BaseProps = {
   /**
    * The variant (color scheme) of the button.
    */
-  variant?: 'normal' | 'primary' | 'success';
+  variant?: 'normal' | 'primary' | 'success' | 'danger' | 'warning';
 
   /**
    * The size of the button.
@@ -35,6 +35,14 @@ variantStyles.set(
 variantStyles.set(
   'success',
   'bg-zinc-200 hover:bg-emerald-300 hover:text-slate-50'
+);
+variantStyles.set(
+  'danger',
+  'bg-rose-200 hover:bg-rose-400 hover:text-slate-50'
+);
+variantStyles.set(
+  'warning',
+  'bg-yellow-200 hover:bg-yellow-400 hover:text-slate-50'
 );
 
 const sizes = new Map();
