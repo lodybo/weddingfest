@@ -1,6 +1,8 @@
 import { forwardRef } from 'react';
 
-type Props = JSX.IntrinsicElements['input'];
+type Props = Omit<JSX.IntrinsicElements['input'], 'ref'> & {
+  ref?: React.Ref<HTMLInputElement>;
+};
 
 const Input = forwardRef<HTMLInputElement, Props>(
   ({ className = '', ...props }, ref) => {

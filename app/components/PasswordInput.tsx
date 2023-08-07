@@ -1,6 +1,6 @@
 import Input from './Input';
 
-type Props = Omit<JSX.IntrinsicElements['input'], 'type'> & {
+type Props = Omit<JSX.IntrinsicElements['input'], 'type' | 'ref'> & {
   showPassword?: boolean;
 };
 
