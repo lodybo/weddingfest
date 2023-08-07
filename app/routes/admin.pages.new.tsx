@@ -46,7 +46,6 @@ export async function action({ request }: ActionArgs) {
     invariant(mode && typeof mode === 'string', 'De modus is niet ingevuld');
     invariant(mode === 'publish' || mode === 'draft', 'De modus is ongeldig');
 
-    console.log({ mode });
     try {
       await createPage({ title, slug, content, mode });
       return redirect('/admin/pages');

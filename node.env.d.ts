@@ -6,5 +6,6 @@ declare namespace NodeJS {
     STRIPE_SECRET_KEY: string;
     STRIPE_PUBLISHABLE_KEY: string;
     STRIPE_WEBHOOK_SECRET: string;
+    SENDGRID_API_KEY: string;
   }
 }

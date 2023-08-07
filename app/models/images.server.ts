@@ -1,6 +1,7 @@
 import { unstable_createFileUploadHandler } from '@remix-run/node';
 import dns from 'dns';
 import Client from 'ssh2-sftp-client';
+import fs from 'fs';
 import * as Sentry from '@sentry/node';
 
 export const uploadHandler = unstable_createFileUploadHandler({
@@ -26,9 +27,9 @@ export async function replicateImageAcrossApps(image: string) {
       try {
         await sftp.connect({
           host: ip,
-          port: 22,
+          port: 3022,
           username: process.env.REPLICATOR_SSH_USER,
-          password: process.env.REPLICATOR_SSH_PASSWORD,
+          privateKey: fs.readFileSync('/root/.ssh/id_rsa'),
         });
 
         await sftp.put(`./images/${image}`, `/weddingfest/images/${image}`);

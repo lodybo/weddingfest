@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { ATTENDANCE } from '@prisma/client';
 import Icon from '~/components/Icon';
 import type { SerializeFrom } from '@remix-run/server-runtime';
@@ -5,17 +6,17 @@ import { formatAmountInLocale } from '~/utils/utils';
 import type { FullRSVP } from '~/models/rsvp.server';
 import TicketIcon from '~/components/TicketIcon';
 import Anchor from '~/components/Anchor';
-import { Link } from '@remix-run/react';
 
 type Props = {
   Rsvps: SerializeFrom<FullRSVP>[] | undefined;
+  actions: (rsvp: SerializeFrom<FullRSVP>) => ReactNode;
 };
 
-export default function RSVPTable({ Rsvps }: Props) {
+export default function RSVPTable({ Rsvps, actions }: Props) {
   if (!Rsvps) return null;
 
   return (
-    <table className="w-full  border-2 border-slate-100">
+    <table className="w-full border-2 border-slate-100">
       <thead>
         <tr className="bg-stone-100">
           <th className="p-2.5 text-center sm:text-left">
@@ -90,14 +91,7 @@ export default function RSVPTable({ Rsvps }: Props) {
                 ) : null}
               </div>
             </td>
-            <td className="flex gap-5 p-5">
-              <Link to={`/admin/rsvp/edit/${rsvp.id}`}>
-                <Icon name="pencil" />
-              </Link>
-              <Link to={`/verwijderen/${rsvp.id}`}>
-                <Icon name="trash" />
-              </Link>
-            </td>
+            <td className="flex gap-5 p-5">{actions(rsvp)}</td>
           </tr>
         ))}
       </tbody>

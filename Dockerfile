@@ -51,17 +51,38 @@ COPY --from=deps /weddingfest/public/tinymce /weddingfest/public/tinymce
 
 ADD . .
 
-# Set environment variables for the username and password
-# These values will be replaced with the actual values provided at runtime
-ENV REPLICATOR_SSH_USER=weddingfest-replicator
+# Create the ssh directory
+RUN mkdir /root/.ssh
 
-# Add a new user based on the provided username
-RUN useradd -m -s /bin/bash $REPLICATOR_SSH_USER
+# Set SSH user
+ENV REPLICATOR_SSH_USER root
 
-# Set the password for the new user based on the provided password
-RUN --mount=type=secret,id=ssh_password echo "$REPLICATOR_SSH_USER:$(cat /run/secrets/ssh_password)" | chpasswd
+# Save the public and private ssh key for the server
+RUN --mount=type=secret,id=replicator_private_ssh_key \
+  cat /run/secrets/replicator_private_ssh_key > /root/.ssh/id_rsa
+RUN --mount=type=secret,id=replicator_public_ssh_key \
+  cat /run/secrets/replicator_public_ssh_key > /root/.ssh/id_rsa.pub
 
-COPY deploy/ssh_config/server_password_auth.conf /etc/ssh/sshd_config.d/password_auth.conf
-COPY deploy/ssh_config/client_password_auth.conf /etc/ssh/ssh_config.d/password_auth.conf
+# Add newline to the end of the private key
+RUN echo "" >> /root/.ssh/id_rsa
 
-CMD ["npm", "start"]
+# Set the permissions for the ssh keys
+RUN chmod 700 /root/.ssh
+RUN chmod 600 /root/.ssh/id_rsa
+
+# Add the public key to the authorized keys
+RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+
+# Set the permissions for the authorized keys
+RUN chmod 600 /root/.ssh/authorized_keys
+
+# Copy the sshd config file
+COPY deploy/ssh_config/ssh_weddingfest.conf /etc/ssh/sshd_config.d/ssh_weddingfest.conf
+
+# Copy the start script
+COPY deploy/start.sh ./start.sh
+
+# Creating privileged separation directory
+RUN mkdir /run/sshd
+
+CMD ["./start.sh"]
