@@ -44,7 +44,7 @@ export function sendMailToRecipients({
 }) {
   let emails: sgMail.MailDataRequired[] = [];
   recipients.forEach((recipient) => {
-    let html = '';
+    let html: string;
 
     if (testMode) {
       html = `
@@ -68,10 +68,20 @@ export function sendMailToRecipients({
     });
   });
 
-  return sgMail.send(emails).catch((err) => {
-    console.error(err);
-    throw err.body;
-  });
+  return sgMail
+    .send(emails)
+    .then((res) => {
+      console.log(`Mails sent to ${recipients.map((r) => r.email).join(', ')}`);
+      Sentry.captureMessage(
+        `Mails sent to ${recipients.map((r) => r.email).join(', ')}`
+      );
+      return res;
+    })
+    .catch((err) => {
+      console.log('err', err);
+      Sentry.captureException(err);
+      throw err;
+    });
 }
 
 export function separateRecipients(recipients: string): string[] {
