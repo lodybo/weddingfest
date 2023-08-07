@@ -36,14 +36,6 @@ export default function UsersTable({ users }: Props) {
             </td>
             <td className="table-cell p-2.5">
               <div className="flex flex-row flex-wrap gap-2">
-                <Button
-                  variant="warning"
-                  size="small"
-                  to={`/admin/users/${user.id}/link`}
-                >
-                  <Icon name="link" />
-                </Button>
-
                 {user.rsvp ? (
                   <Button
                     variant="warning"
@@ -52,7 +44,15 @@ export default function UsersTable({ users }: Props) {
                   >
                     <Icon name="unlink" />
                   </Button>
-                ) : null}
+                ) : (
+                  <Button
+                    variant="primary"
+                    size="small"
+                    to={`/admin/users/${user.id}/link`}
+                  >
+                    <Icon name="link" />
+                  </Button>
+                )}
 
                 {user.rsvp ? (
                   <Button size="small" to={`/admin/rsvp/edit/${user.rsvp.id}`}>
