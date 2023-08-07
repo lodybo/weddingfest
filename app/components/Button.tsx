@@ -1,5 +1,6 @@
 import type { LinkProps } from '@remix-run/react';
 import { Link } from '@remix-run/react';
+import { forwardRef } from 'react';
 
 type JSXButtonProps = JSX.IntrinsicElements['button'];
 
@@ -50,13 +51,16 @@ sizes.set('small', 'px-4 py-2 text-sm');
 sizes.set('normal', 'px-8 py-4 text-md');
 sizes.set('large', 'px-12 py-6 text-xl');
 
-export default function Button({
-  className = '',
-  children,
-  variant = 'normal',
-  size = 'normal',
-  ...props
-}: Props) {
+const Button = forwardRef<HTMLButtonElement, Props>(function Button(
+  {
+    className = '',
+    children,
+    variant = 'normal',
+    size = 'normal',
+    ...props
+  }: Props,
+  ref
+) {
   const classes = `${className} ${variantStyles.get(variant)} ${sizes.get(
     size
   )} rounded text-slate-800 transition focus:outline-none focus-visible:ring focus-visible:ring-primary focus-visible:ring-offset-2`;
@@ -71,13 +75,13 @@ export default function Button({
 
   return (
     <button
+      ref={ref}
       className={`${classes} rounded disabled:pointer-events-none disabled:cursor-default disabled:bg-gray-200 disabled:text-gray-300`}
-      disabled={props.disabled}
-      onClick={props.onClick}
-      name={props.name}
-      value={props.value}
+      {...props}
     >
       {children}
     </button>
   );
-}
+});
+
+export default Button;

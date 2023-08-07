@@ -9,7 +9,7 @@ type Props = {
 export default function Label({ label, children, flex = false }: Props) {
   return (
     <label
-      className={`mb-5 w-full ${
+      className={`inline-block w-full ${
         flex ? 'flex flex-col items-center gap-2 sm:flex-row' : ''
       }`}
     >

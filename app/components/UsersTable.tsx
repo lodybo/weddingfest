@@ -37,14 +37,6 @@ export default function UsersTable({ users }: Props) {
             <td className="table-cell p-2.5">
               <div className="flex flex-row flex-wrap gap-2">
                 <Button
-                  variant="primary"
-                  size="small"
-                  to={`/admin/users/${user.id}/edit`}
-                >
-                  <Icon name="envelope" />
-                </Button>
-
-                <Button
                   variant="warning"
                   size="small"
                   to={`/admin/users/${user.id}/link`}
