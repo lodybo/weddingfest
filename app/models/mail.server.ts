@@ -3,7 +3,7 @@ import { getAllUsers } from '~/models/user.server';
 import * as Sentry from '@sentry/node';
 
 export type Recipient = {
-  name: string;
+  name?: string;
   email: string;
 };
 
@@ -99,6 +99,10 @@ export async function getRecipients(from: string): Promise<Recipient[]> {
       recipients.push({
         name: user.name,
         email: user.email,
+      });
+    } else {
+      recipients.push({
+        email: address,
       });
     }
   });
