@@ -38,6 +38,11 @@ export default function Document({ children }: Props) {
   return (
     <html lang="en" className="h-full">
       <head>
+        <script
+          defer
+          data-domain="weddingfest.nl"
+          src="https://plausible.io/js/script.js"
+        ></script>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
