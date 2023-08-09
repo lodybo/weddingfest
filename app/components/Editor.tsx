@@ -83,7 +83,7 @@ export default function Editor({ initialValue, name }: Props) {
           ],
           toolbar:
             'undo redo | fontfamily styles | ' +
-            'bold italic forecolor | image | alignleft aligncenter ' +
+            'bold italic forecolor | image media | alignleft aligncenter ' +
             `alignright alignjustify | bullist numlist outdent indent | ` +
             'removeformat | help',
           block_formats:
