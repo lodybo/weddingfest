@@ -1,11 +1,11 @@
 import type { SerializeFrom } from '@remix-run/server-runtime';
-import { Link } from '@remix-run/react';
+import { Link, useNavigation } from '@remix-run/react';
 import type { User } from '@prisma/client';
 
 import Button from '~/components/Button';
 import Icon from '~/components/Icon';
 import NavigationLink from '~/components/NavigationLink';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export type MenuItem = {
   to: string;
@@ -25,7 +25,14 @@ type Props = {
 };
 
 export default function Navigation({ user, menuItems = [] }: Props) {
+  const navigation = useNavigation();
   const [menuIsCollapsed, setMenuIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    if (navigation.state !== 'idle' && menuIsCollapsed) {
+      setMenuIsCollapsed(false);
+    }
+  }, [navigation, menuIsCollapsed]);
 
   const toggleMenu = () => {
     setMenuIsCollapsed(!menuIsCollapsed);
