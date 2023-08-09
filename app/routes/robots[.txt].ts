@@ -1,14 +1,8 @@
-import { json } from '@remix-run/node';
+import { txt } from 'remix-utils';
 
 export function loader() {
-  const body = `
-User-agent: *
-Disallow: /
-  `;
-
-  return json(body, {
-    headers: {
-      'Content-Type': 'text/plain',
-    },
-  });
+  return txt(`
+    User-agent: *
+    Disallow: /
+  `);
 }
