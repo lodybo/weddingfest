@@ -10,6 +10,7 @@ export default function Prose({ children }: Props) {
       className="
         prose
         prose-sm
+        w-full
         p-4
         sm:prose-base
         md:prose-lg

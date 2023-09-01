@@ -48,19 +48,19 @@ export default function Navigation({ user, menuItems = [] }: Props) {
 
       <div
         className={`fixed left-0 top-20 z-10 h-full w-full bg-white px-8 ${
-          menuIsCollapsed ? 'block sm:hidden' : 'hidden'
+          menuIsCollapsed ? 'block md:hidden' : 'hidden'
         }`}
       >
         <NavigationMenu menuItems={menuItems} user={user} />
       </div>
 
-      <div className="flex w-full justify-end sm:hidden">
+      <div className="flex w-full justify-end md:hidden">
         <button className="text-2xl" onClick={toggleMenu}>
           <Icon name={`${menuIsCollapsed ? 'times' : 'bars'}`} />
         </button>
       </div>
 
-      <div className="hidden sm:block">
+      <div className="hidden md:block">
         <NavigationMenu menuItems={menuItems} user={user} />
       </div>
     </div>
@@ -75,7 +75,7 @@ function NavigationMenu({
   user?: User | SerializeFrom<User>;
 }) {
   return (
-    <ul className="flex flex-col items-center gap-10 sm:flex-row sm:gap-4">
+    <ul className="flex flex-col items-center gap-10 md:flex-row md:gap-4">
       {menuItems.map(({ to, title }) => (
         <NavigationLink key={to} to={to} title={title} />
       ))}
