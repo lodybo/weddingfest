@@ -20,7 +20,7 @@ export async function action({ request }: ActionArgs) {
   await requireAdmin(request);
 
   const origin = request.headers.get('origin');
-  console.log({ origin });
+
   if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
     return json<APIResponse>({
       ok: false,

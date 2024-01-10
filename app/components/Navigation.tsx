@@ -94,11 +94,7 @@ function NavigationMenu({
             </form>
           </li>
         </>
-      ) : (
-        <>
-          <NavigationLink to="/inloggen" title="Inloggen" />
-        </>
-      )}
+      ) : null}
     </ul>
   );
 }
