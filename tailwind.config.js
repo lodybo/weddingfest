@@ -27,7 +27,7 @@ module.exports = {
         '10xl': '10rem',
         '11xl': '11rem',
         '12xl': '12rem',
-        hero: ['clamp(2rem, 10vw, 8rem)', '1'],
+        hero: ['clamp(4rem, 10vw, 8rem)', '1'],
         resp: ['clamp(1rem, 3vw, 5rem)', '1'],
       },
     },
