@@ -43,14 +43,14 @@ export default function Document({ children }: Props) {
         <meta charSet="utf-8" />
         <meta
           name="viewport"
-          content="width=device-width,initial-scale=1;viewport-fit=cover"
+          content="width=device-width,initial-scale=1,viewport-fit=cover"
         />
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#cffafe" />
         <meta name="msapplication-TileColor" content="#00aba9" />
         <Meta />
         <Links />
       </head>
-      <body className="h-full font-sans">
+      <body className="h-full w-full font-sans">
         <div className="relative flex min-h-full flex-col items-center justify-center">
           {children}
 
