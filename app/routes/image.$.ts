@@ -86,7 +86,7 @@ function streamingResize(
       width,
       height,
       fit,
-      position: sharp.strategy.attention, // will try to crop the image and keep the most interesting parts
+      position: sharp.strategy.entropy, // will try to crop the image and keep the most interesting parts
     })
     // .jpeg({
     //   mozjpeg: true, // use mozjpeg defaults, = smaller images
@@ -113,7 +113,7 @@ function streamingResize(
   return new Response(passthroughStream as any, {
     headers: {
       'Content-Type': 'image/webp',
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': 'public, max-age=31536000, immutable, must-revalidate',
     },
   });
 }

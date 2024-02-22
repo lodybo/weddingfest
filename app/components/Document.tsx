@@ -56,7 +56,7 @@ export default function Document({ children }: Props) {
 
           <Footer />
         </div>
-        <ScrollRestoration />
+        <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
         <script
           dangerouslySetInnerHTML={{

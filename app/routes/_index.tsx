@@ -39,7 +39,7 @@ export default function Index() {
       </div>
 
       <div className="sticky bottom-5 left-auto mx-auto w-[75vw] -translate-x-0 sm:w-96 md:absolute md:bottom-20 md:left-1/2 md:mx-auto md:w-80 md:-translate-x-1/2 lg:bottom-5">
-        <Button to="">Ik wil alles zien!</Button>
+        <Button to="/gallerij">Ik wil alles zien!</Button>
       </div>
     </div>
   );
