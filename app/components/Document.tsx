@@ -53,8 +53,6 @@ export default function Document({ children }: Props) {
       <body className="h-full w-full font-sans">
         <div className="relative flex min-h-full flex-col items-center justify-center">
           {children}
-
-          <Footer />
         </div>
         <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
