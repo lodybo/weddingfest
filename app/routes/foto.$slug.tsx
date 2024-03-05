@@ -20,17 +20,17 @@ export default function PhotoPage() {
     <>
       <Link to="/gallerij">Terug naar de galerij</Link>
       <Image
-        src={`/image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}`}
+        src={`/image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=200&h=200&fit=cover`}
         srcSet={`
-        /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=200&h=200&fit=cover  400w,
-        /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=400&h=400&fit=cover  800w,
-        /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=600&h=600&fit=cover 1200w,
-      `}
+          /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=200&h=200&fit=cover  400w,
+          /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=400&h=400&fit=cover  800w,
+          /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${slug}?w=600&h=600&fit=cover 1200w,
+        `}
         sizes={`
-        400px
-        800px
-        1200px
-      `}
+          400px
+          800px
+          1200px
+        `}
         alt={slug}
       />
     </>

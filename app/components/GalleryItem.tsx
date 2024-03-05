@@ -6,7 +6,7 @@ export function GalleryItem(props: { imageName: string }) {
   const [ref, entry] = useIntersectionObserver({
     threshold: 0,
     root: null,
-    rootMargin: '0px',
+    rootMargin: '500px',
   });
 
   return (
@@ -18,7 +18,7 @@ export function GalleryItem(props: { imageName: string }) {
         <Link to={`/foto/${props.imageName}`}>
           <Image
             className="scale-100 transition-transform duration-300 group-hover/image:scale-105"
-            src={`/image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${props.imageName}`}
+            src={`/image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${props.imageName}?w=200&h=200&fit=cover`}
             srcSet={`
                   /image/official/2023/ALL_HR_-_Bruiloft_Kaylee_&_Lody_-_momenttom/${props.imageName}?w=200&h=200&fit=cover  400w,
                 `}

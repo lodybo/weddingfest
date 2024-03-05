@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import {
   Links,
-  LiveReload,
   Meta,
   Scripts,
   ScrollRestoration,
@@ -10,6 +9,7 @@ import {
 import { useMatchesData, useOptionalUser } from '~/utils/utils';
 import type { LoaderData } from '~/root';
 import type { MenuItem } from '~/components/Navigation';
+import LiveReload from '~/components/LiveReload';
 import Footer from '~/components/Footer';
 
 type Props = {

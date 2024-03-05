@@ -1,3 +1,5 @@
+import spdy from 'spdy';
+import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import compression from 'compression';
@@ -89,12 +91,22 @@ const localIPAddress = Object.values(networkInterfaces())
   .flat()
   .find((x) => !!x && !x.internal && x.family === 'IPv4')?.address;
 
-app.listen(port, '0.0.0.0', () => {
+const server = spdy.createServer(
+  {
+    key: fs.readFileSync(path.resolve(__dirname, '../', 'certs', 'server.key')),
+    cert: fs.readFileSync(
+      path.resolve(__dirname, '../', 'certs', 'server.crt')
+    ),
+  },
+  app
+);
+
+server.listen(port, '0.0.0.0', () => {
   // require the built app so we're ready when the first request comes in
   require(BUILD_DIR);
-  console.log(`✅ app ready: http://localhost:${port}`);
+  console.log(`✅ app ready: https://localhost:${port}`);
   if (localIPAddress) {
-    console.log(`💻 app reachable at: http://${localIPAddress}:${port}`);
+    console.log(`💻 app reachable at: https://${localIPAddress}:${port}`);
   }
 });
 
