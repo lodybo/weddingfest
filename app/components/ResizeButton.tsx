@@ -8,7 +8,10 @@ type Props = {
 export default function ResizeButton({ fullScreen, setFullScreen }: Props) {
   return (
     <button onClick={() => setFullScreen(!fullScreen)}>
-      <Icon name={fullScreen ? 'minimize' : 'maximize'} />
+      <Icon
+        className="text-3xl md:text-2xl"
+        name={fullScreen ? 'minimize' : 'maximize'}
+      />
     </button>
   );
 }

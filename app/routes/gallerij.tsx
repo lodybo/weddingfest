@@ -18,9 +18,9 @@ export default function GalleryPage() {
   // TODO: use modal? post on stackoverflow? revert scroll position key?
   return (
     <>
-      <div className="mx-auto w-[72vw] space-y-4">
-        <h1 className="font-handwriting text-hero">Galerij</h1>
-        <ul className="group/grid flex flex-wrap">
+      <div className="mx-auto w-[91vw] space-y-4">
+        <h1 className="text-center font-handwriting text-hero">Galerij</h1>
+        <ul className="group/grid flex flex-wrap justify-center">
           {imageNames.map((imageName: string) => (
             <GalleryItem key={imageName} imageName={imageName} />
           ))}

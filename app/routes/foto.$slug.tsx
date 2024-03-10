@@ -6,6 +6,7 @@ import { Image } from '~/components/Image';
 import { useState } from 'react';
 import ResizeButton from '~/components/ResizeButton';
 import CopyrighText from '~/components/CopyrightText';
+import Icon from '~/components/Icon';
 
 export async function loader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
@@ -46,18 +47,25 @@ export default function PhotoPage() {
         `}
         alt={slug}
       />
-      <div className="absolute bottom-0 flex h-10 w-full items-center justify-between bg-black/50 px-10 text-white">
-        <div className="flex flex-1 justify-start">
-          <Link
-            className="border-b border-b-white pb-0 transition-all duration-300 hover:border-b-primary-dark hover:pb-0.5 hover:text-primary-dark"
-            to="/gallerij"
-          >
-            Terug naar de galerij
+      <div className="absolute bottom-0 flex h-20 w-full items-center justify-between bg-black/50 px-4 text-white md:h-10 lg:px-10">
+        <div className="flex w-auto flex-initial justify-start sm:w-full sm:flex-1">
+          <Link to="/gallerij">
+            <span className="hidden border-b border-b-white pb-0 transition-all duration-300 hover:border-b-primary-dark hover:pb-0.5 hover:text-primary-dark sm:inline-block">
+              Terug naar de galerij
+            </span>
+            <Icon
+              name="arrow-left"
+              className="inline-block sm:hidden"
+              sizes="l"
+            />
           </Link>
         </div>
-        <div className="flex flex-1 justify-center gap-4">
-          <span className="flex items-center justify-center gap-1">
-            Foto door{' '}
+        <div className="flex w-full flex-initial flex-col justify-center gap-2 sm:flex-1 md:flex-row lg:flex-row lg:gap-4">
+          <span className="flex items-center justify-center gap-2.5 lg:gap-1">
+            <span className="hidden whitespace-nowrap lg:inline-block">
+              Foto door{' '}
+            </span>
+            <Icon className="inline-block lg:hidden" name="camera" />
             <a
               className="border-b border-b-white pb-0 transition-all duration-300 hover:border-b-primary-dark hover:pb-0.5 hover:text-primary-dark"
               href="https://momenttom.com"
@@ -69,7 +77,7 @@ export default function PhotoPage() {
           </span>
           <CopyrighText stylizeWeddingfest />
         </div>
-        <div className="flex flex-1 justify-end">
+        <div className="flex flex-initial justify-end sm:flex-1">
           <ResizeButton fullScreen={fullScreen} setFullScreen={setFullScreen} />
         </div>
       </div>
