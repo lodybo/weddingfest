@@ -3,7 +3,7 @@ export default function LiveReload({ port = Number(8002) }: { port?: number }) {
   let setupLiveReload = ((port: number) => {
     let protocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
     let [host] = location.hostname.split('.');
-    let socketPath = `${protocol}//${host}:${port}/socket`;
+    let socketPath = `${protocol}//${host}:${port}`;
     console.log(`connecting to socket ${socketPath}`);
     let ws = new WebSocket(socketPath);
     ws.onmessage = (message) => {

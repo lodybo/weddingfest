@@ -81,7 +81,7 @@
     "react-dom": "^18.2.0",
     "remix-utils": "^6.4.1",
     "sanitize-html": "^2.11.0",
-    "sharp": "^0.32.1",
+    "sharp": "^0.32.6",
     "spdy": "^4.0.2",
     "ssh2-sftp-client": "^9.1.0",
     "stripe": "^12.9.0",

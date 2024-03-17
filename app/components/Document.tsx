@@ -51,9 +51,7 @@ export default function Document({ children }: Props) {
         <Links />
       </head>
       <body className="h-full w-full font-sans">
-        <div className="relative flex min-h-full flex-col items-center justify-center">
-          {children}
-        </div>
+        <div className="relative flex min-h-full flex-col">{children}</div>
         <ScrollRestoration getKey={(location) => location.pathname} />
         <Scripts />
         <script
@@ -61,7 +59,7 @@ export default function Document({ children }: Props) {
             __html: `window.ENV = ${JSON.stringify(ENV)}`,
           }}
         />
-        <LiveReload port={4200} />
+        <LiveReload port={3000} />
       </body>
     </html>
   );
