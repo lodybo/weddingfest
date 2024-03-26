@@ -15,14 +15,39 @@
 import type { ReadStream } from 'fs';
 import * as fs from 'fs';
 import path from 'path';
-import { PassThrough } from 'stream';
+import { PassThrough, finished } from 'stream';
 import * as Sentry from '@sentry/remix';
 import type { LoaderArgs } from '@remix-run/node';
 import type { FitEnum } from 'sharp';
 import sharp from 'sharp';
+import { client } from '~/redis.server';
 
 const ASSETS_ROOT = 'images';
 const { createReadStream, statSync } = fs;
+
+async function getCachedImage(key: string) {
+  try {
+    const data = await client.get(key);
+    if (data) {
+      return Buffer.from(data, 'binary');
+    }
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error('Redis get error:', error);
+  }
+  return null;
+}
+
+async function setCachedImage(key: string, buffer: string) {
+  try {
+    // 'EX', 3600 denotes that the key will expire in 3600 seconds (1 hour)
+    // Adjust the expiration time based on your needs
+    await client.set(key, buffer, { EX: 3600 });
+  } catch (error) {
+    Sentry.captureException(error);
+    console.error('Redis set error:', error);
+  }
+}
 
 interface ResizeParams {
   src: string;
@@ -39,7 +64,9 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     // read the image as a stream of bytes
     const readStream = readFileAsStream(src);
     // read the image from the file system and stream it through the sharp pipeline
-    return streamingResize(readStream, width, height, fit);
+    const result = await streamingResize(readStream, src, width, height, fit);
+    // console.log('Returning result...', result);
+    return result;
   } catch (error: unknown) {
     // if the image is not found, or we get any other errors we return different response types
     Sentry.captureException(error);
@@ -72,45 +99,80 @@ function extractParams(
   return { src, width, height, fit };
 }
 
-function streamingResize(
+async function streamingResize(
   imageStream: ReadStream,
+  src: string,
   width: number | undefined,
   height: number | undefined,
   fit: keyof FitEnum
 ) {
-  // create the sharp transform pipeline
-  // https://sharp.pixelplumbing.com/api-resize
-  // you can also add watermarks, sharpen, blur, etc.
-  const sharpTransforms = sharp()
-    .resize({
-      width,
-      height,
-      fit,
-      position: sharp.strategy.entropy, // will try to crop the image and keep the most interesting parts
-    })
-    // .jpeg({
-    //   mozjpeg: true, // use mozjpeg defaults, = smaller images
-    //   quality: 80,
-    // });
-    // sharp also has other image formats, just comment out .jpeg and make sure to change the Content-Type header below
-    // .avif({
-    //   quality: 80,
-    // });
-    // .png({
-    //   quality: 80,
-    // });
-    .webp({
-      quality: 80,
-    });
+  const cacheKey = `${src}-${width}x${height ?? 'auto'}-${fit}`;
+  const cachedImage = await getCachedImage(cacheKey);
 
-  // create a pass through stream that will take the input image
-  // stream it through the sharp pipeline and then output it to the response
-  // without buffering the entire image in memory
-  const passthroughStream = new PassThrough();
+  let responseData: ReadableStream | Buffer;
 
-  imageStream.pipe(sharpTransforms).pipe(passthroughStream);
+  console.log(' ');
+  if (cachedImage) {
+    console.log(`Cache hit for ${cacheKey}`);
+    responseData = cachedImage;
+  } else {
+    console.log(`Cache miss for ${cacheKey}`);
+    // create the sharp transform pipeline
+    // https://sharp.pixelplumbing.com/api-resize
+    // you can also add watermarks, sharpen, blur, etc.
+    const sharpTransforms = sharp()
+      .resize({
+        width,
+        height,
+        fit,
+        position: sharp.strategy.entropy, // will try to crop the image and keep the most interesting parts
+      })
+      // .jpeg({
+      //   mozjpeg: true, // use mozjpeg defaults, = smaller images
+      //   quality: 80,
+      // });
+      // sharp also has other image formats, just comment out .jpeg and make sure to change the Content-Type header below
+      // .avif({
+      //   quality: 80,
+      // });
+      // .png({
+      //   quality: 80,
+      // });
+      .webp({
+        quality: 80,
+      });
 
-  return new Response(passthroughStream as any, {
+    // create a pass through stream that will take the input image
+    // stream it through the sharp pipeline and then output it to the response
+    // without buffering the entire image in memory
+    const passthroughStream = new PassThrough();
+
+    imageStream.pipe(sharpTransforms).pipe(passthroughStream);
+
+    const buffers: any[] = [];
+    passthroughStream.on('data', (data) => buffers.push(data));
+
+    try {
+      await new Promise((resolve, reject) => {
+        passthroughStream.on('error', (error) => {
+          Sentry.captureException(error);
+          reject(error);
+        });
+        passthroughStream.on('end', async () => resolve(null));
+      });
+
+      const buffer = Buffer.concat(buffers);
+      await setCachedImage(cacheKey, buffer.toString('binary'));
+
+      responseData = buffer;
+    } catch (error) {
+      Sentry.captureException(error);
+      console.error('Error:', error);
+      throw error;
+    }
+  }
+
+  return new Response(responseData, {
     headers: {
       'Content-Type': 'image/webp',
       'Cache-Control': 'public, max-age=31536000, immutable, must-revalidate',

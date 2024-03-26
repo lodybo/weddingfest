@@ -9,6 +9,8 @@ export function GalleryItem(props: { imageName: string }) {
     rootMargin: '500px',
   });
 
+  console.log('entry', entry);
+
   return (
     <li
       className="group/image m-2 h-[200px] w-[200px] cursor-pointer overflow-hidden transition-opacity duration-300 hover:!opacity-100 group-hover/grid:opacity-80"
