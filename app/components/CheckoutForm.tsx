@@ -5,7 +5,6 @@ import {
   useStripe,
 } from '@stripe/react-stripe-js';
 import { useMatchesData } from '~/utils/utils';
-import type { StripeLoaderData } from '~/routes/betalen';
 import type { StripePaymentElementOptions } from '@stripe/stripe-js';
 import Button from '~/components/Button';
 import ErrorMessage from '~/components/ErrorMessage';
@@ -25,7 +24,7 @@ export default function CheckoutForm({ returnUrl }: Props) {
   const [isLoading, setIsLoading] = useState(true);
 
   const data = useMatchesData('routes/betalen');
-  const { clientSecret } = (data as unknown as StripeLoaderData) || {};
+  const { clientSecret } = data as any;
 
   if (!stripe || !clientSecret) {
     return;
