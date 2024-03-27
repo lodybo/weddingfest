@@ -1,16 +1,22 @@
 import { type LoaderFunctionArgs } from '@remix-run/router';
 import invariant from 'tiny-invariant';
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { Link, useLoaderData } from '@remix-run/react';
 import { Image } from '~/components/Image';
 import { useState } from 'react';
 import ResizeButton from '~/components/ResizeButton';
-import CopyrighText from '~/components/CopyrightText';
+import CopyrightText from '~/components/CopyrightText';
 import Icon from '~/components/Icon';
+import { getSession } from '~/session.server';
 
-export async function loader({ params }: LoaderFunctionArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   const { slug } = params;
   invariant(slug, 'slug is required');
+
+  const session = await getSession(request);
+  if (!session.get('hasAccess')) {
+    return redirect(`/inloggen?redirectTo=/foto/${slug}`);
+  }
 
   return json({ slug });
 }
@@ -75,7 +81,7 @@ export default function PhotoPage() {
               Momenttom
             </a>
           </span>
-          <CopyrighText stylizeWeddingfest />
+          <CopyrightText stylizeWeddingfest />
         </div>
         <div className="flex flex-initial justify-end sm:flex-1">
           <ResizeButton fullScreen={fullScreen} setFullScreen={setFullScreen} />

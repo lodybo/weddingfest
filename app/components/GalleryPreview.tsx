@@ -41,6 +41,7 @@ export default function GalleryPreview({ images }: Props) {
           variant="primary"
           className="flex w-full flex-row gap-5 font-handwriting text-3xl"
           to="/gallerij"
+          size="small"
         >
           Bekijk alle foto's <Icon className="mt-1" name="arrow-right" />
         </Button>

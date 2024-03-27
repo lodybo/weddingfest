@@ -1,15 +1,21 @@
 import { type ReactNode } from 'react';
+import { json, redirect } from '@remix-run/node';
+import { type LoaderFunctionArgs } from '@remix-run/router';
+import imageNames from '~/images-selection.json';
 import Anchor from '~/components/Anchor';
 import Aftermovie from '~/components/Aftermovie';
-import { json } from '@remix-run/node';
-import imageNames from '~/images-selection.json';
 import { useLoaderData } from '@remix-run/react';
 import GalleryPreview from '~/components/GalleryPreview';
-import Button from '~/components/Button';
 import FirstDanceMovie from '~/components/FirstDanceMovie';
 import Footer from '~/components/Footer';
+import { getSession } from '~/session.server';
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request);
+  if (!session.get('hasAccess')) {
+    return redirect('/inloggen?redirectTo=/nagenieten');
+  }
+
   return json({
     imageNames,
   });
@@ -60,5 +66,7 @@ type ParagraphProps = {
 };
 
 function Paragraph({ children }: ParagraphProps) {
-  return <p className="text-center text-2xl leading-tight">{children}</p>;
+  return (
+    <p className="text-center text-xl leading-tight md:text-2xl">{children}</p>
+  );
 }

@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
 import { Image } from '~/components/Image';
 import Button from '~/components/Button';
 import Footer from '~/components/Footer';
+import Title from '~/components/Title';
+import Subtitle from '~/components/Subtitle';
 
 export default function Index() {
   return (
@@ -48,13 +49,3 @@ export default function Index() {
     </>
   );
 }
-
-const Title = ({ children }: { children: ReactNode }) => (
-  <h1 className="mb-grow-x text-center font-handwriting text-hero leading-10 sm:leading-[0.8]">
-    {children}
-  </h1>
-);
-
-const Subtitle = ({ children }: { children: ReactNode }) => (
-  <p className="text-center text-resp leading-tight">{children}</p>
-);

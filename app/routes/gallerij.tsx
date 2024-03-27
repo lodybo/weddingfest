@@ -1,11 +1,18 @@
-import { json } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { type LoaderFunctionArgs } from '@remix-run/router';
 import imageNames from '~/images.json';
 import { GalleryItem } from '~/components/GalleryItem';
 import Footer from '~/components/Footer';
 import Anchor from '~/components/Anchor';
+import { getSession } from '~/session.server';
 
-export async function loader() {
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request);
+  if (!session.get('hasAccess')) {
+    return redirect('/inloggen?redirectTo=/gallerij');
+  }
+
   return json({
     imageNames,
   });

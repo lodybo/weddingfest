@@ -4,7 +4,7 @@ import { Image } from '~/components/Image';
 
 export function GalleryItem(props: { imageName: string }) {
   const [ref, entry] = useIntersectionObserver({
-    threshold: 0,
+    threshold: 10,
     root: null,
     rootMargin: '500px',
   });
