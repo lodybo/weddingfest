@@ -1,4 +1,6 @@
 import { Image } from '~/components/Image';
+import Button from '~/components/Button';
+import Icon from '~/components/Icon';
 
 type ImagePreview = {
   name: string;
@@ -34,6 +36,15 @@ export default function GalleryPreview({ images }: Props) {
           />
         </li>
       ))}
+      <li className="col-span-4 row-span-1 grid items-center pl-3">
+        <Button
+          variant="primary"
+          className="flex w-full flex-row gap-5 font-handwriting text-3xl"
+          to="/gallerij"
+        >
+          Bekijk alle foto's <Icon className="mt-1" name="arrow-right" />
+        </Button>
+      </li>
     </ul>
   );
 }

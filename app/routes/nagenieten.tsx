@@ -6,6 +6,8 @@ import imageNames from '~/images-selection.json';
 import { useLoaderData } from '@remix-run/react';
 import GalleryPreview from '~/components/GalleryPreview';
 import Button from '~/components/Button';
+import FirstDanceMovie from '~/components/FirstDanceMovie';
+import Footer from '~/components/Footer';
 
 export async function loader() {
   return json({
@@ -16,34 +18,39 @@ export async function loader() {
 export default function AfterPartyPage() {
   const { imageNames } = useLoaderData<typeof loader>();
 
-  // TODO: first dance video
   // TODO: add password protection to this page.
   return (
-    <div className="mx-auto mt-0 w-full space-y-4 px-5 lg:w-2/3">
-      <h1 className="text-center font-handwriting text-hero">
-        Bedankt dat je er bij was!
-      </h1>
+    <div className="space-y-6">
+      <div className="mx-auto mt-0 w-full space-y-4 px-5 lg:w-2/3">
+        <h1 className="text-center font-handwriting text-hero">
+          Bedankt dat je er bij was!
+        </h1>
 
-      <Paragraph>
-        We hopen dat je net zo hebt genoten als wij. Het was een fantastische
-        dag en we zijn blij dat we het met jullie hebben kunnen delen.
-      </Paragraph>
+        <Paragraph>
+          We hopen dat je net zo hebt genoten als wij. Het was een fantastische
+          dag en we zijn blij dat we het met jullie hebben kunnen delen.
+        </Paragraph>
 
-      <Paragraph>
-        Wil je nog even nagenieten van de dag? Klik{' '}
-        <Anchor to="/nagenieten">hier</Anchor> om de aftermovie te bekijken.
-      </Paragraph>
+        <Paragraph>
+          Wil je nog even nagenieten van de dag? Bekijk dan de aftermovie.
+        </Paragraph>
 
-      <Aftermovie />
+        <Aftermovie />
 
-      <Paragraph>
-        Gelukkig hebben we de foto's nog! Klik{' '}
-        <Anchor to="/gallerij">hier</Anchor> om ze te bekijken.
-      </Paragraph>
+        <Paragraph>
+          Of, wil je misschien de 1e dans nog een keer bekijken?
+        </Paragraph>
 
-      <GalleryPreview images={imageNames} />
+        <FirstDanceMovie />
 
-      <Button to="/gallerij">Bekijk alle foto's</Button>
+        <Paragraph>
+          Of wil je liever wegzwijmelen bij de foto's! Bekijk de hele{' '}
+          <Anchor to="/gallerij">galerij</Anchor>.
+        </Paragraph>
+
+        <GalleryPreview images={imageNames} />
+      </div>
+      <Footer />
     </div>
   );
 }

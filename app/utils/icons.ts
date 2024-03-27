@@ -35,6 +35,7 @@ export {
   faMaximize,
   faMinimize,
   faArrowLeft,
+  faArrowRight,
   faCamera,
 } from '@fortawesome/free-solid-svg-icons';
 
