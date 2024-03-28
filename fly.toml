@@ -35,6 +35,8 @@ kill_timeout = "5s"
   [[services.ports]]
     port = 443
     handlers = ["tls", "http"]
+
+
   [services.concurrency]
     type = "connections"
     hard_limit = 25
@@ -53,4 +55,4 @@ kill_timeout = "5s"
     restart_limit = 0
     method = "get"
     path = "/healthcheck"
-    protocol = "http"
+    protocol = "https"
