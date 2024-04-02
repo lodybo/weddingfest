@@ -5,12 +5,11 @@ import {
   Scripts,
   ScrollRestoration,
   useLocation,
+  LiveReload,
 } from '@remix-run/react';
 import { useMatchesData, useOptionalUser } from '~/utils/utils';
 import type { LoaderData } from '~/root';
 import type { MenuItem } from '~/components/Navigation';
-import LiveReload from '~/components/LiveReload';
-import Footer from '~/components/Footer';
 
 type Props = {
   children: ReactNode;
