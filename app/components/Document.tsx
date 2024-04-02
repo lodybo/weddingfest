@@ -58,7 +58,7 @@ export default function Document({ children }: Props) {
             __html: `window.ENV = ${JSON.stringify(ENV)}`,
           }}
         />
-        <LiveReload port={3000} />
+        <LiveReload port={4200} />
       </body>
     </html>
   );
