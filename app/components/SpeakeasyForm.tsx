@@ -11,7 +11,7 @@ type Props = {
 
 export default function SpeakeasyForm({ errors }: Props) {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get('redirectTo') || '/account';
+  const redirectTo = searchParams.get('redirectTo') || '/nagenieten';
 
   return (
     <div className="mx-auto flex h-screen w-full flex-col items-center justify-center px-3 md:w-2/3">
