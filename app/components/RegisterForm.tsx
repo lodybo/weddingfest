@@ -1,6 +1,5 @@
 import { Form } from '@remix-run/react';
 import Button from '~/components/Button';
-import type { ActionData } from '~/routes/aanmelden';
 import EmailField from '~/components/EmailField';
 import PasswordField from '~/components/PasswordField';
 import NameField from '~/components/NameField';
@@ -9,8 +8,8 @@ import type { AuthErrors } from '~/validations/auth';
 type Props = {
   rsvp?: string;
   errors?: AuthErrors;
-  success?: ActionData['success'];
-  data?: ActionData['data'];
+  success?: any;
+  data?: any;
 };
 
 export function RegisterForm({ rsvp, errors, success, data }: Props) {

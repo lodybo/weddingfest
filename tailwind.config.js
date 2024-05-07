@@ -3,7 +3,7 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./app/**/*.{js,jsx,ts,tsx}'],
+  content: ['./app/**/*.{js,jsx,ts,tsx,json}'],
   theme: {
     extend: {
       colors: {
@@ -27,8 +27,8 @@ module.exports = {
         '10xl': '10rem',
         '11xl': '11rem',
         '12xl': '12rem',
-        hero: ['clamp(2rem, 10vw, 8rem)', '1'],
-        resp: ['clamp(1rem, 3vw, 5rem)', '1'],
+        hero: ['clamp(4rem, 10vw, 8rem)', '1'],
+        resp: ['clamp(1rem, 2.5vw, 5rem)', '1'],
       },
     },
     fontFamily: {
@@ -45,5 +45,6 @@ module.exports = {
     require('tailwindcss/plugin')(({ addVariant }) => {
       addVariant('has-checked', '&:has(:checked)');
     }),
+    require('tailwindcss-safe-area'),
   ],
 };

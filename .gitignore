@@ -11,8 +11,10 @@ node_modules
 
 /postgres-data
 images/
+redis-data/
 
 /app/styles/tailwind.css
 
 coverage
 keys/
+certs/

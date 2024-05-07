@@ -2,13 +2,12 @@ import { Form } from '@remix-run/react';
 import EmailField from '~/components/EmailField';
 import PasswordField from '~/components/PasswordField';
 import Button from '~/components/Button';
-import type { ActionData } from '~/routes/account.instellingen';
 import ErrorMessage from '~/components/ErrorMessage';
 import SuccessMessage from '~/components/SuccessMessage';
 
 type Props = {
   email: string;
-  actionData?: ActionData;
+  actionData?: any;
 };
 
 export default function SettingsForm({ email, actionData }: Props) {
