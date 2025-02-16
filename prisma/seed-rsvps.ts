@@ -18,7 +18,7 @@ function createRSVP({ userId }: { userId: string }) {
     data: {
       name: faker.person.fullName(),
       attendance,
-      camping: faker.datatype.boolean(),
+      camping: attendance !== ATTENDANCE.NONE ? faker.datatype.boolean() : false,
       diet: faker.helpers.arrayElement([null, null, null, 'geen', 'vegetarisch', 'vegan', 'gluten-vrij', 'lactose-vrij', 'halal', 'noten-vrij']),
       remarks: faker.helpers.arrayElement([null, faker.lorem.sentence()]),
       userId,
