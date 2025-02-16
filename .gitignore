@@ -10,6 +10,7 @@ node_modules
 /cypress/videos
 
 /postgres-data
+/redis-data
 images/
 
 /app/styles/tailwind.css
