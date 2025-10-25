@@ -51,7 +51,7 @@
     "release:minor": "npm version minor",
     "release:major": "npm version major",
     "release:beta": "npm version prerelease --preid=beta",
-    "postversion": "git add . && git commit -m \"Releasing plugin version v$npm_package_version\" && git tag plugin-v$npm_package_version && git push && git push --tags"
+    "postversion": "git add . && git commit -m \"Releasing app v$npm_package_version\" && git tag weddingfest-v$npm_package_version && git push && git push --tags"
   },
   "prettier": {
     "singleQuote": true

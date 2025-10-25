@@ -3,8 +3,8 @@ name: 🚀 Deploy
 on:
   push:
     tags:
-      - 'backend-v[0-9]+.[0-9]+.[0-9]+'
-      - 'backend-v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
+      - 'weddingfest-v[0-9]+.[0-9]+.[0-9]+'
+      - 'weddingfest-v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+'
 
 env:
   REGISTRY: ghcr.io
