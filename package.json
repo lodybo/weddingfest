@@ -43,10 +43,15 @@
     "db:migrate": "prisma migrate dev",
     "db:push": "prisma db push",
     "db:studio": "prisma studio --browser none",
+    "db:deploy": "npx prisma migrate deploy",
     "stripe:forward-webhook": "stripe listen --forward-to http://localhost:3000/webhook",
     "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID",
-    "release": "npx prisma migrate deploy",
-    "release-new": "npx sentry-upload-sourcemaps && npx prisma migrate deploy"
+    "prod:pre-start": "npx sentry-upload-sourcemaps && npx prisma migrate deploy",
+    "release:patch": "npm version patch",
+    "release:minor": "npm version minor",
+    "release:major": "npm version major",
+    "release:beta": "npm version prerelease --preid=beta",
+    "postversion": "git add . && git commit -m \"Releasing plugin version v$npm_package_version\" && git tag plugin-v$npm_package_version && git push && git push --tags"
   },
   "prettier": {
     "singleQuote": true
