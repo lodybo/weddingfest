@@ -47,10 +47,10 @@
     "stripe:forward-webhook": "stripe listen --forward-to http://localhost:3000/webhook",
     "stripe:trigger-webhook": "stripe trigger payment_intent.succeeded --add payment_intent:metadata.rsvpId=$RSVPID",
     "prod:pre-start": "npx sentry-upload-sourcemaps && npx prisma migrate deploy",
-    "release:patch": "npm version patch",
-    "release:minor": "npm version minor",
-    "release:major": "npm version major",
-    "release:beta": "npm version prerelease --preid=beta",
+    "release:patch": "npm version --no-git-tag-version patch",
+    "release:minor": "npm version --no-git-tag-version minor",
+    "release:major": "npm version --no-git-tag-version major",
+    "release:beta": "npm version --no-git-tag-version prerelease --preid=beta",
     "postversion": "git add . && git commit -m \"Releasing app v$npm_package_version\" && git tag weddingfest-v$npm_package_version && git push && git push --tags"
   },
   "prettier": {
