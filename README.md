@@ -85,89 +85,284 @@ This is a pretty simple note-taking app, but it's a good example of how you can 
 
 ## Deployment
 
-This Remix Stack comes with two GitHub Actions that handle automatically deploying your app to production and staging environments.
+This application is designed to be deployed on a VPS (Virtual Private Server) with Nginx as a reverse proxy and caching layer.
 
-Prior to your first deployment, you'll need to do a few things:
+### Prerequisites
 
-- [Install Fly](https://fly.io/docs/getting-started/installing-flyctl/)
+- A VPS with Ubuntu 20.04+ or similar Linux distribution
+- Node.js 18+ installed
+- PostgreSQL database
+- Nginx installed
+- Domain name pointing to your VPS
 
-- Sign up and log in to Fly
+### Step 1: Server Setup
 
-  ```sh
-  fly auth signup
-  ```
+1. **Install dependencies on your VPS:**
 
-  > **Note:** If you have more than one Fly account, ensure that you are signed into the same account in the Fly CLI as you are in the browser. In your terminal, run `fly auth whoami` and ensure the email matches the Fly account signed into the browser.
+   ```sh
+   # Install Node.js (if not already installed)
+   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+   sudo apt-get install -y nodejs
 
-- Create two apps on Fly, one for staging and one for production:
+   # Install PostgreSQL (if not already installed)
+   sudo apt-get install postgresql postgresql-contrib
 
-  ```sh
-  fly apps create weddingfest
-  fly apps create weddingfest-staging
-  ```
+   # Install Nginx
+   sudo apt-get install nginx
+   ```
 
-  > **Note:** Once you've successfully created an app, double-check the `fly.toml` file to ensure that the `app` key is the name of the production app you created. This Stack [automatically appends a unique suffix at init](https://github.com/remix-run/blues-stack/blob/4c2f1af416b539187beb8126dd16f6bc38f47639/remix.init/index.js#L29) which may not match the apps you created on Fly. You will likely see [404 errors in your Github Actions CI logs](https://community.fly.io/t/404-failure-with-deployment-with-remix-blues-stack/4526/3) if you have this mismatch.
+2. **Clone your repository:**
 
-- Initialize Git.
+   ```sh
+   cd /var/www
+   git clone <your-repo-url> weddingfest
+   cd weddingfest
+   ```
 
-  ```sh
-  git init
-  ```
+3. **Install project dependencies:**
 
-- Create a new [GitHub Repository](https://repo.new), and then add it as the remote for your project. **Do not push your app yet!**
+   ```sh
+   npm install
+   ```
 
-  ```sh
-  git remote add origin <ORIGIN_URL>
-  ```
+### Step 2: Database Setup
 
-- Add a `FLY_API_TOKEN` to your GitHub repo. To do this, go to your user settings on Fly and create a new [token](https://web.fly.io/user/personal_access_tokens/new), then add it to [your repo secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) with the name `FLY_API_TOKEN`.
+1. **Create PostgreSQL database:**
 
-- Add a `SESSION_SECRET` to your fly app secrets, to do this you can run the following commands:
+   ```sh
+   sudo -u postgres psql
+   CREATE DATABASE weddingfest;
+   CREATE USER weddingfest_user WITH ENCRYPTED PASSWORD 'your_secure_password';
+   GRANT ALL PRIVILEGES ON DATABASE weddingfest TO weddingfest_user;
+   \q
+   ```
 
-  ```sh
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app weddingfest
-  fly secrets set SESSION_SECRET=$(openssl rand -hex 32) --app weddingfest-staging
-  ```
+2. **Set up environment variables:**
 
-  > **Note:** When creating the staging secret, you may get a warning from the Fly CLI that looks like this:
-  >
-  > ```
-  > WARN app flag 'weddingfest-staging' does not match app name in config file 'weddingfest'
-  > ```
-  >
-  > This simply means that the current directory contains a config that references the production app we created in the first step. Ignore this warning and proceed to create the secret.
+   Create a `.env` file in your project root:
 
-  If you don't have openssl installed, you can also use [1password](https://1password.com/password-generator/) to generate a random secret, just replace `$(openssl rand -hex 32)` with the generated secret.
+   ```sh
+   NODE_ENV=production
+   PORT=3000
+   DATABASE_URL="postgresql://weddingfest_user:your_secure_password@localhost:5432/weddingfest"
+   SESSION_SECRET="$(openssl rand -hex 32)"
+   STRIPE_SECRET_KEY="your_stripe_secret_key"
+   STRIPE_PUBLISHABLE_KEY="your_stripe_publishable_key"
+   STRIPE_WEBHOOK_SECRET="your_stripe_webhook_secret"
+   SENDGRID_API_KEY="your_sendgrid_api_key"
+   ```
 
-- Create a database for both your staging and production environments. Run the following:
+3. **Run database migrations:**
 
-  ```sh
-  fly postgres create --name weddingfest-db
-  fly postgres attach --postgres-app weddingfest-db --app weddingfest
+   ```sh
+   npm run setup
+   ```
 
-  fly postgres create --name weddingfest-staging-db
-  fly postgres attach --postgres-app weddingfest-staging-db --app weddingfest-staging
-  ```
+### Step 3: Build the Application
 
-  > **Note:** You'll get the same warning for the same reason when attaching the staging database that you did in the `fly set secret` step above. No worries. Proceed!
+```sh
+npm run build
+```
 
-Fly will take care of setting the `DATABASE_URL` secret for you.
+### Step 4: Configure Process Manager (PM2)
 
-Now that everything is set up you can commit and push your changes to your repo. Every commit to your `main` branch will trigger a deployment to your production environment, and every commit to your `dev` branch will trigger a deployment to your staging environment.
+1. **Install PM2 globally:**
 
-If you run into any issues deploying to Fly, make sure you've followed all of the steps above and if you have, then post as many details about your deployment (including your app name) to [the Fly support community](https://community.fly.io). They're normally pretty responsive over there and hopefully can help resolve any of your deployment issues and questions.
+   ```sh
+   sudo npm install -g pm2
+   ```
 
-### Multi-region deploys
+2. **Start your application:**
 
-Once you have your site and database running in a single region, you can add more regions by following [Fly's Scaling](https://fly.io/docs/reference/scaling/) and [Multi-region PostgreSQL](https://fly.io/docs/getting-started/multi-region-databases/) docs.
+   ```sh
+   pm2 start npm --name "weddingfest" -- start
+   ```
 
-Make certain to set a `PRIMARY_REGION` environment variable for your app. You can use `[env]` config in the `fly.toml` to set that to the region you want to use as the primary region for both your app and database.
+3. **Configure PM2 to start on boot:**
 
-#### Testing your app in other regions
+   ```sh
+   pm2 save
+   pm2 startup
+   ```
 
-Install the [ModHeader](https://modheader.com/) browser extension (or something similar) and use it to load your app with the header `fly-prefer-region` set to the region name you would like to test.
+   Follow the instructions PM2 provides to enable startup on boot.
 
-You can check the `x-fly-region` header on the response to know which region your request was handled by.
+**Alternative: Using Systemd**
+
+If you prefer systemd over PM2, create a service file:
+
+```sh
+sudo nano /etc/systemd/system/weddingfest.service
+```
+
+Add the following content:
+
+```ini
+[Unit]
+Description=Weddingfest Application
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/var/www/weddingfest
+Environment=NODE_ENV=production
+Environment=PORT=3000
+EnvironmentFile=/var/www/weddingfest/.env
+ExecStart=/usr/bin/node /var/www/weddingfest/build/server.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable and start the service:
+
+```sh
+sudo systemctl enable weddingfest
+sudo systemctl start weddingfest
+sudo systemctl status weddingfest
+```
+
+### Step 5: Configure Nginx
+
+1. **Create Nginx configuration:**
+
+   ```sh
+   sudo nano /etc/nginx/sites-available/weddingfest
+   ```
+
+2. **Add the following configuration:**
+
+   ```nginx
+   # Proxy cache for optimized images
+   proxy_cache_path /var/cache/nginx/images levels=1:2 keys_zone=images:10m max_size=1g inactive=7d;
+
+   server {
+       listen 80;
+       server_name yourdomain.com www.yourdomain.com;
+
+       # Proxy cache for dynamically resized images
+       # This prevents your Node.js app from processing the same image multiple times
+       location /image/ {
+           proxy_pass http://localhost:3000;
+           proxy_cache images;
+           proxy_cache_valid 200 7d;
+           proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+           proxy_cache_lock on;
+           add_header X-Cache-Status $upstream_cache_status;
+       }
+
+       # Main application proxy
+       location / {
+           proxy_pass http://localhost:3000;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+           proxy_set_header X-Forwarded-Proto $scheme;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
+
+3. **Enable the site:**
+
+   ```sh
+   sudo ln -s /etc/nginx/sites-available/weddingfest /etc/nginx/sites-enabled/
+   sudo nginx -t
+   sudo systemctl restart nginx
+   ```
+
+### Step 6: Set up SSL with Let's Encrypt
+
+1. **Install Certbot:**
+
+   ```sh
+   sudo apt-get install certbot python3-certbot-nginx
+   ```
+
+2. **Obtain SSL certificate:**
+
+   ```sh
+   sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+   ```
+
+3. **Certbot will automatically configure Nginx to use SSL and set up auto-renewal.**
+
+### Image Processing and Caching
+
+This application uses a streaming-based image resizing approach that keeps memory usage constant regardless of traffic:
+
+- **Dynamic Resizing:** Images are resized on-the-fly using Sharp (libvips)
+- **True Streaming:** Images are streamed directly from disk → Sharp → response without buffering in memory
+- **Nginx Caching:** Nginx caches processed images for 7 days, so repeat requests never hit your Node.js app
+- **Browser Caching:** Images are cached in browsers for 1 year via Cache-Control headers
+
+**Memory Usage:** ~10-20MB per concurrent image request (Sharp's internal buffers only)
+
+### Monitoring and Maintenance
+
+**View application logs:**
+
+With PM2:
+```sh
+pm2 logs weddingfest
+```
+
+With Systemd:
+```sh
+sudo journalctl -u weddingfest -f
+```
+
+**Restart application:**
+
+With PM2:
+```sh
+pm2 restart weddingfest
+```
+
+With Systemd:
+```sh
+sudo systemctl restart weddingfest
+```
+
+**Deploy updates:**
+
+```sh
+cd /var/www/weddingfest
+git pull
+npm install
+npm run build
+pm2 restart weddingfest  # or: sudo systemctl restart weddingfest
+```
+
+### Troubleshooting
+
+**Check if the app is running:**
+```sh
+curl http://localhost:3000/healthcheck
+```
+
+**Check Nginx error logs:**
+```sh
+sudo tail -f /var/log/nginx/error.log
+```
+
+**Check disk space (for image cache):**
+```sh
+df -h
+du -sh /var/cache/nginx/images
+```
+
+**Clear Nginx image cache if needed:**
+```sh
+sudo rm -rf /var/cache/nginx/images/*
+sudo systemctl reload nginx
+```
 
 ## GitHub Actions
 

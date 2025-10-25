@@ -1,53 +1,27 @@
 /**
- * An on the fly image resizer, taken from https://github.com/remix-run/examples/blob/main/image-resize/app/routes/assets/resize/%24.ts
+ * Hybrid image serving system with three-tier optimization:
  *
- * Since most of our images are served via a CDN, we don't have to save the resized images.
- * Instead we set cache headers for them and let the cdn cache them for us.
+ * 1. Pre-generated images (fastest): Serve pre-optimized files at standard sizes
+ * 2. Disk cache (fast): Serve previously generated on-demand images from cache
+ * 3. On-demand generation (slow): Generate and cache new sizes as needed
  *
- * sharp uses a highly performant native package called libvips.
- * it's written in C and is extremely fast.
+ * This approach provides instant serving for common cases while maintaining
+ * flexibility for custom sizes, with minimal CPU/memory usage.
  *
- * The implementation of the demo uses a stream based approach where the image is never stored in memory.
- * This means it's very good at handling images of any size, and is extremely performant.
- * Further improvements could be done by implementing ETags, but that is out of scope for this demo.
+ * Original implementation from https://github.com/remix-run/examples/blob/main/image-resize/app/routes/assets/resize/%24.ts
  */
 
-import type { ReadStream } from 'fs';
 import * as fs from 'fs';
 import path from 'path';
-import { PassThrough, finished } from 'stream';
 import * as Sentry from '@sentry/remix';
 import type { LoaderArgs } from '@remix-run/node';
 import type { FitEnum } from 'sharp';
 import sharp from 'sharp';
-import { client } from '~/redis.server';
 
 const ASSETS_ROOT = 'images';
-const { createReadStream, statSync } = fs;
-
-async function getCachedImage(key: string) {
-  try {
-    const data = await client.get(key);
-    if (data) {
-      return Buffer.from(data, 'binary');
-    }
-  } catch (error) {
-    Sentry.captureException(error);
-    console.error('Redis get error:', error);
-  }
-  return null;
-}
-
-async function setCachedImage(key: string, buffer: string) {
-  try {
-    // 'EX', 3600 denotes that the key will expire in 3600 seconds (1 hour)
-    // Adjust the expiration time based on your needs
-    await client.set(key, buffer, { EX: 3600 });
-  } catch (error) {
-    Sentry.captureException(error);
-    console.error('Redis set error:', error);
-  }
-}
+const OPTIMIZED_ROOT = 'public/optimized-images';
+const CACHE_ROOT = 'public/cache-images';
+const { createReadStream, statSync, existsSync } = fs;
 
 interface ResizeParams {
   src: string;
@@ -56,17 +30,25 @@ interface ResizeParams {
   fit: keyof FitEnum;
 }
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = ({ params, request }: LoaderArgs) => {
   // extract all the parameters from the url
   const { src, width, height, fit } = extractParams(params, request);
 
   try {
-    // read the image as a stream of bytes
-    const readStream = readFileAsStream(src);
-    // read the image from the file system and stream it through the sharp pipeline
-    const result = await streamingResize(readStream, src, width, height, fit);
-    // console.log('Returning result...', result);
-    return result;
+    // TIER 1: Check for pre-generated optimized image
+    const preGenerated = checkPreGeneratedImage(src, width, height, fit);
+    if (preGenerated) {
+      return serveStaticFile(preGenerated, 'pre-generated');
+    }
+
+    // TIER 2: Check for cached on-demand image
+    const cached = checkCachedImage(src, width, height, fit);
+    if (cached) {
+      return serveStaticFile(cached, 'cached');
+    }
+
+    // TIER 3: Generate on-demand, cache it, and serve
+    return generateAndCacheImage(src, width, height, fit);
   } catch (error: unknown) {
     // if the image is not found, or we get any other errors we return different response types
     Sentry.captureException(error);
@@ -99,119 +81,153 @@ function extractParams(
   return { src, width, height, fit };
 }
 
-async function streamingResize(
-  imageStream: ReadStream,
+/**
+ * Check if a pre-generated optimized image exists
+ * Pre-generated images are named: filename-400w.webp, filename-800w.webp, etc.
+ */
+function checkPreGeneratedImage(
   src: string,
   width: number | undefined,
   height: number | undefined,
   fit: keyof FitEnum
-) {
-  const cacheKey = `${src}-${width}x${height ?? 'auto'}-${fit}`;
-  const cachedImage = await getCachedImage(cacheKey);
-
-  let responseData: ReadableStream | Buffer;
-
-  console.log(' ');
-  if (cachedImage) {
-    console.log(`Cache hit for ${cacheKey}`);
-    responseData = cachedImage;
-  } else {
-    console.log(`Cache miss for ${cacheKey}`);
-    // create the sharp transform pipeline
-    // https://sharp.pixelplumbing.com/api-resize
-    // you can also add watermarks, sharpen, blur, etc.
-    const sharpTransforms = sharp()
-      .resize({
-        width,
-        height,
-        fit,
-        position: sharp.strategy.entropy, // will try to crop the image and keep the most interesting parts
-      })
-      // .jpeg({
-      //   mozjpeg: true, // use mozjpeg defaults, = smaller images
-      //   quality: 80,
-      // });
-      // sharp also has other image formats, just comment out .jpeg and make sure to change the Content-Type header below
-      // .avif({
-      //   quality: 80,
-      // });
-      // .png({
-      //   quality: 80,
-      // });
-      .webp({
-        quality: 80,
-      });
-
-    // create a pass through stream that will take the input image
-    // stream it through the sharp pipeline and then output it to the response
-    // without buffering the entire image in memory
-    const passthroughStream = new PassThrough();
-
-    imageStream.pipe(sharpTransforms).pipe(passthroughStream);
-
-    const buffers: any[] = [];
-    passthroughStream.on('data', (data) => buffers.push(data));
-
-    try {
-      await new Promise((resolve, reject) => {
-        passthroughStream.on('error', (error) => {
-          Sentry.captureException(error);
-          reject(error);
-        });
-        passthroughStream.on('end', async () => resolve(null));
-      });
-
-      const buffer = Buffer.concat(buffers);
-      await setCachedImage(cacheKey, buffer.toString('binary'));
-
-      responseData = buffer;
-    } catch (error) {
-      Sentry.captureException(error);
-      console.error('Error:', error);
-      throw error;
-    }
+): string | null {
+  // Only check for pre-generated if:
+  // 1. Width is specified (we pre-generate by width)
+  // 2. Height is not specified (we only pre-generate width-only resizes)
+  // 3. Fit is 'cover' (the default used in pre-generation)
+  if (!width || height || fit !== 'cover') {
+    return null;
   }
 
-  return new Response(responseData, {
+  // Build the expected pre-generated filename
+  // src: official/2023/ALL_HR_.../image.jpg
+  // becomes: public/optimized-images/official/2023/ALL_HR_.../image-400w.webp
+  const parsedPath = path.parse(src);
+  const optimizedFilename = `${parsedPath.name}-${width}w.webp`;
+  const optimizedPath = path.join(
+    OPTIMIZED_ROOT,
+    parsedPath.dir,
+    optimizedFilename
+  );
+
+  if (existsSync(optimizedPath)) {
+    return optimizedPath;
+  }
+
+  return null;
+}
+
+/**
+ * Check if a cached on-demand image exists
+ * Cached images include all the parameters in the filename
+ */
+function checkCachedImage(
+  src: string,
+  width: number | undefined,
+  height: number | undefined,
+  fit: keyof FitEnum
+): string | null {
+  const cacheFilename = buildCacheFilename(src, width, height, fit);
+  const cachePath = path.join(CACHE_ROOT, cacheFilename);
+
+  if (existsSync(cachePath)) {
+    return cachePath;
+  }
+
+  return null;
+}
+
+/**
+ * Build a unique cache filename based on all parameters
+ */
+function buildCacheFilename(
+  src: string,
+  width: number | undefined,
+  height: number | undefined,
+  fit: keyof FitEnum
+): string {
+  // Create a unique filename that includes all the resize parameters
+  // src: official/2023/ALL_HR_.../image.jpg
+  // becomes: official-2023-ALL_HR_...-image-w400-h0-cover.webp
+  const normalized = src.replace(/\//g, '-').replace(/\\/g, '-');
+  const parsedPath = path.parse(normalized);
+  const w = width || 0;
+  const h = height || 0;
+
+  return `${parsedPath.name}-w${w}-h${h}-${fit}.webp`;
+}
+
+/**
+ * Serve a pre-generated or cached static file
+ */
+function serveStaticFile(filePath: string, source: string): Response {
+  const stat = statSync(filePath);
+
+  if (!stat.isFile()) {
+    throw new Error(`${filePath} is not a file`);
+  }
+
+  const stream = createReadStream(filePath);
+
+  // Add a custom header to help with debugging/monitoring
+  return new Response(stream as any, {
     headers: {
       'Content-Type': 'image/webp',
-      'Cache-Control': 'public, max-age=31536000, immutable, must-revalidate',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'X-Image-Source': source, // 'pre-generated' or 'cached'
     },
   });
 }
 
-function readFileAsStream(src: string): ReadStream {
-  // Local filesystem
-
-  // check that file exists
+/**
+ * Generate image on-demand, cache it to disk, and serve
+ */
+async function generateAndCacheImage(
+  src: string,
+  width: number | undefined,
+  height: number | undefined,
+  fit: keyof FitEnum
+): Promise<Response> {
+  // Verify source file exists
   const srcPath = path.join(ASSETS_ROOT, src);
   const fileStat = statSync(srcPath);
   if (!fileStat.isFile()) {
-    Sentry.captureException(new Error(`${srcPath} is not a file`));
     throw new Error(`${srcPath} is not a file`);
   }
 
-  // create a readable stream from the image file
-  return createReadStream(path.join(ASSETS_ROOT, src));
+  // Build cache path
+  const cacheFilename = buildCacheFilename(src, width, height, fit);
+  const cachePath = path.join(CACHE_ROOT, cacheFilename);
 
-  // Other implementations that you could look into
+  // Ensure cache directory exists
+  const cacheDir = path.dirname(cachePath);
+  if (!existsSync(cacheDir)) {
+    fs.mkdirSync(cacheDir, { recursive: true });
+  }
 
-  // Google Cloud Storage
-  // we could also create a stream directly from a bucket file
-  // import { Storage } from '@google-cloud/storage'
-  // const storage = new Storage();
-  // const bucketName = 'my-gcp-bucket'
-  // const bucketPath = src // the bucket path /dogs/cute/dog-1.jpg'
-  // return storage.bucket(bucketName).file(src).createReadStream()
+  // Generate and save to cache
+  await sharp(srcPath)
+    .resize({
+      width,
+      height,
+      fit,
+      position: sharp.strategy.entropy,
+    })
+    .webp({
+      quality: 80,
+    })
+    .toFile(cachePath);
 
-  // AWS S3 / Digital Ocean Spaces
-  // import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
-  // const s3 = new S3Client({...})
-  // const bucketName = 'my-s3-bucket'
-  // const bucketKey = src // 'dogs/cute/dog-1.jpg'
-  // const fileResult = await s3.send(new GetObjectCommand({ Bucket: bucketName, Key: bucketKey }));
-  // s3 GetObjectCommand result.Body is a ReadableStream
-  // return fileResult.Body
+  // Serve the newly cached file
+  const stream = createReadStream(cachePath);
+
+  return new Response(stream as any, {
+    headers: {
+      'Content-Type': 'image/webp',
+      'Cache-Control': 'public, max-age=31536000, immutable',
+      'X-Image-Source': 'generated-and-cached',
+    },
+  });
 }
 
 function handleError(error: unknown) {

@@ -13,8 +13,14 @@ node_modules
 images/
 redis-data/
 
+# Pre-generated and cached images
+/public/optimized-images/
+/public/cache-images/
+
 /app/styles/tailwind.css
 
 coverage
 keys/
 certs/
+
+.DS_Store
