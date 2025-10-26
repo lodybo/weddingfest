@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === "production") {
 function getClient() {
   const { DATABASE_URL } = process.env;
   invariant(typeof DATABASE_URL === "string", "DATABASE_URL env var not set");
+  console.log(`Database URL: ${DATABASE_URL}`);
 
   const databaseUrl = new URL(DATABASE_URL);
 
