@@ -5,3 +5,6 @@
 /.cache
 /public/build
 /build
+images
+public/cache-images
+public/optimized-images
