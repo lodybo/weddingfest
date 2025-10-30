@@ -14,7 +14,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     });
     return new Response('OK');
   } catch (error: unknown) {
-    Sentry.captureException(error);
+    // Sentry.captureException(error);
     console.log('healthcheck ❌', { error });
     return new Response('ERROR', { status: 500 });
   }

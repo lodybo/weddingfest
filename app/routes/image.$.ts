@@ -51,7 +51,8 @@ export const loader = ({ params, request }: LoaderArgs) => {
     return generateAndCacheImage(src, width, height, fit);
   } catch (error: unknown) {
     // if the image is not found, or we get any other errors we return different response types
-    Sentry.captureException(error);
+    // Sentry.captureException(error);
+    console.error(error);
     return handleError(error);
   }
 };
@@ -234,7 +235,7 @@ function handleError(error: unknown) {
   // error needs to be typed
   const errorT = error as Error & { code: string };
   // if the read stream fails, it will have the error.code ENOENT
-  Sentry.captureException(error);
+  // Sentry.captureException(error);
   console.error(error);
   if (errorT.code === 'ENOENT') {
     return new Response('image not found', {

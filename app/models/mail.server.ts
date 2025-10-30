@@ -22,11 +22,11 @@ export function sendMail(to: string, subject: string, html: string) {
       html,
     })
     .then((res) => {
-      Sentry.captureMessage(`Mail sent to ${to}`);
+      // Sentry.captureMessage(`Mail sent to ${to}`);
       return res;
     })
     .catch((err) => {
-      Sentry.captureException(err);
+      // Sentry.captureException(err);
       throw err;
     });
 }
@@ -72,14 +72,14 @@ export function sendMailToRecipients({
     .send(emails)
     .then((res) => {
       console.log(`Mails sent to ${recipients.map((r) => r.email).join(', ')}`);
-      Sentry.captureMessage(
-        `Mails sent to ${recipients.map((r) => r.email).join(', ')}`
-      );
+      // Sentry.captureMessage(
+      //   `Mails sent to ${recipients.map((r) => r.email).join(', ')}`
+      // );
       return res;
     })
     .catch((err) => {
       console.log('err', err);
-      Sentry.captureException(err);
+      // Sentry.captureException(err);
       throw err;
     });
 }

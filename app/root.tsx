@@ -128,7 +128,7 @@ export function ErrorBoundary() {
     title = 'Oh nee!';
     message = error.data.message;
   } else {
-    Sentry.captureException(error);
+    // Sentry.captureException(error);
     message = getErrorMessage(error);
     console.error(message);
     if (error instanceof Error) {
